@@ -5,6 +5,18 @@
 
 ---
 
+## 📸 界面预览 (Preview)
+
+![DeepSeek Harness ReadingOS 运行预览](assets/preview.jpg)
+
+*在 DeepSeek Harness 桌面端内嵌无缝运行，支持根据窗口大小流式自适应排版。*
+
+![阅读足迹热力图与资产大盘](assets/bento-pulse.png)
+
+*Claude 纸质极简设计：365 天阅读脉搏热力图、藏书资产转化率、四大思维维度分布、最近下载入库书目。*
+
+---
+
 ## ✨ 核心特性
 
 - **⚡️ 零摩擦本地直连**：无需点击邮件导出，毫秒级读取 macOS Apple Books 本地 SQLite，实时获取全部藏书、划线高亮与阅读进度。
@@ -27,7 +39,7 @@
 2. 点击左侧栏 **「🧩 插件」 ➔ 「添加插件」**；
 3. 在弹窗输入框中直接填入本 GitHub 仓库地址：
    ```text
-   https://github.com/your-username/dsh-plugin-reading-os
+   https://github.com/maikaojai/dsh-plugin-reading-os
    ```
 4. 点击 **“安装”**，左侧栏立即点亮 **`📖 ReadingOS 读书`**。
 
