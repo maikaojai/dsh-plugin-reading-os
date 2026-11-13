@@ -1,7 +1,7 @@
 {
   "name": "dsh-plugin-reading-os",
   "version": "1.0.0",
-  "description": "ReadingOS · 个人阅读与认知操作系统：苹果图书高亮打通、藏书资产洞察、跨书主题网络与 AI 深度研读",
+  "description": "ReadingOS · macOS 本地图书划线与阅读记录插件，支持与 DeepSeek 对话联动",
   "type": "module",
   "main": "lib/index.js",
   "exports": {

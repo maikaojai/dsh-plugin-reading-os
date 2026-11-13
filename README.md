@@ -1,51 +1,51 @@
-# 📚 ReadingOS for DeepSeek Harness
+# 📖 ReadingOS for DeepSeek Harness
 
-> **个人阅读与认知操作系统 · DeepSeek Harness 官方标准插件**  
-> 告别繁琐的邮件导出，直连 macOS 原生图书（Apple Books）本地底层数据库与下载书库，为 DeepSeek 赋予你的专属阅读外脑。
+> **macOS 本地图书划线与阅读记录插件 · DeepSeek Harness**  
+> 直接读取 macOS 自带「图书」App 的划线高亮与本地下载的书籍，在 DeepSeek Harness 里随时查看阅读足迹，并可一键把划线内容发给 DeepSeek 展开探讨。
 
 ---
 
 ## 📸 界面预览 (Preview)
 
-### 1. 自适应阅读大盘 (Responsive Bento Dashboard)
-![ReadingOS 自适应大盘](assets/01-responsive-dashboard.png)
-*365 天阅读足迹热力图、下方紧随「最近下载入库书目」（含作者/简介）、自适应流式排版的四大认知维度与藏书转化率大盘，顶部常驻「🔄 实时同步」按钮。*
+### 1. 阅读看板 (Dashboard)
+![ReadingOS 阅读看板](assets/01-responsive-dashboard.png)
+*展示近一年阅读足迹热力图、最近下载的书籍（书名、作者与简介）、藏书分类比例与阅读统计。支持自适应窗口宽度，顶部提供「🔄 同步」刷新按钮。*
 
-### 2. 沉浸式划线抽屉与 DSH 原生联动 (Highlights Drawer & DSH Action)
-![书目划线抽屉与 DSH 联动](assets/02-book-highlights-drawer.png)
-*点击任意书籍即刻展开全量划线，标注精确阅读时间戳；轻点「✨ 联动 DSH 探讨」，无缝在 DeepSeek Harness 中开启针对该条划线的深度哲学与思维探讨。*
+### 2. 书籍划线抽屉与对话联动 (Highlights Drawer)
+![书籍划线抽屉与对话联动](assets/02-book-highlights-drawer.png)
+*点击任意书籍可展开全部划线内容与标记时间；轻点「✨ 联动 DSH 探讨」，直接在 DeepSeek Harness 中发起新会话，就某句划线内容展开交流。*
 
-### 3. 全局思维检索 (Full-text Highlights Search)
-![全库划线毫秒级检索](assets/03-quick-search-modal.png)
-*支持快捷键 `/` 或点击顶部搜索框，毫秒级跨越全库 4,400+ 条划线检索核心观点共鸣（如检索「舍」，瞬间聚合跨书高亮）。*
+### 3. 划线快速检索 (Highlights Search)
+![划线快速检索](assets/03-quick-search-modal.png)
+*点击顶部搜索框或按快捷键 `/`，快速查找全部划线记录中的关键词（例如搜索「舍」）。*
 
 ---
 
-## ✨ 核心特性
+## ✨ 主要功能
 
-- **⚡️ 零摩擦本地直连**：无需点击邮件导出，毫秒级读取 macOS Apple Books 本地 SQLite，实时获取全部藏书、划线高亮与阅读进度。
-- **📥 电子书库资产盘点**：自动扫描本机的电子书下载目录（如 Z-Library 下载的书籍），计算藏书总量、近 30 天入库率与沉睡积读率（Tsundoku）。
-- **🎨 Claude 纸感极简看版**：优雅的 Bento 网格布局，365 天阅读足迹热力图、分类维度权重进度条、精读书目抽屉与双模式（米黄暖纸 / 暗夜深色）切换。
-- **🌐 跨书主题网络 (Concept Clusters)**：打破单本书的边界，对跨越数十本书的「放下与破执」、「风险与期权」、「本质与底层」、「规律与辩证」等高频命题进行网状碰撞。
-- **✨ 看板与 DeepSeek 原生联动**：在看版的任意划线卡片轻点「✨ 联动 DSH 探讨」，直接在 DeepSeek Harness 中开启新会话并自动填入深度研读 Prompt。
-- **🤖 内置 4 项智能体工具**：模型在日常对话中可自主调用划线搜索、主题网络与书目档案，用你认同的思维语料辅助决策。
-- **🔄 一键实时同步**：看版顶部常驻「🔄 同步」按钮，阅读完新章节或下载新书后，点击即刻热更新大盘。
-- **🔒 100% 本地隐私**：无任何外部服务器依赖，纯本地 Python + Node 运行，数据不出你的 Mac。
+- 📖 **直读 macOS 自带图书**：直接读取 macOS「图书」App 的本地记录，自动提取书名、划线内容、标注时间与阅读进度，无需手动导出。
+- 📁 **关联本地下载目录**：自动统计下载目录（如 `~/Downloads`）中的电子书（EPUB、PDF、MOBI 等），展示最近添加的书籍与待读情况。
+- 🗓️ **阅读热力图与分类概览**：以清晰的卡片形式展示 365 天阅读足迹、各类书籍分布与阅读统计，支持随窗口自适应排版和深浅色模式。
+- 💬 **一键联动 DeepSeek 探讨**：查看划线时，点击卡片上的「联动 DSH 探讨」，会自动在对话框中填入该划线内容并开启交流。
+- 🔍 **划线快速检索**：支持全局搜索全部划线记录，方便快速找回某句话或某个观点。
+- 🛠️ **提供 Agent 工具**：向 DeepSeek 提供划线搜索和图书信息查询工具，在普通对话中 DeepSeek 也能查阅你的读书记录。
+- 🔄 **一键刷新同步**：页面右上角提供「同步」按钮，新划了线或下了新书，点一下即可刷新数据。
+- 🔒 **纯本地运行**：只读取本机本地数据，不需要连接任何第三方云端服务，隐私安全。
 
 ---
 
 ## 🚀 在 DeepSeek Harness 中安装使用
 
-本插件完全符合 DeepSeek Harness 官方插件规范。
+本插件符合 DeepSeek Harness 插件规范。
 
-### 方式一：GitHub 一键安装（开源发布后）
-1. 打开 DeepSeek Harness 客户端；
+### 方式一：GitHub 一键安装（推荐）
+1. 打开 DeepSeek Harness 桌面端；
 2. 点击左侧栏 **「🧩 插件」 ➔ 「添加插件」**；
-3. 在弹窗输入框中直接填入本 GitHub 仓库地址：
+3. 在弹窗输入框中填入本仓库地址：
    ```text
    https://github.com/maikaojai/dsh-plugin-reading-os
    ```
-4. 点击 **“安装”**，左侧栏立即点亮 **`📖 ReadingOS 读书`**。
+4. 点击 **“安装”**，左侧栏即可看到 **`📖 ReadingOS 读书`**。
 
 ### 方式二：本地目录安装（开发者与抢先体验）
 1. Clone 或下载本仓库至本机目录（例如 `~/Downloads/reading-os/dsh-plugin-reading-os`）；
@@ -56,37 +56,37 @@
 
 ## 🛠️ 智能体工具列表 (Tools for Agent)
 
-安装后，DeepSeek 模型在与你对话时可自主使用以下工具：
+安装后，DeepSeek 模型在与你对话时可按需调用以下工具：
 
 | 工具名称 | 功能描述 |
 | :--- | :--- |
-| `reading_search_highlights` | 全文检索全库 4,400+ 条划线批注，寻找观点共鸣 |
-| `reading_get_concept_network` | 调取跨书核心概念（放下、本质、风险等）的多书对照 |
-| `reading_get_overview` | 查询个人阅读大盘数据（藏书量、四大维度权重、转化率） |
-| `reading_get_book_highlights` | 查询指定单本书籍的所有划线与精读进度 |
+| `reading_search_highlights` | 按关键词搜索图书划线记录 |
+| `reading_get_concept_network` | 查看跨书的相关主题与关联划线 |
+| `reading_get_overview` | 查看藏书总量、各类别比例与阅读统计 |
+| `reading_get_book_highlights` | 查询某本具体书籍的划线与笔记 |
 
 ---
 
-## 📂 插件架构
+## 📂 项目结构
 
 ```text
 dsh-plugin-reading-os/
-├── package.json         # DSH 插件清单与组合包声明
-├── cordis.patch.yml     # DSH 宿主服务自动挂载配置
+├── package.json         # DSH 插件清单与配置声明
+├── cordis.patch.yml     # DSH 服务自动挂载配置
 ├── lib/
-│   ├── client.js        # 客户端半边：侧栏图标、主面板 iframe、postMessage 通信
-│   ├── index.js         # 宿主半边：/reading-os/ 路由挂载与 /api/sync 实时刷新
-│   └── tools.js         # 注册给 DeepSeek 模型的 4 个原生认知工具
+│   ├── client.js        # 客户端：侧边栏图标、主面板 iframe、postMessage 通信
+│   ├── index.js         # 服务端：静态路由挂载与 /api/sync 刷新接口
+│   └── tools.js         # 注册给 DeepSeek 模型的工具接口
 ├── dashboard/
-│   └── index.html       # 极简 Claude 纸感交互看版（响应式流布局）
+│   └── index.html       # 响应式阅读看板页面
 └── scripts/
-    ├── data_fetcher.py  # 零依赖动态 SQLite & Downloads 数据抓取引擎
-    ├── core.py          # 核心分析器
-    └── mcp_server.py    # MCP 标准服务
+    ├── data_fetcher.py  # 本地图书与下载目录数据提取脚本
+    ├── core.py          # 核心解析逻辑
+    └── mcp_server.py    # MCP 服务端
 ```
 
 ---
 
 ## 📄 License
 
-[MIT License](LICENSE) © 2026
+[MIT License](LICENSE) © 2026 maikaojai
