@@ -7,13 +7,17 @@
 
 ## 📸 界面预览 (Preview)
 
-![DeepSeek Harness ReadingOS 运行预览](assets/preview.jpg)
+### 1. 自适应阅读大盘 (Responsive Bento Dashboard)
+![ReadingOS 自适应大盘](assets/01-responsive-dashboard.png)
+*365 天阅读足迹热力图、下方紧随「最近下载入库书目」（含作者/简介）、自适应流式排版的四大认知维度与藏书转化率大盘，顶部常驻「🔄 实时同步」按钮。*
 
-*在 DeepSeek Harness 桌面端内嵌无缝运行，支持根据窗口大小流式自适应排版。*
+### 2. 沉浸式划线抽屉与 DSH 原生联动 (Highlights Drawer & DSH Action)
+![书目划线抽屉与 DSH 联动](assets/02-book-highlights-drawer.png)
+*点击任意书籍即刻展开全量划线，标注精确阅读时间戳；轻点「✨ 联动 DSH 探讨」，无缝在 DeepSeek Harness 中开启针对该条划线的深度哲学与思维探讨。*
 
-![阅读足迹热力图与资产大盘](assets/bento-pulse.png)
-
-*Claude 纸质极简设计：365 天阅读脉搏热力图、藏书资产转化率、四大思维维度分布、最近下载入库书目。*
+### 3. 全局思维检索 (Full-text Highlights Search)
+![全库划线毫秒级检索](assets/03-quick-search-modal.png)
+*支持快捷键 `/` 或点击顶部搜索框，毫秒级跨越全库 4,400+ 条划线检索核心观点共鸣（如检索「舍」，瞬间聚合跨书高亮）。*
 
 ---
 
