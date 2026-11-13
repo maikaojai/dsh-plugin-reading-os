@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 def get_reading_os_data():
     home = os.path.expanduser("~")
-    downloads_dir = os.path.join(home, "Downloads")
+    downloads_dir = os.environ.get("READING_OS_BOOKS_DIR", os.path.join(home, "Downloads"))
 
     bklib_pattern = os.path.join(home, "Library/Containers/com.apple.iBooksX/Data/Documents/BKLibrary/BKLibrary-*.sqlite")
     ann_pattern = os.path.join(home, "Library/Containers/com.apple.iBooksX/Data/Documents/AEAnnotation/AEAnnotation_*.sqlite")
