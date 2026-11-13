@@ -10,6 +10,11 @@
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
+  "author": "maikaojai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maikaojai/dsh-plugin-reading-os.git"
+  },
   "keywords": [
     "deepseek-harness",
     "dsh-plugin",
