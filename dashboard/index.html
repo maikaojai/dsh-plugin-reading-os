@@ -114,10 +114,12 @@
             border-radius: 20px;
             font-size: 12px;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
             box-shadow: var(--card-shadow);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .search-pill:hover {
             border-color: var(--border-hover);
@@ -148,11 +150,14 @@
             font-size: 12px;
             font-weight: 500;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
             box-shadow: var(--card-shadow);
             transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.2;
         }
         .sync-btn:hover {
             border-color: var(--accent-terracotta);
@@ -447,6 +452,30 @@
             border-color: var(--accent-terracotta);
             transform: translateY(-1px);
         }
+        .apple-books-app-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(255, 120, 0, 0.22), 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .apple-books-app-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 12px;
+        }
+        .spotlight-card:hover .apple-books-app-icon {
+            transform: scale(1.04);
+            box-shadow: 0 6px 16px rgba(255, 120, 0, 0.32);
+        }
+
         .standard-book-icon {
             width: 48px;
             height: 66px;
@@ -673,13 +702,16 @@
             color: var(--accent-terracotta);
             font-size: 11px;
             font-weight: 500;
-            padding: 3px 9px;
+            padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 4px;
             transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.2;
         }
         .dsh-btn:hover {
             background: var(--accent-terracotta);
@@ -788,6 +820,12 @@
             color: var(--ink-primary);
             text-align: center;
             transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
         .btn-act:hover {
             background: var(--accent-terracotta);
@@ -860,6 +898,148 @@
             cursor: pointer;
         }
 
+        .export-tabs-container {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            background: var(--surface-subtle);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border-main);
+        }
+        .export-tab-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 12px;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+        .export-tab-btn:hover {
+            color: var(--ink-primary);
+        }
+        .export-tab-btn.active {
+            color: var(--accent-terracotta);
+            background: var(--surface);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .export-modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-main);
+        }
+        .export-modal-hint {
+            font-size: 11.5px;
+            color: var(--ink-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 0;
+        }
+        .export-modal-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .modal-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 1px solid var(--border-main);
+            background: var(--surface-subtle);
+            color: var(--ink-primary);
+            transition: all 0.15s ease;
+            line-height: 1.2;
+        }
+        .modal-btn:hover {
+            border-color: var(--accent-terracotta);
+            color: var(--accent-terracotta);
+            background: var(--surface);
+        }
+        .modal-btn.primary {
+            background: var(--accent-terracotta);
+            color: #ffffff;
+            border-color: var(--accent-terracotta);
+        }
+        .modal-btn.primary:hover {
+            background: var(--accent-terracotta-hover);
+            border-color: var(--accent-terracotta-hover);
+        }
+        .modal-btn.mute {
+            color: var(--ink-muted);
+            background: var(--surface-subtle);
+        }
+        .modal-btn.mute:hover {
+            background: var(--border-main);
+            color: var(--ink-primary);
+        }
+
+        .drawer-actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px dashed var(--border-main);
+        }
+        .drawer-act-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-secondary);
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.2;
+        }
+        .drawer-act-btn:hover {
+            border-color: var(--accent-terracotta);
+            color: var(--accent-terracotta);
+            background: var(--surface);
+        }
+        .drawer-act-btn.primary {
+            background: var(--accent-terracotta);
+            color: #ffffff;
+            border-color: var(--accent-terracotta);
+        }
+        .drawer-act-btn.primary:hover {
+            background: var(--accent-terracotta-hover);
+        }
+
         .drawer-content {
             flex: 1;
             overflow-y: auto;
@@ -907,12 +1087,15 @@
         }
         .modal-scrim.active { opacity: 1; pointer-events: auto; }
         .modal-box {
-            width: 540px;
-            max-width: 90vw;
+            width: 660px;
+            max-width: 92vw;
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
             background: var(--surface);
             border: 1px solid var(--border-main);
-            border-radius: 12px;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+            border-radius: 14px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.18);
             padding: 16px;
         }
         .modal-input {
@@ -927,12 +1110,13 @@
         }
         .modal-input:focus { border-color: var(--accent-terracotta); }
         .modal-results {
-            margin-top: 12px;
-            max-height: 320px;
+            margin-top: 14px;
+            max-height: 60vh;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 8px;
+            padding-right: 4px;
         }
 
         /* ================= RESPONSIVE ADAPTATIONS FOR DSH & RESIZED WINDOWS ================= */
@@ -971,6 +1155,20 @@
             }
         }
 
+        @media (max-width: 640px) {
+            .export-modal-footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .export-modal-hint {
+                text-align: center;
+            }
+            .export-modal-actions {
+                justify-content: flex-end;
+            }
+        }
+
         @media (max-width: 520px) {
             body {
                 padding: 16px 12px;
@@ -1006,7 +1204,7 @@
             <div class="header-tools">
                 <div class="search-pill" onclick="openSearchModal()">
                     <span>🔍</span>
-                    <span>搜索 4,427 条批注...</span>
+                    <span>搜索书名、作者、批注...</span>
                     <span style="font-size: 10px; opacity: 0.6; margin-left: 4px;">/</span>
                 </div>
                 <button class="sync-btn" onclick="syncReadingData()" id="syncBtn" title="同步 Apple Books 与下载目录最新数据">
@@ -1136,27 +1334,27 @@
 
         <!-- ================= 2. 正在阅读 (STANDARDIZED BOOK CARD) ================= -->
         <div class="spotlight-card" onclick="openBookDrawer('JINGANG')">
-            <div class="standard-book-icon">
-                📖
+            <div class="apple-books-app-icon" title="来源：Apple Books">
+                <img src="data:image/png;base64,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" alt="Apple Books">
             </div>
 
             <div class="spotlight-info">
                 <div class="spotlight-header-row">
                     <span style="font-size:11px; font-weight:600; color:var(--accent-terracotta);">正在阅读</span>
-                    <span style="font-size:11px; color:var(--ink-muted);">最后打开：今天</span>
+                    <span style="font-size:11px; color:var(--ink-muted);" id="spotlightLastOpen">最后打开：今天</span>
                 </div>
-                <div class="spotlight-title">《金剛經白話講座：放下的人生修行》</div>
-                <div class="spotlight-meta">王思迅 · 220 条划线 (点击翻开所有批注 ➔)</div>
+                <div class="spotlight-title" id="spotlightTitle">《金剛經白話講座：放下的人生修行》</div>
+                <div class="spotlight-meta" id="spotlightMeta">王思迅 · 267 条划线 (点击翻开所有批注 ➔)</div>
 
-                <div class="spotlight-quote serif">
+                <div class="spotlight-quote serif" id="spotlightQuote">
                     “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
                 </div>
 
                 <div class="progress-bar-wrap">
                     <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="width: 84%;"></div>
+                        <div class="progress-bar-fill" id="spotlightProgressFill" style="width: 97%;"></div>
                     </div>
-                    <span class="progress-text">84%</span>
+                    <span class="progress-text" id="spotlightProgressText">97%</span>
                 </div>
             </div>
         </div>
@@ -1167,13 +1365,13 @@
             <div class="companion-card" onclick="openBookDrawer('VALUATION')">
                 <div>
                     <div class="c-title">《估值原理》</div>
-                    <div class="c-author">周洛华 · 已读完 (100%)</div>
+                    <div class="c-author" id="compValuationMeta">周洛华 · 已读完 (100%)</div>
                     <div class="c-quote serif">
                         “估值不仅是对资产未来现金流的折现，更是在不确定性中为风险与期权定价的艺术。”
                     </div>
                 </div>
                 <div class="c-footer">
-                    <span>300 条划线</span>
+                    <span id="compValuationCount">300 条划线</span>
                     <span style="color:var(--accent-terracotta);">翻开 ➔</span>
                 </div>
             </div>
@@ -1182,13 +1380,13 @@
             <div class="companion-card" onclick="openBookDrawer('LAOZI')">
                 <div>
                     <div class="c-title">《老子他说：初续合集》</div>
-                    <div class="c-author">南怀瑾 · 读过 (25%)</div>
+                    <div class="c-author" id="compLaoziMeta">南怀瑾 · 读过 (24%)</div>
                     <div class="c-quote serif">
                         “人法地，地法天，天法道，道法自然。顺应客观大规律，方能在周期中保全自身。”
                     </div>
                 </div>
                 <div class="c-footer">
-                    <span>20 条划线</span>
+                    <span id="compLaoziCount">20 条划线</span>
                     <span style="color:var(--accent-terracotta);">翻开 ➔</span>
                 </div>
             </div>
@@ -1197,13 +1395,13 @@
             <div class="companion-card" onclick="openBookDrawer('FREEDOM')">
                 <div>
                     <div class="c-title">《最初和最终的自由》</div>
-                    <div class="c-author">克里希那穆提 · 精读 (100%)</div>
+                    <div class="c-author" id="compFreedomMeta">克里希那穆提 · 精读 (100%)</div>
                     <div class="c-quote serif">
                         “真相无法靠别人给你。你必须自己去发现它。倾听是有艺术的，必须舍弃所有的偏见和预设。”
                     </div>
                 </div>
                 <div class="c-footer">
-                    <span>474 条划线</span>
+                    <span id="compFreedomCount">474 条划线</span>
                     <span style="color:var(--accent-terracotta);">翻开 ➔</span>
                 </div>
             </div>
@@ -1274,14 +1472,55 @@
             </div>
             <button class="drawer-close" onclick="closeDrawer()">✕</button>
         </div>
+        <div class="drawer-actions-bar">
+            <button class="drawer-act-btn primary" onclick="incubateTopicFromDrawer()" title="从本书划线中提炼现实选题、社会痛点与核心概念反思">
+                <span>💡</span> 选题与现实思考
+            </button>
+            <button class="drawer-act-btn" onclick="exportMarkdownReportFromDrawer()" title="导出高信息密度 Markdown 结构化复盘报告">
+                <span>📑</span> 导出 Markdown 报告
+            </button>
+        </div>
         <div class="drawer-content" id="drawerStream"></div>
     </div>
 
     <!-- ================= SEARCH MODAL ================= -->
     <div class="modal-scrim" id="searchModal" onclick="closeModalOnMask(event)">
         <div class="modal-box">
-            <input type="text" id="searchInput" class="modal-input" placeholder="输入关键词检索批注（如搜'实相'、'逻辑'、'周期'、'放下'）...">
+            <input type="text" id="searchInput" class="modal-input" placeholder="搜索书名、作者或划线句子（如搜'最初和最终的自由'、'克里希那穆提'、'放下'）...">
             <div class="modal-results" id="searchResultsList"></div>
+        </div>
+    </div>
+
+    <!-- ================= EXPORT MARKDOWN MODAL ================= -->
+    <div class="modal-scrim" id="exportModal" onclick="closeExportModalOnMask(event)">
+        <div class="modal-box" style="width: 760px; max-width: 95vw; max-height: 88vh;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border-main);">
+                <div style="font-size: 15px; font-weight: 700; color: var(--ink-primary);" id="exportModalTitle">📑 导出 Markdown</div>
+                <button class="drawer-close" onclick="closeExportModal()" style="font-size: 16px;">✕</button>
+            </div>
+
+            <!-- Tab Switcher: 结构化复盘报告 vs 全部划线底稿 -->
+            <div class="export-tabs-container">
+                <button class="export-tab-btn active" id="btnExportModeReport" onclick="setExportMode('report')">
+                    <span>📑</span> 结构化复盘报告
+                </button>
+                <button class="export-tab-btn" id="btnExportModeRaw" onclick="setExportMode('raw')">
+                    <span>📝</span> 全部划线底稿 (<span id="exportRawCount">0</span> 条)
+                </button>
+            </div>
+
+            <div style="position: relative; flex: 1; min-height: 320px; display: flex; flex-direction: column;">
+                <textarea id="markdownExportArea" readonly style="flex: 1; width: 100%; min-height: 380px; max-height: 52vh; padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.6; color: var(--ink-primary); background: var(--surface-subtle); border: 1px solid var(--border-main); border-radius: 8px; resize: none; outline: none;"></textarea>
+            </div>
+
+            <div class="export-modal-footer">
+                <div class="export-modal-hint" id="exportModeHint">当前：结构化复盘报告模式，适合知识沉淀、金句聚合与现实复盘</div>
+                <div class="export-modal-actions">
+                    <button class="modal-btn" onclick="copyExportMarkdown()">📋 复制到剪贴板</button>
+                    <button class="modal-btn primary" onclick="downloadExportMarkdown()">💾 下载 .md 文件</button>
+                    <button class="modal-btn mute" onclick="closeExportModal()">关闭</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1352,7 +1591,7 @@
             currentDrawerBookKey = bookKey;
 
             document.getElementById('drawerTitle').innerText = '《' + b.title + '》';
-            document.getElementById('drawerAuthor').innerText = b.author + ' · 共有 ' + b.highlights.length + ' 条划线批注';
+            document.getElementById('drawerAuthor').innerText = `${b.author} · 共有 ${b.highlights.length} 条划线批注 · 进度 ${b.progress}%`;
 
             const stream = document.getElementById('drawerStream');
             stream.innerHTML = b.highlights.map((h, i) => `
@@ -1375,7 +1614,249 @@
             const b = DATA.books[currentDrawerBookKey];
             if (!b || !b.highlights[idx]) return;
             const h = b.highlights[idx];
-            askDsh(b.title, b.author, h.text, '精读划线深度研读');
+            askDsh(b.title, b.author, h.text, '读书思考');
+        }
+
+        // --- Single-Book Topic Incubation (选题与现实思考) ---
+        function incubateTopicFromDrawer() {
+            if (!currentDrawerBookKey) return;
+            const b = DATA.books[currentDrawerBookKey];
+            if (!b || !b.highlights || !b.highlights.length) {
+                showToast('该书暂无划线批注，无法提炼选题');
+                return;
+            }
+
+            const total = b.highlights.length;
+            let sampleHighlights = [];
+            if (total <= 12) {
+                sampleHighlights = b.highlights;
+            } else {
+                const step = (total - 1) / 11;
+                for (let i = 0; i < 12; i++) {
+                    const idx = Math.round(i * step);
+                    sampleHighlights.push(b.highlights[idx]);
+                }
+            }
+
+            const quotesText = sampleHighlights.map((h, i) => {
+                const notePart = h.note ? ` (思考批注: ${h.note})` : '';
+                return `${i + 1}. “${h.text}”${notePart}`;
+            }).join('\n');
+
+            const prompt = `【读书思考 · 选题与现实思考】
+书名：《${b.title}》
+作者：${b.author}
+划线数量：共 ${total} 条批注
+
+我的核心划线片段（选录）：
+${quotesText}
+
+思考探讨诉求：
+读完《${b.title}》并回顾自己的划线，这些句子是我在阅读中真正有体会与感触的地方。我想把源自自身的这些触动与当下的现实环境做衔接，孵化出值得记录或分享的选题。请帮我按以下层次展开梳理：
+
+1. 现实切入与选题孵化：
+   结合当下真实的社会热点、职场或生活痛点，从上面的划线与体悟中，能提炼出哪 2-3 个引人深思、值得探讨的核心选题或讨论角度？
+
+2. 社会意义与反思价值：
+   先不急于铺陈长文，针对最值得深挖的 1 个选题，提炼其最关键的核心概念：
+   - 它的核心立论是什么？为什么能击中现实痛点？
+   - 逆向审视与反驳：是否存在被忽视的盲区？在什么现实语境下该观点可能失效甚至值得反驳？避免脱离现实走向空谈。
+   - 超越视角的综合：在正向与逆向之上，能沉淀出怎样的本质认知？
+
+3. 值得引发讨论的真问题：
+   提炼出 1 个真正接地气、能在日常工作决策或生活中自我检验的自省问题。`;
+
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'reading-os:start', prompt: prompt }, '*');
+            } else if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(prompt).then(() => {
+                    showToast('✨ 已生成选题与现实思考 Prompt 并复制到剪贴板！');
+                });
+            } else {
+                alert(prompt);
+            }
+        }
+
+        // --- Single-Book High-Density Markdown Report & Raw Highlights Export ---
+        let currentExportMode = 'report'; // 'report' | 'raw'
+        let cachedReportMarkdown = '';
+        let cachedRawMarkdown = '';
+        let currentReportFilename = '';
+        let currentRawFilename = '';
+
+        function generateSynthesisReportMarkdown(b) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+            const total = b.highlights.length;
+
+            // Pick up to 8 representative highlights (prioritizing user notes)
+            const withNotes = b.highlights.filter(h => h.note && h.note.trim());
+            const withoutNotes = b.highlights.filter(h => !h.note || !h.note.trim());
+            let selectedQuotes = [...withNotes];
+            if (selectedQuotes.length < 8) {
+                const needed = 8 - selectedQuotes.length;
+                const step = Math.max(1, Math.floor(withoutNotes.length / needed));
+                for (let i = 0; i < withoutNotes.length && selectedQuotes.length < 8; i += step) {
+                    selectedQuotes.push(withoutNotes[i]);
+                }
+            }
+            if (selectedQuotes.length > 8) {
+                selectedQuotes = selectedQuotes.slice(0, 8);
+            }
+
+            let md = `# 《${b.title}》结构化阅读复盘报告\n\n`;
+            md += `- **作者**：${b.author}\n`;
+            md += `- **划线体量**：共 ${total} 处心智划线与批注\n`;
+            md += `- **完成进度**：约 ${b.progress}%\n`;
+            md += `- **复盘日期**：${dateStr}\n`;
+            md += `- **报告性质**：结构化认知沉淀与现实映射报告\n\n`;
+            md += `---\n\n`;
+
+            md += `## 一、核心思想与主旨脉络\n\n`;
+            md += `> 阅读一本书，不是被动接受作者的结论，而是借作者的思维透镜，重新审视自己平时的盲区。在对《${b.title}》的通读研读中，总计留下了 ${total} 条引发思考的划线痕迹。\n\n`;
+            md += `从全书的核心划线脉络来看，本书着重回应了以下深层命题：\n`;
+            md += `1. **第一性原理溯源**：穿透表面的现象与修辞，探究事物运行与心智运作的根本规律。\n`;
+            md += `2. **认知盲区打破**：针对日常经验中容易习以为常的惯性执念，进行反直觉的审视与破除。\n`;
+            md += `3. **知行落地指引**：不陷于清谈，而是为现实决策、心态安顿与复杂局面提供清晰的落脚点。\n\n`;
+            md += `---\n\n`;
+
+            md += `## 二、精选核心金句与心智印记（TOP 8）\n\n`;
+            selectedQuotes.forEach((h, i) => {
+                md += `### ${i + 1}. “${h.text}”\n\n`;
+                if (h.note) {
+                    md += `- 💭 **我的思考批注**：${h.note}\n`;
+                }
+                md += `- ⏱ **记录时间**：\`${h.time}\`\n\n`;
+            });
+
+            md += `---\n\n`;
+            md += `## 三、现实思考与正反辩证审视\n\n`;
+            md += `### 1. 正面立论：在什么前提下最成立？\n`;
+            md += `- 本书观点之所以直击人心，是因为它切中了现实中普遍存在的焦虑、得失与认知局限。\n`;
+            md += `- 在顺境与认知提升期，这些洞见能够作为强有力的锚点，帮助我们保持清醒与定力。\n\n`;
+
+            md += `### 2. 逆向审视：反过来想，何时可能失效？\n`;
+            md += `- **警惕绝对化与空谈**：任何高妙的观点如果脱离了具体的约束条件，都容易沦为廉价的心理安慰剂。\n`;
+            md += `- **被遮蔽的对立面**：关注作者观点的同时，也要看到反向视角（如强调放下时不能忽视责任与基本底线）。\n\n`;
+
+            md += `### 3. 超越视角的综合（双遮双照，执两用中）\n`;
+            md += `- 不非黑即白地选边站队，而是在看似矛盾的两极之间，找到动态平衡的智慧。\n\n`;
+
+            md += `---\n\n`;
+            md += `## 四、落地自检与行动真问题\n\n`;
+            md += `- [ ] **日常自检**：在目前的工作决策或个人生活中，我是否正在犯下书中指出的类似执念？\n`;
+            md += `- [ ] **选题输出**：结合本书中触动最大的 1-2 句划线，提炼一篇具有社会共鸣的深度探讨选题。\n`;
+            md += `- [ ] **微小行动**：未来一周内，尝试以书中的视角处理一件曾经让自己纠结的事情。\n\n`;
+
+            md += `---\n*由 ReadingOS 个人阅读空间自动生成于 ${now.toLocaleString('zh-CN')}*\n`;
+            return md;
+        }
+
+        function generateRawHighlightsMarkdown(b) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+            const total = b.highlights.length;
+
+            let md = `# 《${b.title}》全书划线批注底稿\n\n`;
+            md += `- **作者**：${b.author}\n`;
+            md += `- **划线总数**：全部 ${total} 条批注（一条不漏）\n`;
+            md += `- **导出时间**：${dateStr}\n`;
+            md += `- **数据来源**：Apple Books 个人划线数据库\n\n`;
+            md += `---\n\n`;
+
+            md += `## 全景汇编（共 ${total} 条，一条不漏）\n\n`;
+            md += `> 以下为阅读《${b.title}》期间按时间留下的完整划线记录，原汁原味，供个人知识库归档与检索。\n\n`;
+
+            b.highlights.forEach((h, i) => {
+                md += `### #${i + 1}\n\n`;
+                md += `> “${h.text}”\n\n`;
+                if (h.note) {
+                    md += `- 💭 **我的批注**：${h.note}\n`;
+                }
+                md += `- ⏱ **划线时间**：\`${h.time}\`\n\n`;
+            });
+
+            md += `---\n*由 ReadingOS 个人阅读空间导出于 ${now.toLocaleString('zh-CN')}*\n`;
+            return md;
+        }
+
+        function setExportMode(mode) {
+            currentExportMode = mode;
+            const btnReport = document.getElementById('btnExportModeReport');
+            const btnRaw = document.getElementById('btnExportModeRaw');
+            const area = document.getElementById('markdownExportArea');
+            const hint = document.getElementById('exportModeHint');
+
+            if (mode === 'report') {
+                btnReport.classList.add('active');
+                btnRaw.classList.remove('active');
+                area.value = cachedReportMarkdown;
+                hint.innerText = '当前：结构化复盘报告模式，适合知识沉淀、金句聚合与现实复盘';
+            } else {
+                btnRaw.classList.add('active');
+                btnReport.classList.remove('active');
+                area.value = cachedRawMarkdown;
+                const total = currentDrawerBookKey && DATA.books[currentDrawerBookKey] ? DATA.books[currentDrawerBookKey].highlights.length : 0;
+                hint.innerText = `当前：全书划线底稿模式（全部 ${total} 条），适合导入知识库与全量归档`;
+            }
+        }
+
+        function exportMarkdownReportFromDrawer() {
+            if (!currentDrawerBookKey) return;
+            const b = DATA.books[currentDrawerBookKey];
+            if (!b || !b.highlights || !b.highlights.length) {
+                showToast('该书暂无划线批注，无法导出');
+                return;
+            }
+
+            const total = b.highlights.length;
+            cachedReportMarkdown = generateSynthesisReportMarkdown(b);
+            cachedRawMarkdown = generateRawHighlightsMarkdown(b);
+            currentReportFilename = `《${b.title}》结构化阅读复盘报告.md`;
+            currentRawFilename = `《${b.title}》全书划线批注底稿.md`;
+
+            document.getElementById('exportModalTitle').innerText = `📑 《${b.title}》Markdown 导出`;
+            document.getElementById('exportRawCount').innerText = total;
+
+            setExportMode('report');
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        function closeExportModalOnMask(e) {
+            if (e.target && e.target.id === 'exportModal') {
+                closeExportModal();
+            }
+        }
+
+        function copyExportMarkdown() {
+            const content = currentExportMode === 'report' ? cachedReportMarkdown : cachedRawMarkdown;
+            if (!content) return;
+            navigator.clipboard.writeText(content).then(() => {
+                const label = currentExportMode === 'report' ? '结构化复盘报告' : '全部划线底稿';
+                showToast(`📋 已成功复制【${label}】到剪贴板！`);
+            }).catch(() => {
+                showToast('⚠️ 复制失败，请手动全选复制');
+            });
+        }
+
+        function downloadExportMarkdown() {
+            const content = currentExportMode === 'report' ? cachedReportMarkdown : cachedRawMarkdown;
+            const filename = currentExportMode === 'report' ? currentReportFilename : currentRawFilename;
+            if (!content) return;
+            const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename || '阅读报告.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`💾 已开始下载：${filename}`);
         }
 
         function closeDrawer() {
@@ -1441,9 +1922,137 @@
             alert('📖 开始速读《' + b.title + '》：建议花 10 分钟只看目录与结语。');
         }
 
+        // --- Enhanced Three-in-One Search & All Books Shelf ---
+        function getUniqueBooksList() {
+            const list = [];
+            const seen = new Set();
+            for (let k in DATA.books) {
+                const bk = DATA.books[k];
+                if (bk && !seen.has(bk.title)) {
+                    seen.add(bk.title);
+                    list.push(bk);
+                }
+            }
+            list.sort((a, b) => (b.highlights?.length || 0) - (a.highlights?.length || 0));
+            return list;
+        }
+
+        function renderSearchResults(kw) {
+            const listEl = document.getElementById('searchResultsList');
+            const allBooks = getUniqueBooksList();
+
+            if (!kw) {
+                // Default: All books shelf view
+                listEl.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-size:12px; font-weight:600; color:var(--ink-dim);">📚 全部藏书 (${allBooks.length} 本 · 点击直接进入该书)</span>
+                        <span style="font-size:11px; color:var(--ink-dim); opacity:0.8;">按划线数量排序</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:8px;">
+                        ${allBooks.map(bk => `
+                            <div onclick="closeSearchModal(); openBookDrawer('${bk.key}')"
+                                 style="background:var(--surface-subtle); border:1px solid var(--border-subtle); padding:10px 12px; border-radius:8px; cursor:pointer; transition:all 0.15s ease;"
+                                 onmouseover="this.style.borderColor='var(--accent-terracotta)'; this.style.transform='translateY(-1px)';"
+                                 onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='none';">
+                                <div style="font-weight:600; font-size:12.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">《${bk.title}》</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; font-size:11px; color:var(--ink-dim);">
+                                    <span style="max-width:130px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${bk.author || '未知作者'}</span>
+                                    <span style="color:var(--accent-terracotta); font-weight:500; font-variant-numeric:tabular-nums;">${bk.highlights?.length || 0} 条划线 →</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                return;
+            }
+
+            // 1. Matches on Book Titles and Authors
+            const matchedBooks = allBooks.filter(bk => 
+                (bk.title && bk.title.toLowerCase().includes(kw)) ||
+                (bk.author && bk.author.toLowerCase().includes(kw))
+            );
+
+            // 2. Matches on Highlights text
+            const matchedQuotes = [];
+            for (let k in DATA.books) {
+                if (k.length > 20) {
+                    const bk = DATA.books[k];
+                    if (bk.highlights) {
+                        bk.highlights.forEach((h, hIdx) => {
+                            if (h.text && (h.text.toLowerCase().includes(kw) || (h.note && h.note.toLowerCase().includes(kw)))) {
+                                matchedQuotes.push({
+                                    bookKey: bk.key,
+                                    book: bk.title,
+                                    author: bk.author,
+                                    text: h.text,
+                                    time: h.time,
+                                    idx: hIdx
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+
+            if (!matchedBooks.length && !matchedQuotes.length) {
+                listEl.innerHTML = '<div style="color:var(--ink-dim); padding:24px 10px; text-align:center; font-size:12.5px;">未检索到相关书籍、作者或划线，换个词试试...</div>';
+                return;
+            }
+
+            let html = '';
+            // Render Books Section
+            if (matchedBooks.length) {
+                html += `
+                    <div style="font-size:11.5px; font-weight:600; color:var(--ink-dim); margin-bottom:8px;">📖 匹配的书籍与作者 (${matchedBooks.length} 本)</div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:8px; margin-bottom:14px;">
+                        ${matchedBooks.map(bk => `
+                            <div onclick="closeSearchModal(); openBookDrawer('${bk.key}')"
+                                 style="background:var(--surface-subtle); border:1px solid var(--border-subtle); padding:10px 12px; border-radius:8px; cursor:pointer; transition:all 0.15s ease;"
+                                 onmouseover="this.style.borderColor='var(--accent-terracotta)'; this.style.transform='translateY(-1px)';"
+                                 onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='none';">
+                                <div style="font-weight:600; font-size:12.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">《${bk.title}》</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; font-size:11px; color:var(--ink-dim);">
+                                    <span style="max-width:130px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${bk.author || '未知作者'}</span>
+                                    <span style="color:var(--accent-terracotta); font-weight:500;">${bk.highlights?.length || 0} 条划线 →</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Render Highlights Section
+            if (matchedQuotes.length) {
+                html += `
+                    <div style="font-size:11.5px; font-weight:600; color:var(--ink-dim); margin-bottom:8px;">✍️ 匹配的划线批注 (${matchedQuotes.length} 处)</div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        ${matchedQuotes.slice(0, 10).map(r => `
+                            <div style="background:var(--surface-subtle); border:1px solid var(--border-subtle); padding:11px 14px; border-radius:8px; font-size:12.5px; line-height:1.6;">
+                                <div class="serif" style="color:var(--ink);">“${r.text}”</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:7px; font-size:11px;">
+                                    <span style="color:var(--accent-terracotta); cursor:pointer;" onclick="closeSearchModal(); openBookDrawer('${r.bookKey}')">《${r.book}》· ${r.author} · ${r.time} →</span>
+                                    <button class="dsh-btn" style="font-size:10.5px; padding:2px 8px;" onclick="askDsh('${r.book}', '${r.author}', '${r.text.replace(/'/g, "\\'")}', '划线思考探讨')">✨ 探讨</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            listEl.innerHTML = html;
+        }
+
         // --- Search Modal ---
         function openSearchModal() {
             document.getElementById('searchModal').classList.add('active');
+            renderSearchResults(document.getElementById('searchInput').value.toLowerCase().trim());
+            setTimeout(() => document.getElementById('searchInput').focus(), 50);
+        }
+
+        function openAllBooksModal() {
+            document.getElementById('searchModal').classList.add('active');
+            document.getElementById('searchInput').value = '';
+            renderSearchResults('');
             setTimeout(() => document.getElementById('searchInput').focus(), 50);
         }
 
@@ -1458,31 +2067,7 @@
         }
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
-            const kw = e.target.value.toLowerCase().trim();
-            const list = document.getElementById('searchResultsList');
-            if (!kw) { list.innerHTML = ''; return; }
-
-            let results = [];
-            for (let k in DATA.books) {
-                const bk = DATA.books[k];
-                bk.highlights.forEach(h => {
-                    if (h.text.toLowerCase().includes(kw) || (h.note && h.note.toLowerCase().includes(kw))) {
-                        results.push({ book: bk.title, author: bk.author, text: h.text, time: h.time });
-                    }
-                });
-            }
-
-            if (!results.length) {
-                list.innerHTML = '<div style="color:var(--ink-dim); padding:10px; font-size:12px;">未检索到匹配，换个词试试...</div>';
-                return;
-            }
-
-            list.innerHTML = results.slice(0, 6).map(r => `
-                <div style="background:var(--surface-subtle); padding:10px 12px; border-radius:6px; font-size:12.5px; line-height:1.5;">
-                    <div class="serif">“${r.text}”</div>
-                    <div style="color:var(--accent-terracotta); font-size:11px; margin-top:4px;">《${r.book}》· ${r.time}</div>
-                </div>
-            `).join('');
+            renderSearchResults(e.target.value.toLowerCase().trim());
         });
 
         window.addEventListener('keydown', (e) => {
@@ -1577,19 +2162,21 @@
         // --- Interactive Bridge to DeepSeekHarness ---
         function askDshCurrentSpark() {
             const sp = DATA.sparks[sparkIdx];
-            askDsh(sp.book, sp.author, sp.quote, "今日划线深度研读");
+            askDsh(sp.book, sp.author, sp.quote, "读书思考");
         }
 
-        function askDsh(book, author, quote, concept) {
-            const prompt = `【DeepSeekHarness 认知研读对话】
-核心主题：${concept || '书籍观点深度拆解'}
+        function askDsh(book, author, quote, topic) {
+            const prompt = `【读书思考探讨】
 出处：《${book}》· ${author}
-划线内容：“${quote}”
-
-研读目标：
-1. 请从第一性原理拆解该观点背后的心智模型与认知局限。
-2. 结合我在其他同类书籍中的阅读习惯，进行跨书视角的批判性对照。
-3. 提炼出 1 个可以在现实工作决策或生活中落地的自检问题。`;
+划线句子：“${quote}”
+${topic ? `讨论切入：${topic}\n` : ''}
+想和你聊聊：
+1. 从第一性原理出发，这句话的核心想法是什么？在什么前提下成立，什么时候可能会失效？
+2. 正反两面看与更高视角：
+   - 正面看：结合平时读过的同类书，这个观点在哪些地方说得很对，怎么加深理解？
+   - 反过来想：如果站在相反的立场（或者现实生存、商业竞争等不同角度），这句话有什么盲区或局限？
+   - 超越来看：如果不非黑即白地站队，站在正反两面之上，怎样理解才能既不走极端，又能兼顾现实？
+3. 现实中的自省：结合平时的工作或生活，提炼一个实在的自问，帮我看看自己有没有掉进类似的盲区里。`;
 
             // 如果在 DeepSeekHarness 客户端的 iframe 内部，直接通知 DSH 开新会话并填入提示词
             try {
@@ -1612,6 +2199,8 @@
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
+
+
         async function syncReadingData() {
             const btn = document.getElementById('syncBtn');
             btn.classList.add('spinning');
@@ -1622,18 +2211,7 @@
                 if (res.ok) {
                     const fresh = await res.json();
                     if (!fresh.error) {
-                        Object.assign(DATA, fresh);
-                        renderHeatmap();
-                        renderRecentDownloads();
-                        renderConceptPills();
-                        renderConceptGrid();
-                        renderUnreadSuggestion();
-                        if (document.getElementById('statTotalBooks')) {
-                            document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
-                            document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
-                            document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
-                            document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
-                        }
+                        applyFreshData(fresh);
                         showToast(`✨ 同步完成！已更新至最新阅读进度与下载书目`);
                         btn.classList.remove('spinning');
                         return;
@@ -1647,12 +2225,101 @@
             }, 600);
         }
 
-        // Init
+        // --- Local Storage Cache & Fresh Data Sync (零隐私进 Git，秒开全量图书) ---
+        function renderSpotlightAndCompanions() {
+            if (!DATA.books) return;
+
+            // 1. Spotlight (JINGANG)
+            const jg = DATA.books['JINGANG'] || Object.values(DATA.books).find(b => b.title.includes('金剛經'));
+            if (jg) {
+                const elTitle = document.getElementById('spotlightTitle');
+                const elMeta = document.getElementById('spotlightMeta');
+                const elFill = document.getElementById('spotlightProgressFill');
+                const elText = document.getElementById('spotlightProgressText');
+                const elQuote = document.getElementById('spotlightQuote');
+
+                if (elTitle) elTitle.innerText = '《' + jg.title + '》';
+                if (elMeta) elMeta.innerText = `${jg.author} · ${jg.highlights.length} 条划线 (点击翻开所有批注 ➔)`;
+                if (elFill) elFill.style.width = jg.progress + '%';
+                if (elText) elText.innerText = jg.progress + '%';
+                if (elQuote && jg.sample_quote) elQuote.innerText = '“' + jg.sample_quote + '”';
+            }
+
+            // 2. Valuation
+            const val = DATA.books['VALUATION'];
+            if (val) {
+                const elMeta = document.getElementById('compValuationMeta');
+                const elCount = document.getElementById('compValuationCount');
+                if (elMeta) elMeta.innerText = `${val.author} · 已读完 (${val.progress}%)`;
+                if (elCount) elCount.innerText = `${val.highlights.length} 条划线`;
+            }
+
+            // 3. Laozi
+            const lz = DATA.books['LAOZI'];
+            if (lz) {
+                const elMeta = document.getElementById('compLaoziMeta');
+                const elCount = document.getElementById('compLaoziCount');
+                if (elMeta) elMeta.innerText = `${lz.author} · 读过 (${lz.progress}%)`;
+                if (elCount) elCount.innerText = `${lz.highlights.length} 条划线`;
+            }
+
+            // 4. Freedom
+            const fr = DATA.books['FREEDOM'];
+            if (fr) {
+                const elMeta = document.getElementById('compFreedomMeta');
+                const elCount = document.getElementById('compFreedomCount');
+                if (elMeta) elMeta.innerText = `${fr.author} · 精读 (${fr.progress}%)`;
+                if (elCount) elCount.innerText = `${fr.highlights.length} 条划线`;
+            }
+        }
+        function applyFreshData(fresh) {
+            if (!fresh || fresh.error || !fresh.books) return;
+            Object.assign(DATA, fresh);
+            try {
+                localStorage.setItem('readingos_cached_data', JSON.stringify(fresh));
+            } catch (e) {}
+            renderSpotlightAndCompanions();
+            renderHeatmap();
+            renderRecentDownloads();
+            renderConceptPills();
+            renderConceptGrid();
+            renderUnreadSuggestion();
+            if (document.getElementById('statTotalBooks') && DATA.inventory) {
+                document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
+                document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
+                document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
+                document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
+            }
+        }
+
+        // Init: 先尝试从本地浏览器缓存秒开（若已有73本书缓存直接呈现）
+        try {
+            const cached = JSON.parse(localStorage.getItem('readingos_cached_data') || 'null');
+            if (cached && cached.books && Object.keys(cached.books).length > 4) {
+                Object.assign(DATA, cached);
+            }
+        } catch (e) {}
+
+        renderSpotlightAndCompanions();
         renderHeatmap();
         renderRecentDownloads();
         renderConceptPills();
         renderConceptGrid();
         renderUnreadSuggestion();
+
+        // 自动拉取本地最新阅读数据（优先从本地静态缓存获取，次选 API）
+        fetch('/reading-os/data.local.json', { cache: 'no-store' })
+            .then(res => {
+                if (res.ok) return res.json();
+                throw new Error('static not ready');
+            })
+            .then(applyFreshData)
+            .catch(() => {
+                fetch('/reading-os/api/data', { cache: 'no-store' })
+                    .then(res => res.json())
+                    .then(applyFreshData)
+                    .catch(() => {});
+            });
     </script>
 </body>
 </html>
