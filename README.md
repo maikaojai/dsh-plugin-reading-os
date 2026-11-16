@@ -2,7 +2,7 @@
 
 > 让散落在 macOS 苹果图书中的划线与感触，重新在日常思考中鲜活起来。
 
-![ReadingOS 阅读看板](assets/01-responsive-dashboard.png)
+![ReadingOS 首页看板](assets/01-responsive-dashboard.png)
 
 ---
 
@@ -40,7 +40,7 @@
 抽屉顶部更提供专注交付的核心出口：
 - **💡 选题与现实思考**：自动聚合你在该书中具有共鸣的划线片段，结合当下真实的社会热点、职场或生活痛点，提炼 2-3 个核心议题，并对最关键的概念进行正反逻辑推演与反常识审视，先立住核心骨架。
 
-![单书划线抽屉与对话联动](assets/02-book-highlights-drawer.png)
+![单书工作室与对话联动](assets/02-book-highlights-drawer.png)
 
 #### 4. 一键 Markdown 导出，告别发邮件倒腾
 平时用 Apple Books 最大的痛点，莫过于笔记划线的导出与归档。  
@@ -51,7 +51,7 @@ ReadingOS 通过直接读取本地底层数据，**无需发送邮件、无需�
 - **📑 结构化复盘报告**：提炼全书核心主旨、精选 TOP 8 核心金句（优先呈现你的个人批注）、现实思考与正反辩证审视，文字信息密度高；
 - 配套提供一键复制到剪贴板与 `.md` 文件本地下载，无缝衔接 Obsidian、Notion 或本地文本知识库。
 
-![《估值原理》Markdown 一键导出](assets/03-quick-export-modal.png)
+![一键 Markdown 导出，告别发邮件倒腾](assets/03-quick-export-modal.png)
 
 #### 5. 纯本地运行，隐私至上
 代码完全开源，且仅在本地 macOS 环境中运行。所有图书数据库读取与分析均在本地内存中完成，**绝不向任何外部服务器上传任何书名、划线或笔记数据**，Git 仓库中也仅保留公开示例模板，个人隐私绝对安全。
