@@ -114,10 +114,12 @@
             border-radius: 20px;
             font-size: 12px;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
             box-shadow: var(--card-shadow);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .search-pill:hover {
             border-color: var(--border-hover);
@@ -148,11 +150,14 @@
             font-size: 12px;
             font-weight: 500;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
             box-shadow: var(--card-shadow);
             transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.2;
         }
         .sync-btn:hover {
             border-color: var(--accent-terracotta);
@@ -673,13 +678,16 @@
             color: var(--accent-terracotta);
             font-size: 11px;
             font-weight: 500;
-            padding: 3px 9px;
+            padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 4px;
             transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.2;
         }
         .dsh-btn:hover {
             background: var(--accent-terracotta);
@@ -788,6 +796,12 @@
             color: var(--ink-primary);
             text-align: center;
             transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
         .btn-act:hover {
             background: var(--accent-terracotta);
@@ -884,6 +898,8 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.15s ease;
+            white-space: nowrap;
+            line-height: 1.2;
         }
         .export-tab-btn:hover {
             color: var(--ink-primary);
@@ -893,6 +909,71 @@
             background: var(--surface);
             font-weight: 600;
             box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .export-modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-main);
+        }
+        .export-modal-hint {
+            font-size: 11.5px;
+            color: var(--ink-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 0;
+        }
+        .export-modal-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .modal-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 1px solid var(--border-main);
+            background: var(--surface-subtle);
+            color: var(--ink-primary);
+            transition: all 0.15s ease;
+            line-height: 1.2;
+        }
+        .modal-btn:hover {
+            border-color: var(--accent-terracotta);
+            color: var(--accent-terracotta);
+            background: var(--surface);
+        }
+        .modal-btn.primary {
+            background: var(--accent-terracotta);
+            color: #ffffff;
+            border-color: var(--accent-terracotta);
+        }
+        .modal-btn.primary:hover {
+            background: var(--accent-terracotta-hover);
+            border-color: var(--accent-terracotta-hover);
+        }
+        .modal-btn.mute {
+            color: var(--ink-muted);
+            background: var(--surface-subtle);
+        }
+        .modal-btn.mute:hover {
+            background: var(--border-main);
+            color: var(--ink-primary);
         }
 
         .drawer-actions-bar {
@@ -917,6 +998,9 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.2;
         }
         .drawer-act-btn:hover {
             border-color: var(--accent-terracotta);
@@ -1044,6 +1128,20 @@
             }
             .drawer {
                 width: min(520px, 92vw);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .export-modal-footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .export-modal-hint {
+                text-align: center;
+            }
+            .export-modal-actions {
+                justify-content: flex-end;
             }
         }
 
@@ -1395,12 +1493,12 @@
                 <textarea id="markdownExportArea" readonly style="flex: 1; width: 100%; min-height: 380px; max-height: 52vh; padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.6; color: var(--ink-primary); background: var(--surface-subtle); border: 1px solid var(--border-main); border-radius: 8px; resize: none; outline: none;"></textarea>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-main);">
-                <span style="font-size: 11px; color: var(--ink-muted);" id="exportModeHint">当前：结构化复盘报告模式，适合知识沉淀、金句聚合与现实复盘</span>
-                <div style="display:flex; gap: 10px;">
-                    <button class="btn-act" onclick="copyExportMarkdown()">📋 复制到剪贴板</button>
-                    <button class="btn-act" style="background:var(--accent-terracotta); color:#fff; border-color:var(--accent-terracotta);" onclick="downloadExportMarkdown()">💾 下载 .md 文件</button>
-                    <button class="btn-act btn-mute" onclick="closeExportModal()">关闭</button>
+            <div class="export-modal-footer">
+                <div class="export-modal-hint" id="exportModeHint">当前：结构化复盘报告模式，适合知识沉淀、金句聚合与现实复盘</div>
+                <div class="export-modal-actions">
+                    <button class="modal-btn" onclick="copyExportMarkdown()">📋 复制到剪贴板</button>
+                    <button class="modal-btn primary" onclick="downloadExportMarkdown()">💾 下载 .md 文件</button>
+                    <button class="modal-btn mute" onclick="closeExportModal()">关闭</button>
                 </div>
             </div>
         </div>
