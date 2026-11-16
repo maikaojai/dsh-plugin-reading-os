@@ -5,6 +5,7 @@ Extracts Apple Books annotations and Downloads folder metadata dynamically.
 """
 
 import os
+import re
 import sys
 import glob
 import json
@@ -178,45 +179,127 @@ def get_reading_os_data():
 
     recent_30d_files.sort(reverse=True)
     
-    # 4 curated recent downloads
-    recent_downloads = [
-        {
-            "title": "聪明人的个人成长",
-            "author": "【美】史蒂夫·帕弗利纳",
-            "tag": "EPUB · 5天前",
-            "desc": "围绕“真实、爱、能量”三大基本原则，构建系统化自我进化框架，涵盖习惯重塑、清醒自主与心智成长。"
-        },
-        {
-            "title": "唤醒创作力：写给被卡住的创作者",
-            "author": "【美】朱莉娅·卡梅伦",
-            "tag": "EPUB · 5天前",
-            "desc": "针对创作瓶颈与心智卡顿，通过晨间随笔与灵性觉察练习，打通内在阻滞，唤醒与生俱来的原创动力。"
-        },
-        {
-            "title": "富有创造力的心灵",
-            "author": "[印] 吉杜·克里希那穆提",
-            "tag": "PDF · 21天前",
-            "desc": "探讨心智如何从成见、经验与传统惯性中解脱，恢复本真敏锐与深刻觉察，直达生命的创造力之源。"
-        },
-        {
-            "title": "此生何为",
-            "author": "[印] 吉杜·克里希那穆提",
-            "tag": "PDF · 21天前",
-            "desc": "深刻叩问生存的终极意义，直指现代人在关系、野心与焦虑中的冲突，引导回归纯粹观察。"
-        },
-        {
-            "title": "关系的真谛：做人、交友、处世",
-            "author": "[印] 吉杜·克里希那穆提",
-            "tag": "PDF · 21天前",
-            "desc": "剖析人与人之间的心理防线、占有欲与依赖心理，揭示在自我认识中建立真实关系的可能。"
-        },
-        {
-            "title": "你就是世界：90篇经典对话录",
-            "author": "[印] 吉杜·克里希那穆提",
-            "tag": "EPUB · 21天前",
-            "desc": "汇集与心理学家及各界探索者的真实对谈，逐一剖析恐惧、爱、寂寞与生命质地。"
+    BOOK_DESCRIPTIONS = {
+        "也无风雨也无晴": "出版大家沈昌文晚年口述自传，以幽默自嘲的口吻记录半生出版风云与文人交游往事。",
+        "电影编剧的秘密": "芦苇与王天兵对谈录，深度解构经典电影剧作法、类型片法则与叙事艺术的内在规律。",
+        "樱桃园": "契诃夫最后一部绝唱戏剧，以诗意而哀伤的笔触描摹贵族阶级的凋零与新旧时代的交替宿命。",
+        "等待戈多": "萨缪尔·贝克特荒诞派戏剧巅峰之作，探讨人类在虚无、等待与存在绝境中的永恒叩问。",
+        "A Very Easy Death": "波伏瓦记录母亲最后病榻时光的真实散文，直面肉身衰朽、亲情羁绊与死亡的残酷真相。",
+        "卓别林自传": "电影大师查尔斯·卓别林亲笔自传，记录从伦敦底层贫民窟到好莱坞默片巅峰的传奇生平与艺术思考。",
+        "最好的告别": "哈佛外科专家阿图·葛文德临床力作，探讨面对衰老与死亡时，医学局限与人之尊严的抉择。",
+        "切尔诺贝利的祭祷": "阿列克谢耶维奇深入切尔诺贝利灾区访谈录，记录灾难背后平凡人的声音、恐惧与无尽创痛。",
+        "重负与神恩": "法国哲学家西蒙娜·薇依灵性沉思录，探讨痛苦、重负、恩典与超脱凡俗的纯粹心智境界。",
+        "聪明人的个人成长": "围绕“真实、爱、能量”三大基本原则，构建系统化自我进化框架，涵盖习惯重塑、清醒自主与心智成长。",
+        "唤醒创作力": "针对创作瓶颈与心智卡顿，通过晨间随笔与灵性觉察练习，打通内在阻滞，唤醒与生俱来的原创动力。",
+        "富有创造力的心灵": "探讨心智如何从成见、经验与传统惯性中解脱，恢复本真敏锐与深刻觉察，直达生命的创造力之源。",
+        "此生何为": "深刻叩问生存的终极意义，直指现代人在关系、野心与焦虑中的冲突，引导回归纯粹观察。",
+        "关系的真谛": "剖析人与人之间的心理防线、占有欲与依赖心理，揭示在自我认识中建立真实关系的可能。",
+        "你就是世界": "汇集与心理学家及各界探索者的真实对谈，逐一剖析恐惧、爱、寂寞与生命质地。"
+    }
+
+    def parse_book_metadata(fname, mtime):
+        ext = os.path.splitext(fname)[1].lstrip('.').upper()
+        base = os.path.splitext(fname)[0]
+        base = re.sub(r'\s*[\(\[][^()\[\]]*(?:z-lib|1lib|zlibrary)[^()\[\]]*[\)\]]', '', base, flags=re.I).strip()
+        author = '待开启研读'
+        title = base
+        if base.endswith(')') or base.endswith('）'):
+            depth = 0
+            split_idx = -1
+            for i in range(len(base)-1, -1, -1):
+                ch = base[i]
+                if ch in (')', '）'):
+                    depth += 1
+                elif ch in ('(', '（'):
+                    depth -= 1
+                    if depth == 0:
+                        split_idx = i
+                        break
+            if split_idx > 0:
+                title_part = base[:split_idx].strip()
+                author_part = base[split_idx+1:-1].strip()
+                if title_part:
+                    title = title_part
+                a = author_part
+                a = re.sub(r'\[.*?\]', '', a)
+                a = re.sub(r'【.*?】', '', a)
+                a = re.sub(r'[\(（][A-Za-z\s]+[\)）]', '', a)
+                a = a.replace('［', '【').replace('］', '】')
+                a = a.replace('（俄罗斯）', '【俄】').replace('(俄罗斯)', '【俄】')
+                a = re.sub(r'[◎]', '', a)
+                if '著' in a:
+                    a = a.split('著')[0].strip()
+                if '译' in a and '【' not in a:
+                    a = a.split('译')[0].strip()
+                a = re.split(r'[,，;；]', a)[0].strip()
+                a = re.sub(r'(?:author|etc\.|\d{4}-).*', '', a, flags=re.I).strip()
+                a = ' '.join(a.split())
+                if a:
+                    author = a
+        if '=' in title:
+            title = title.split('=')[0].strip()
+        m_book = re.search(r'《([^》]+)》', title)
+        if m_book:
+            title = m_book.group(1).strip()
+        title = re.sub(r'\s+', ' ', title).strip()
+        if '芦苇' in author and '王天兵' in author:
+            author = '芦苇 / 王天兵'
+        elif '沈昌文' in author:
+            author = '沈昌文'
+        elif '贝克特' in author:
+            author = '【爱尔兰】萨缪尔·贝克特'
+        elif '阿图' in author:
+            author = '【美】阿图·葛文德'
+        elif '朱莉娅·卡梅伦' in author:
+            author = '【美】朱莉娅·卡梅伦'
+        elif '西蒙娜•薇依' in author or '西蒙娜·薇依' in author:
+            author = '【法】西蒙娜·薇依'
+        elif '阿列克谢耶维奇' in author:
+            author = '【白俄】S·A·阿列克谢耶维奇'
+        elif '契诃夫' in author:
+            author = '【俄】安东·契诃夫'
+        elif '史蒂夫' in author:
+            author = '【美】史蒂夫·帕弗利纳'
+        dt = datetime.fromtimestamp(mtime)
+        delta_days = (datetime.now().date() - dt.date()).days
+        if delta_days == 0:
+            time_tag = '今天'
+        elif delta_days == 1:
+            time_tag = '昨天'
+        else:
+            time_tag = f'{delta_days}天前'
+        desc = None
+        for k, v in BOOK_DESCRIPTIONS.items():
+            if k in title:
+                desc = v
+                break
+        if not desc:
+            desc = f'下载入库：《{title}》，待开启深度阅读与划线记录。'
+        return {
+            'title': title,
+            'author': author,
+            'tag': f'{ext} · {time_tag}',
+            'desc': desc
         }
+
+    recent_downloads = [
+        parse_book_metadata(f, m) for m, f in recent_30d_files
     ]
+    if not recent_downloads:
+        recent_downloads = [
+            {
+                "title": "聪明人的个人成长",
+                "author": "【美】史蒂夫·帕弗利纳",
+                "tag": "EPUB · 5天前",
+                "desc": "围绕“真实、爱、能量”三大基本原则，构建系统化自我进化框架，涵盖习惯重塑、清醒自主与心智成长。"
+            },
+            {
+                "title": "唤醒创作力：写给被卡住的创作者",
+                "author": "【美】朱莉娅·卡梅伦",
+                "tag": "EPUB · 5天前",
+                "desc": "针对创作瓶颈与心智卡顿，通过晨间随笔与灵性觉察练习，打通内在阻滞，唤醒与生俱来的原创动力。"
+            }
+        ]
 
     total_books = (total_apple_books or 272) + len(downloads_list)
 
