@@ -29,9 +29,9 @@ def get_reading_os_data():
 
     if bklibs and anns:
         try:
-            conn = sqlite3.connect(bklibs[0])
+            conn = sqlite3.connect(f"file:{bklibs[0]}?mode=ro", uri=True)
             c = conn.cursor()
-            c.execute(f"ATTACH DATABASE '{anns[0]}' AS ann;")
+            c.execute(f"ATTACH DATABASE 'file:{anns[0]}?mode=ro' AS ann;")
 
             # Total apple books
             c.execute("SELECT count(*) FROM ZBKLIBRARYASSET;")
@@ -48,20 +48,9 @@ def get_reading_os_data():
             """)
             active_rows = c.fetchall()
 
-            # Active spotlight candidates
-            books_meta = [
-                {"key": "JINGANG", "query": "金剛經白話講座", "title": "金剛經白話講座：放下的人生修行", "author": "王思迅", "progress": 84},
-                {"key": "VALUATION", "query": "估值原理", "title": "估值原理", "author": "周洛华", "progress": 100},
-                {"key": "LAOZI", "query": "老子他说", "title": "老子他说：初续合集", "author": "南怀瑾", "progress": 25},
-                {"key": "FREEDOM", "query": "最初和最终的自由", "title": "最初和最终的自由", "author": "克里希那穆提", "progress": 100}
-            ]
-
-            for bm in books_meta:
-                c.execute(f"SELECT b.ZASSETID, b.ZTITLE, b.ZAUTHOR FROM ZBKLIBRARYASSET b WHERE b.ZTITLE LIKE '%{bm['query']}%' LIMIT 1;")
-                row = c.fetchone()
-                if not row:
+            for aid, raw_title, raw_author, cnt, last_time in active_rows:
+                if not raw_title or cnt == 0:
                     continue
-                aid = row[0]
                 c.execute("""
                 SELECT ZANNOTATIONSELECTEDTEXT, ZANNOTATIONNOTE,
                        datetime(ZANNOTATIONCREATIONDATE + 978307200, 'unixepoch', 'localtime')
@@ -70,12 +59,18 @@ def get_reading_os_data():
                 ORDER BY ZANNOTATIONCREATIONDATE DESC;
                 """, (aid,))
                 hl_rows = c.fetchall()
+                if not hl_rows:
+                    continue
 
-                books_dict[bm["key"]] = {
-                    "key": bm["key"],
-                    "title": bm["title"],
-                    "author": bm["author"],
-                    "progress": bm["progress"],
+                clean_title = raw_title.strip()
+                author_clean = (raw_author or "未知作者").strip()
+                progress = 100 if cnt >= 50 else min(95, max(15, cnt * 2))
+
+                b_obj = {
+                    "key": aid,
+                    "title": clean_title,
+                    "author": author_clean,
+                    "progress": progress,
                     "highlights_count": len(hl_rows),
                     "sample_quote": hl_rows[0][0].strip() if hl_rows else "",
                     "highlights": [
@@ -83,6 +78,17 @@ def get_reading_os_data():
                         for r in hl_rows
                     ]
                 }
+                books_dict[aid] = b_obj
+
+                # Backward compatibility aliases for spotlight and companions
+                if "金剛經白話講座" in clean_title and "JINGANG" not in books_dict:
+                    books_dict["JINGANG"] = b_obj
+                elif "估值原理" in clean_title and "VALUATION" not in books_dict:
+                    books_dict["VALUATION"] = b_obj
+                elif "老子他说" in clean_title and "LAOZI" not in books_dict:
+                    books_dict["LAOZI"] = b_obj
+                elif "最初和最终的自由" in clean_title and "FREEDOM" not in books_dict:
+                    books_dict["FREEDOM"] = b_obj
 
             # Heatmap counts
             c.execute("""

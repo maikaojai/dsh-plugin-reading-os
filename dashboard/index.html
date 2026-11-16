@@ -907,12 +907,15 @@
         }
         .modal-scrim.active { opacity: 1; pointer-events: auto; }
         .modal-box {
-            width: 540px;
-            max-width: 90vw;
+            width: 660px;
+            max-width: 92vw;
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
             background: var(--surface);
             border: 1px solid var(--border-main);
-            border-radius: 12px;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+            border-radius: 14px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.18);
             padding: 16px;
         }
         .modal-input {
@@ -927,12 +930,13 @@
         }
         .modal-input:focus { border-color: var(--accent-terracotta); }
         .modal-results {
-            margin-top: 12px;
-            max-height: 320px;
+            margin-top: 14px;
+            max-height: 60vh;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 8px;
+            padding-right: 4px;
         }
 
         /* ================= RESPONSIVE ADAPTATIONS FOR DSH & RESIZED WINDOWS ================= */
@@ -1006,9 +1010,13 @@
             <div class="header-tools">
                 <div class="search-pill" onclick="openSearchModal()">
                     <span>🔍</span>
-                    <span>搜索 4,427 条批注...</span>
+                    <span>搜索书名、作者、批注...</span>
                     <span style="font-size: 10px; opacity: 0.6; margin-left: 4px;">/</span>
                 </div>
+                <button class="sync-btn" onclick="openAllBooksModal()" id="allBooksBtn" title="查看全部 73 本已划线图书">
+                    <span>📚</span>
+                    <span class="sync-text">全部藏书</span>
+                </button>
                 <button class="sync-btn" onclick="syncReadingData()" id="syncBtn" title="同步 Apple Books 与下载目录最新数据">
                     <span id="syncIcon">🔄</span>
                     <span class="sync-text">同步</span>
@@ -1280,7 +1288,7 @@
     <!-- ================= SEARCH MODAL ================= -->
     <div class="modal-scrim" id="searchModal" onclick="closeModalOnMask(event)">
         <div class="modal-box">
-            <input type="text" id="searchInput" class="modal-input" placeholder="输入关键词检索批注（如搜'实相'、'逻辑'、'周期'、'放下'）...">
+            <input type="text" id="searchInput" class="modal-input" placeholder="搜索书名、作者或划线句子（如搜'最初和最终的自由'、'克里希那穆提'、'放下'）...">
             <div class="modal-results" id="searchResultsList"></div>
         </div>
     </div>
@@ -1441,9 +1449,137 @@
             alert('📖 开始速读《' + b.title + '》：建议花 10 分钟只看目录与结语。');
         }
 
+        // --- Enhanced Three-in-One Search & All Books Shelf ---
+        function getUniqueBooksList() {
+            const list = [];
+            const seen = new Set();
+            for (let k in DATA.books) {
+                const bk = DATA.books[k];
+                if (bk && !seen.has(bk.title)) {
+                    seen.add(bk.title);
+                    list.push(bk);
+                }
+            }
+            list.sort((a, b) => (b.highlights?.length || 0) - (a.highlights?.length || 0));
+            return list;
+        }
+
+        function renderSearchResults(kw) {
+            const listEl = document.getElementById('searchResultsList');
+            const allBooks = getUniqueBooksList();
+
+            if (!kw) {
+                // Default: All books shelf view
+                listEl.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-size:12px; font-weight:600; color:var(--ink-dim);">📚 全部藏书 (${allBooks.length} 本 · 点击直接进入该书)</span>
+                        <span style="font-size:11px; color:var(--ink-dim); opacity:0.8;">按划线数量排序</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:8px;">
+                        ${allBooks.map(bk => `
+                            <div onclick="closeSearchModal(); openBookDrawer('${bk.key}')"
+                                 style="background:var(--surface-subtle); border:1px solid var(--border-subtle); padding:10px 12px; border-radius:8px; cursor:pointer; transition:all 0.15s ease;"
+                                 onmouseover="this.style.borderColor='var(--accent-terracotta)'; this.style.transform='translateY(-1px)';"
+                                 onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='none';">
+                                <div style="font-weight:600; font-size:12.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">《${bk.title}》</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; font-size:11px; color:var(--ink-dim);">
+                                    <span style="max-width:130px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${bk.author || '未知作者'}</span>
+                                    <span style="color:var(--accent-terracotta); font-weight:500; font-variant-numeric:tabular-nums;">${bk.highlights?.length || 0} 条划线 →</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                return;
+            }
+
+            // 1. Matches on Book Titles and Authors
+            const matchedBooks = allBooks.filter(bk => 
+                (bk.title && bk.title.toLowerCase().includes(kw)) ||
+                (bk.author && bk.author.toLowerCase().includes(kw))
+            );
+
+            // 2. Matches on Highlights text
+            const matchedQuotes = [];
+            for (let k in DATA.books) {
+                if (k.length > 20) {
+                    const bk = DATA.books[k];
+                    if (bk.highlights) {
+                        bk.highlights.forEach((h, hIdx) => {
+                            if (h.text && (h.text.toLowerCase().includes(kw) || (h.note && h.note.toLowerCase().includes(kw)))) {
+                                matchedQuotes.push({
+                                    bookKey: bk.key,
+                                    book: bk.title,
+                                    author: bk.author,
+                                    text: h.text,
+                                    time: h.time,
+                                    idx: hIdx
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+
+            if (!matchedBooks.length && !matchedQuotes.length) {
+                listEl.innerHTML = '<div style="color:var(--ink-dim); padding:24px 10px; text-align:center; font-size:12.5px;">未检索到相关书籍、作者或划线，换个词试试...</div>';
+                return;
+            }
+
+            let html = '';
+            // Render Books Section
+            if (matchedBooks.length) {
+                html += `
+                    <div style="font-size:11.5px; font-weight:600; color:var(--ink-dim); margin-bottom:8px;">📖 匹配的书籍与作者 (${matchedBooks.length} 本)</div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:8px; margin-bottom:14px;">
+                        ${matchedBooks.map(bk => `
+                            <div onclick="closeSearchModal(); openBookDrawer('${bk.key}')"
+                                 style="background:var(--surface-subtle); border:1px solid var(--border-subtle); padding:10px 12px; border-radius:8px; cursor:pointer; transition:all 0.15s ease;"
+                                 onmouseover="this.style.borderColor='var(--accent-terracotta)'; this.style.transform='translateY(-1px)';"
+                                 onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='none';">
+                                <div style="font-weight:600; font-size:12.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">《${bk.title}》</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; font-size:11px; color:var(--ink-dim);">
+                                    <span style="max-width:130px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${bk.author || '未知作者'}</span>
+                                    <span style="color:var(--accent-terracotta); font-weight:500;">${bk.highlights?.length || 0} 条划线 →</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Render Highlights Section
+            if (matchedQuotes.length) {
+                html += `
+                    <div style="font-size:11.5px; font-weight:600; color:var(--ink-dim); margin-bottom:8px;">✍️ 匹配的划线批注 (${matchedQuotes.length} 处)</div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        ${matchedQuotes.slice(0, 10).map(r => `
+                            <div style="background:var(--surface-subtle); border:1px solid var(--border-subtle); padding:11px 14px; border-radius:8px; font-size:12.5px; line-height:1.6;">
+                                <div class="serif" style="color:var(--ink);">“${r.text}”</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:7px; font-size:11px;">
+                                    <span style="color:var(--accent-terracotta); cursor:pointer;" onclick="closeSearchModal(); openBookDrawer('${r.bookKey}')">《${r.book}》· ${r.author} · ${r.time} →</span>
+                                    <button class="dsh-btn" style="font-size:10.5px; padding:2px 8px;" onclick="askDsh('${r.book}', '${r.author}', '${r.text.replace(/'/g, "\\'")}', '划线思考探讨')">✨ 探讨</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            listEl.innerHTML = html;
+        }
+
         // --- Search Modal ---
         function openSearchModal() {
             document.getElementById('searchModal').classList.add('active');
+            renderSearchResults(document.getElementById('searchInput').value.toLowerCase().trim());
+            setTimeout(() => document.getElementById('searchInput').focus(), 50);
+        }
+
+        function openAllBooksModal() {
+            document.getElementById('searchModal').classList.add('active');
+            document.getElementById('searchInput').value = '';
+            renderSearchResults('');
             setTimeout(() => document.getElementById('searchInput').focus(), 50);
         }
 
@@ -1458,31 +1594,7 @@
         }
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
-            const kw = e.target.value.toLowerCase().trim();
-            const list = document.getElementById('searchResultsList');
-            if (!kw) { list.innerHTML = ''; return; }
-
-            let results = [];
-            for (let k in DATA.books) {
-                const bk = DATA.books[k];
-                bk.highlights.forEach(h => {
-                    if (h.text.toLowerCase().includes(kw) || (h.note && h.note.toLowerCase().includes(kw))) {
-                        results.push({ book: bk.title, author: bk.author, text: h.text, time: h.time });
-                    }
-                });
-            }
-
-            if (!results.length) {
-                list.innerHTML = '<div style="color:var(--ink-dim); padding:10px; font-size:12px;">未检索到匹配，换个词试试...</div>';
-                return;
-            }
-
-            list.innerHTML = results.slice(0, 6).map(r => `
-                <div style="background:var(--surface-subtle); padding:10px 12px; border-radius:6px; font-size:12.5px; line-height:1.5;">
-                    <div class="serif">“${r.text}”</div>
-                    <div style="color:var(--accent-terracotta); font-size:11px; margin-top:4px;">《${r.book}》· ${r.time}</div>
-                </div>
-            `).join('');
+            renderSearchResults(e.target.value.toLowerCase().trim());
         });
 
         window.addEventListener('keydown', (e) => {
