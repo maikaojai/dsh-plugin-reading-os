@@ -1364,9 +1364,9 @@
             <!-- 估值原理 -->
             <div class="companion-card" onclick="openBookDrawer('VALUATION')">
                 <div>
-                    <div class="c-title">《估值原理》</div>
+                    <div class="c-title" id="compValuationTitle">《估值原理》</div>
                     <div class="c-author" id="compValuationMeta">周洛华 · 已读完 (100%)</div>
-                    <div class="c-quote serif">
+                    <div class="c-quote serif" id="compValuationQuote">
                         “估值不仅是对资产未来现金流的折现，更是在不确定性中为风险与期权定价的艺术。”
                     </div>
                 </div>
@@ -1379,9 +1379,9 @@
             <!-- 老子他说 -->
             <div class="companion-card" onclick="openBookDrawer('LAOZI')">
                 <div>
-                    <div class="c-title">《老子他说：初续合集》</div>
+                    <div class="c-title" id="compLaoziTitle">《老子他说：初续合集》</div>
                     <div class="c-author" id="compLaoziMeta">南怀瑾 · 读过 (24%)</div>
-                    <div class="c-quote serif">
+                    <div class="c-quote serif" id="compLaoziQuote">
                         “人法地，地法天，天法道，道法自然。顺应客观大规律，方能在周期中保全自身。”
                     </div>
                 </div>
@@ -1394,9 +1394,9 @@
             <!-- 最初和最终的自由 -->
             <div class="companion-card" onclick="openBookDrawer('FREEDOM')">
                 <div>
-                    <div class="c-title">《最初和最终的自由》</div>
+                    <div class="c-title" id="compFreedomTitle">《最初和最终的自由》</div>
                     <div class="c-author" id="compFreedomMeta">克里希那穆提 · 精读 (100%)</div>
-                    <div class="c-quote serif">
+                    <div class="c-quote serif" id="compFreedomQuote">
                         “真相无法靠别人给你。你必须自己去发现它。倾听是有艺术的，必须舍弃所有的偏见和预设。”
                     </div>
                 </div>
@@ -2248,8 +2248,10 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             // 2. Valuation
             const val = DATA.books['VALUATION'];
             if (val) {
+                const c1Title = document.getElementById('compValuationTitle');
                 const elMeta = document.getElementById('compValuationMeta');
                 const elCount = document.getElementById('compValuationCount');
+                if (c1Title) c1Title.innerText = '《估值原理》';
                 if (elMeta) elMeta.innerText = `${val.author} · 已读完 (${val.progress}%)`;
                 if (elCount) elCount.innerText = `${val.highlights.length} 条划线`;
             }
@@ -2257,8 +2259,10 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             // 3. Laozi
             const lz = DATA.books['LAOZI'];
             if (lz) {
+                const c2Title = document.getElementById('compLaoziTitle');
                 const elMeta = document.getElementById('compLaoziMeta');
                 const elCount = document.getElementById('compLaoziCount');
+                if (c2Title) c2Title.innerText = '《老子他说：初续合集》';
                 if (elMeta) elMeta.innerText = `${lz.author} · 读过 (${lz.progress}%)`;
                 if (elCount) elCount.innerText = `${lz.highlights.length} 条划线`;
             }
@@ -2266,8 +2270,10 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             // 4. Freedom
             const fr = DATA.books['FREEDOM'];
             if (fr) {
+                const c3Title = document.getElementById('compFreedomTitle');
                 const elMeta = document.getElementById('compFreedomMeta');
                 const elCount = document.getElementById('compFreedomCount');
+                if (c3Title) c3Title.innerText = '《最初和最终的自由》';
                 if (elMeta) elMeta.innerText = `${fr.author} · 精读 (${fr.progress}%)`;
                 if (elCount) elCount.innerText = `${fr.highlights.length} 条划线`;
             }
