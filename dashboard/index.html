@@ -1375,7 +1375,7 @@
             const b = DATA.books[currentDrawerBookKey];
             if (!b || !b.highlights[idx]) return;
             const h = b.highlights[idx];
-            askDsh(b.title, b.author, h.text, '精读划线深度研读');
+            askDsh(b.title, b.author, h.text, '读书思考');
         }
 
         function closeDrawer() {
@@ -1577,22 +1577,21 @@
         // --- Interactive Bridge to DeepSeekHarness ---
         function askDshCurrentSpark() {
             const sp = DATA.sparks[sparkIdx];
-            askDsh(sp.book, sp.author, sp.quote, "今日划线深度研读");
+            askDsh(sp.book, sp.author, sp.quote, "读书思考");
         }
 
-        function askDsh(book, author, quote, concept) {
-            const prompt = `【DeepSeekHarness 认知研读对话】
-核心主题：${concept || '书籍观点深度拆解'}
+        function askDsh(book, author, quote, topic) {
+            const prompt = `【读书思考探讨】
 出处：《${book}》· ${author}
-划线内容：“${quote}”
-
-研读目标：
-1. 【第一性原理与前提边界】：拆解该观点背后的底层逻辑与心智模型，并指出它在什么具体前提下成立，在什么边界外会彻底失效？
-2. 【正反审视与辩证超越】：
-   - 正向印证：结合同类书籍的阅读经验，看该观点如何被印证、支撑与深化；
-   - 逆向审视：反过来想，引入非同类甚至对立维度的视角（如现实生存博弈、商业竞争、反常识事实等）进行反向审视与质疑，避免单一视角的强化而带来认知遮蔽；
-   - 超越对立：站在正反两个相互对立的维度之上，提炼出超越二者二元对立的更高智慧（如佛学中的“双破双立”或中道视角）。
-3. 【现实穿透与自检清单】：提炼出 1 个直击本质的自检问题，帮我在现实工作决策或日常生活中，检验自己是否正落入某种偏狭与盲区之中。`;
+划线句子：“${quote}”
+${topic ? `讨论切入：${topic}\n` : ''}
+想和你聊聊：
+1. 这句话的核心想法是什么？在什么情况下适用，什么时候可能会失效？
+2. 正反两面看与更高视角：
+   - 正面看：结合平时读过的同类书，这个观点在哪些地方说得很对，怎么加深理解？
+   - 反过来想：如果站在相反的立场（或者现实生存、商业竞争等不同角度），这句话有什么盲区或局限？
+   - 超越来看：如果不非黑即白地站队，站在正反两面之上，怎样理解才能既不走极端，又能兼顾现实？
+3. 现实中的自省：结合平时的工作或生活，提炼一个实在的自问，帮我看看自己有没有掉进类似的盲区里。`;
 
             // 如果在 DeepSeekHarness 客户端的 iframe 内部，直接通知 DSH 开新会话并填入提示词
             try {
