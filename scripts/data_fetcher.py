@@ -313,4 +313,10 @@ def get_reading_os_data():
 
 if __name__ == "__main__":
     data = get_reading_os_data()
+    try:
+        local_cache = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dashboard", "data.local.json")
+        with open(local_cache, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+    except Exception:
+        pass
     print(json.dumps(data, ensure_ascii=False))

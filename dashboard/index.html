@@ -860,6 +860,41 @@
             cursor: pointer;
         }
 
+        .export-tabs-container {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            background: var(--surface-subtle);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border-main);
+        }
+        .export-tab-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 12px;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .export-tab-btn:hover {
+            color: var(--ink-primary);
+        }
+        .export-tab-btn.active {
+            color: var(--accent-terracotta);
+            background: var(--surface);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
         .drawer-actions-bar {
             display: flex;
             gap: 10px;
@@ -1340,18 +1375,33 @@
 
     <!-- ================= EXPORT MARKDOWN MODAL ================= -->
     <div class="modal-scrim" id="exportModal" onclick="closeExportModalOnMask(event)">
-        <div class="modal-box" style="width: 720px; max-width: 94vw; max-height: 85vh;">
+        <div class="modal-box" style="width: 760px; max-width: 95vw; max-height: 88vh;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border-main);">
-                <div style="font-size: 15px; font-weight: 700; color: var(--ink-primary);" id="exportModalTitle">📑 导出 Markdown 阅读报告</div>
+                <div style="font-size: 15px; font-weight: 700; color: var(--ink-primary);" id="exportModalTitle">📑 导出 Markdown</div>
                 <button class="drawer-close" onclick="closeExportModal()" style="font-size: 16px;">✕</button>
             </div>
-            <div style="position: relative; flex: 1; min-height: 300px; display: flex; flex-direction: column;">
-                <textarea id="markdownExportArea" readonly style="flex: 1; width: 100%; min-height: 380px; max-height: 55vh; padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.6; color: var(--ink-primary); background: var(--surface-subtle); border: 1px solid var(--border-main); border-radius: 8px; resize: none; outline: none;"></textarea>
+
+            <!-- Tab Switcher: 结构化复盘报告 vs 全部划线底稿 -->
+            <div class="export-tabs-container">
+                <button class="export-tab-btn active" id="btnExportModeReport" onclick="setExportMode('report')">
+                    <span>📑</span> 结构化复盘报告
+                </button>
+                <button class="export-tab-btn" id="btnExportModeRaw" onclick="setExportMode('raw')">
+                    <span>📝</span> 全部划线底稿 (<span id="exportRawCount">0</span> 条)
+                </button>
             </div>
-            <div style="display:flex; justify-content:flex-end; gap: 10px; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-main);">
-                <button class="btn-act" onclick="copyExportMarkdown()">📋 复制到剪贴板</button>
-                <button class="btn-act" style="background:var(--accent-terracotta); color:#fff; border-color:var(--accent-terracotta);" onclick="downloadExportMarkdown()">💾 下载 .md 文件</button>
-                <button class="btn-act btn-mute" onclick="closeExportModal()">关闭</button>
+
+            <div style="position: relative; flex: 1; min-height: 320px; display: flex; flex-direction: column;">
+                <textarea id="markdownExportArea" readonly style="flex: 1; width: 100%; min-height: 380px; max-height: 52vh; padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.6; color: var(--ink-primary); background: var(--surface-subtle); border: 1px solid var(--border-main); border-radius: 8px; resize: none; outline: none;"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-main);">
+                <span style="font-size: 11px; color: var(--ink-muted);" id="exportModeHint">当前：结构化复盘报告模式，适合知识沉淀、金句聚合与现实复盘</span>
+                <div style="display:flex; gap: 10px;">
+                    <button class="btn-act" onclick="copyExportMarkdown()">📋 复制到剪贴板</button>
+                    <button class="btn-act" style="background:var(--accent-terracotta); color:#fff; border-color:var(--accent-terracotta);" onclick="downloadExportMarkdown()">💾 下载 .md 文件</button>
+                    <button class="btn-act btn-mute" onclick="closeExportModal()">关闭</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1509,33 +1559,95 @@ ${quotesText}
             }
         }
 
-        // --- Single-Book High-Density Markdown Report Export ---
-        let currentMarkdownContent = '';
-        let currentMarkdownFilename = '';
+        // --- Single-Book High-Density Markdown Report & Raw Highlights Export ---
+        let currentExportMode = 'report'; // 'report' | 'raw'
+        let cachedReportMarkdown = '';
+        let cachedRawMarkdown = '';
+        let currentReportFilename = '';
+        let currentRawFilename = '';
 
-        function exportMarkdownReportFromDrawer() {
-            if (!currentDrawerBookKey) return;
-            const b = DATA.books[currentDrawerBookKey];
-            if (!b || !b.highlights || !b.highlights.length) {
-                showToast('该书暂无划线批注，无法导出报告');
-                return;
-            }
-
+        function generateSynthesisReportMarkdown(b) {
             const now = new Date();
             const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
             const total = b.highlights.length;
 
-            currentMarkdownFilename = `《${b.title}》阅读划线复盘报告.md`;
+            // Pick up to 8 representative highlights (prioritizing user notes)
+            const withNotes = b.highlights.filter(h => h.note && h.note.trim());
+            const withoutNotes = b.highlights.filter(h => !h.note || !h.note.trim());
+            let selectedQuotes = [...withNotes];
+            if (selectedQuotes.length < 8) {
+                const needed = 8 - selectedQuotes.length;
+                const step = Math.max(1, Math.floor(withoutNotes.length / needed));
+                for (let i = 0; i < withoutNotes.length && selectedQuotes.length < 8; i += step) {
+                    selectedQuotes.push(withoutNotes[i]);
+                }
+            }
+            if (selectedQuotes.length > 8) {
+                selectedQuotes = selectedQuotes.slice(0, 8);
+            }
 
-            let md = `# 《${b.title}》阅读划线复盘报告\n\n`;
+            let md = `# 《${b.title}》结构化阅读复盘报告\n\n`;
             md += `- **作者**：${b.author}\n`;
-            md += `- **划线总数**：${total} 条批注\n`;
-            md += `- **生成日期**：${dateStr}\n`;
-            md += `- **阅读来源**：Apple Books / 本地阅读空间\n\n`;
+            md += `- **划线体量**：共 ${total} 处心智划线与批注\n`;
+            md += `- **完成进度**：约 ${b.progress}%\n`;
+            md += `- **复盘日期**：${dateStr}\n`;
+            md += `- **报告性质**：结构化认知沉淀与现实映射报告\n\n`;
             md += `---\n\n`;
 
-            md += `## 一、全书划线全景汇编\n\n`;
-            md += `> 本报告完整汇集阅读《${b.title}》期间沉淀的全部 ${total} 条划线。这些句子是阅读过程中真切的体会与感触，也是后续选题孵化与深度思考的原始素材。\n\n`;
+            md += `## 一、核心思想与主旨脉络\n\n`;
+            md += `> 阅读一本书，不是被动接受作者的结论，而是借作者的思维透镜，重新审视自己平时的盲区。在对《${b.title}》的通读研读中，总计留下了 ${total} 条引发思考的划线痕迹。\n\n`;
+            md += `从全书的核心划线脉络来看，本书着重回应了以下深层命题：\n`;
+            md += `1. **第一性原理溯源**：穿透表面的现象与修辞，探究事物运行与心智运作的根本规律。\n`;
+            md += `2. **认知盲区打破**：针对日常经验中容易习以为常的惯性执念，进行反直觉的审视与破除。\n`;
+            md += `3. **知行落地指引**：不陷于清谈，而是为现实决策、心态安顿与复杂局面提供清晰的落脚点。\n\n`;
+            md += `---\n\n`;
+
+            md += `## 二、精选核心金句与心智印记（TOP 8）\n\n`;
+            selectedQuotes.forEach((h, i) => {
+                md += `### ${i + 1}. “${h.text}”\n\n`;
+                if (h.note) {
+                    md += `- 💭 **我的思考批注**：${h.note}\n`;
+                }
+                md += `- ⏱ **记录时间**：\`${h.time}\`\n\n`;
+            });
+
+            md += `---\n\n`;
+            md += `## 三、现实思考与正反辩证审视\n\n`;
+            md += `### 1. 正面立论：在什么前提下最成立？\n`;
+            md += `- 本书观点之所以直击人心，是因为它切中了现实中普遍存在的焦虑、得失与认知局限。\n`;
+            md += `- 在顺境与认知提升期，这些洞见能够作为强有力的锚点，帮助我们保持清醒与定力。\n\n`;
+
+            md += `### 2. 逆向审视：反过来想，何时可能失效？\n`;
+            md += `- **警惕绝对化与空谈**：任何高妙的观点如果脱离了具体的约束条件，都容易沦为廉价的心理安慰剂。\n`;
+            md += `- **被遮蔽的对立面**：关注作者观点的同时，也要看到反向视角（如强调放下时不能忽视责任与基本底线）。\n\n`;
+
+            md += `### 3. 超越视角的综合（双遮双照，执两用中）\n`;
+            md += `- 不非黑即白地选边站队，而是在看似矛盾的两极之间，找到动态平衡的智慧。\n\n`;
+
+            md += `---\n\n`;
+            md += `## 四、落地自检与行动真问题\n\n`;
+            md += `- [ ] **日常自检**：在目前的工作决策或个人生活中，我是否正在犯下书中指出的类似执念？\n`;
+            md += `- [ ] **选题输出**：结合本书中触动最大的 1-2 句划线，提炼一篇具有社会共鸣的深度探讨选题。\n`;
+            md += `- [ ] **微小行动**：未来一周内，尝试以书中的视角处理一件曾经让自己纠结的事情。\n\n`;
+
+            md += `---\n*由 ReadingOS 个人阅读空间自动生成于 ${now.toLocaleString('zh-CN')}*\n`;
+            return md;
+        }
+
+        function generateRawHighlightsMarkdown(b) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+            const total = b.highlights.length;
+
+            let md = `# 《${b.title}》全书划线批注底稿\n\n`;
+            md += `- **作者**：${b.author}\n`;
+            md += `- **划线总数**：全部 ${total} 条批注（一条不漏）\n`;
+            md += `- **导出时间**：${dateStr}\n`;
+            md += `- **数据来源**：Apple Books 个人划线数据库\n\n`;
+            md += `---\n\n`;
+
+            md += `## 全景汇编（共 ${total} 条，一条不漏）\n\n`;
+            md += `> 以下为阅读《${b.title}》期间按时间留下的完整划线记录，原汁原味，供个人知识库归档与检索。\n\n`;
 
             b.highlights.forEach((h, i) => {
                 md += `### #${i + 1}\n\n`;
@@ -1546,17 +1658,49 @@ ${quotesText}
                 md += `- ⏱ **划线时间**：\`${h.time}\`\n\n`;
             });
 
-            md += `---\n\n`;
-            md += `## 二、现实思考与后续落地检视\n\n`;
-            md += `- [ ] **核心概念推演**：本书的核心洞见在当前工作/生活中成立的边界在哪里？\n`;
-            md += `- [ ] **逆向审视**：是否存在被作者视角遮蔽的对立面？在什么语境下可能失效？\n`;
-            md += `- [ ] **选题与输出**：是否有值得延伸为长文、日常手记或现实决策的选题？\n\n`;
-            md += `---\n*由 ReadingOS 个人阅读空间自动生成于 ${now.toLocaleString('zh-CN')}*\n`;
+            md += `---\n*由 ReadingOS 个人阅读空间导出于 ${now.toLocaleString('zh-CN')}*\n`;
+            return md;
+        }
 
-            currentMarkdownContent = md;
+        function setExportMode(mode) {
+            currentExportMode = mode;
+            const btnReport = document.getElementById('btnExportModeReport');
+            const btnRaw = document.getElementById('btnExportModeRaw');
+            const area = document.getElementById('markdownExportArea');
+            const hint = document.getElementById('exportModeHint');
 
-            document.getElementById('exportModalTitle').innerText = `📑 《${b.title}》Markdown 阅读报告 (${total} 条划线)`;
-            document.getElementById('markdownExportArea').value = md;
+            if (mode === 'report') {
+                btnReport.classList.add('active');
+                btnRaw.classList.remove('active');
+                area.value = cachedReportMarkdown;
+                hint.innerText = '当前：结构化复盘报告模式，适合知识沉淀、金句聚合与现实复盘';
+            } else {
+                btnRaw.classList.add('active');
+                btnReport.classList.remove('active');
+                area.value = cachedRawMarkdown;
+                const total = currentDrawerBookKey && DATA.books[currentDrawerBookKey] ? DATA.books[currentDrawerBookKey].highlights.length : 0;
+                hint.innerText = `当前：全书划线底稿模式（全部 ${total} 条），适合导入知识库与全量归档`;
+            }
+        }
+
+        function exportMarkdownReportFromDrawer() {
+            if (!currentDrawerBookKey) return;
+            const b = DATA.books[currentDrawerBookKey];
+            if (!b || !b.highlights || !b.highlights.length) {
+                showToast('该书暂无划线批注，无法导出');
+                return;
+            }
+
+            const total = b.highlights.length;
+            cachedReportMarkdown = generateSynthesisReportMarkdown(b);
+            cachedRawMarkdown = generateRawHighlightsMarkdown(b);
+            currentReportFilename = `《${b.title}》结构化阅读复盘报告.md`;
+            currentRawFilename = `《${b.title}》全书划线批注底稿.md`;
+
+            document.getElementById('exportModalTitle').innerText = `📑 《${b.title}》Markdown 导出`;
+            document.getElementById('exportRawCount').innerText = total;
+
+            setExportMode('report');
             document.getElementById('exportModal').classList.add('active');
         }
 
@@ -1571,26 +1715,30 @@ ${quotesText}
         }
 
         function copyExportMarkdown() {
-            if (!currentMarkdownContent) return;
-            navigator.clipboard.writeText(currentMarkdownContent).then(() => {
-                showToast('📋 已成功复制高密度 Markdown 报告到剪贴板！');
+            const content = currentExportMode === 'report' ? cachedReportMarkdown : cachedRawMarkdown;
+            if (!content) return;
+            navigator.clipboard.writeText(content).then(() => {
+                const label = currentExportMode === 'report' ? '结构化复盘报告' : '全部划线底稿';
+                showToast(`📋 已成功复制【${label}】到剪贴板！`);
             }).catch(() => {
                 showToast('⚠️ 复制失败，请手动全选复制');
             });
         }
 
         function downloadExportMarkdown() {
-            if (!currentMarkdownContent) return;
-            const blob = new Blob([currentMarkdownContent], { type: 'text/markdown;charset=utf-8' });
+            const content = currentExportMode === 'report' ? cachedReportMarkdown : cachedRawMarkdown;
+            const filename = currentExportMode === 'report' ? currentReportFilename : currentRawFilename;
+            if (!content) return;
+            const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = currentMarkdownFilename || '阅读复盘报告.md';
+            a.download = filename || '阅读报告.md';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast(`💾 已开始下载：${currentMarkdownFilename}`);
+            showToast(`💾 已开始下载：${filename}`);
         }
 
         function closeDrawer() {
@@ -1933,21 +2081,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
-        function applyFreshData(fresh) {
-            if (!fresh || fresh.error) return;
-            Object.assign(DATA, fresh);
-            renderHeatmap();
-            renderRecentDownloads();
-            renderConceptPills();
-            renderConceptGrid();
-            renderUnreadSuggestion();
-            if (document.getElementById('statTotalBooks') && DATA.inventory) {
-                document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
-                document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
-                document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
-                document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
-            }
-        }
+
 
         async function syncReadingData() {
             const btn = document.getElementById('syncBtn');
@@ -1973,18 +2107,53 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             }, 600);
         }
 
-        // Init
+        // --- Local Storage Cache & Fresh Data Sync (零隐私进 Git，秒开全量图书) ---
+        function applyFreshData(fresh) {
+            if (!fresh || fresh.error || !fresh.books) return;
+            Object.assign(DATA, fresh);
+            try {
+                localStorage.setItem('readingos_cached_data', JSON.stringify(fresh));
+            } catch (e) {}
+            renderHeatmap();
+            renderRecentDownloads();
+            renderConceptPills();
+            renderConceptGrid();
+            renderUnreadSuggestion();
+            if (document.getElementById('statTotalBooks') && DATA.inventory) {
+                document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
+                document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
+                document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
+                document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
+            }
+        }
+
+        // Init: 先尝试从本地浏览器缓存秒开（若已有73本书缓存直接呈现）
+        try {
+            const cached = JSON.parse(localStorage.getItem('readingos_cached_data') || 'null');
+            if (cached && cached.books && Object.keys(cached.books).length > 4) {
+                Object.assign(DATA, cached);
+            }
+        } catch (e) {}
+
         renderHeatmap();
         renderRecentDownloads();
         renderConceptPills();
         renderConceptGrid();
         renderUnreadSuggestion();
 
-        // 运行时自动拉取本地真实数据（保持 Git 仓库仅含模板，保护个人阅读隐私）
-        fetch('/reading-os/api/data', { cache: 'no-store' })
-            .then(res => res.json())
+        // 自动拉取本地最新阅读数据（优先从本地静态缓存获取，次选 API）
+        fetch('/reading-os/data.local.json', { cache: 'no-store' })
+            .then(res => {
+                if (res.ok) return res.json();
+                throw new Error('static not ready');
+            })
             .then(applyFreshData)
-            .catch(() => {});
+            .catch(() => {
+                fetch('/reading-os/api/data', { cache: 'no-store' })
+                    .then(res => res.json())
+                    .then(applyFreshData)
+                    .catch(() => {});
+            });
     </script>
 </body>
 </html>
