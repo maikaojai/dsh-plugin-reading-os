@@ -1321,20 +1321,20 @@
             <div class="spotlight-info">
                 <div class="spotlight-header-row">
                     <span style="font-size:11px; font-weight:600; color:var(--accent-terracotta);">正在阅读</span>
-                    <span style="font-size:11px; color:var(--ink-muted);">最后打开：今天</span>
+                    <span style="font-size:11px; color:var(--ink-muted);" id="spotlightLastOpen">最后打开：今天</span>
                 </div>
-                <div class="spotlight-title">《金剛經白話講座：放下的人生修行》</div>
-                <div class="spotlight-meta">王思迅 · 220 条划线 (点击翻开所有批注 ➔)</div>
+                <div class="spotlight-title" id="spotlightTitle">《金剛經白話講座：放下的人生修行》</div>
+                <div class="spotlight-meta" id="spotlightMeta">王思迅 · 267 条划线 (点击翻开所有批注 ➔)</div>
 
-                <div class="spotlight-quote serif">
+                <div class="spotlight-quote serif" id="spotlightQuote">
                     “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
                 </div>
 
                 <div class="progress-bar-wrap">
                     <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="width: 84%;"></div>
+                        <div class="progress-bar-fill" id="spotlightProgressFill" style="width: 97%;"></div>
                     </div>
-                    <span class="progress-text">84%</span>
+                    <span class="progress-text" id="spotlightProgressText">97%</span>
                 </div>
             </div>
         </div>
@@ -1345,13 +1345,13 @@
             <div class="companion-card" onclick="openBookDrawer('VALUATION')">
                 <div>
                     <div class="c-title">《估值原理》</div>
-                    <div class="c-author">周洛华 · 已读完 (100%)</div>
+                    <div class="c-author" id="compValuationMeta">周洛华 · 已读完 (100%)</div>
                     <div class="c-quote serif">
                         “估值不仅是对资产未来现金流的折现，更是在不确定性中为风险与期权定价的艺术。”
                     </div>
                 </div>
                 <div class="c-footer">
-                    <span>300 条划线</span>
+                    <span id="compValuationCount">300 条划线</span>
                     <span style="color:var(--accent-terracotta);">翻开 ➔</span>
                 </div>
             </div>
@@ -1360,13 +1360,13 @@
             <div class="companion-card" onclick="openBookDrawer('LAOZI')">
                 <div>
                     <div class="c-title">《老子他说：初续合集》</div>
-                    <div class="c-author">南怀瑾 · 读过 (25%)</div>
+                    <div class="c-author" id="compLaoziMeta">南怀瑾 · 读过 (24%)</div>
                     <div class="c-quote serif">
                         “人法地，地法天，天法道，道法自然。顺应客观大规律，方能在周期中保全自身。”
                     </div>
                 </div>
                 <div class="c-footer">
-                    <span>20 条划线</span>
+                    <span id="compLaoziCount">20 条划线</span>
                     <span style="color:var(--accent-terracotta);">翻开 ➔</span>
                 </div>
             </div>
@@ -1375,13 +1375,13 @@
             <div class="companion-card" onclick="openBookDrawer('FREEDOM')">
                 <div>
                     <div class="c-title">《最初和最终的自由》</div>
-                    <div class="c-author">克里希那穆提 · 精读 (100%)</div>
+                    <div class="c-author" id="compFreedomMeta">克里希那穆提 · 精读 (100%)</div>
                     <div class="c-quote serif">
                         “真相无法靠别人给你。你必须自己去发现它。倾听是有艺术的，必须舍弃所有的偏见和预设。”
                     </div>
                 </div>
                 <div class="c-footer">
-                    <span>474 条划线</span>
+                    <span id="compFreedomCount">474 条划线</span>
                     <span style="color:var(--accent-terracotta);">翻开 ➔</span>
                 </div>
             </div>
@@ -1571,7 +1571,7 @@
             currentDrawerBookKey = bookKey;
 
             document.getElementById('drawerTitle').innerText = '《' + b.title + '》';
-            document.getElementById('drawerAuthor').innerText = b.author + ' · 共有 ' + b.highlights.length + ' 条划线批注';
+            document.getElementById('drawerAuthor').innerText = `${b.author} · 共有 ${b.highlights.length} 条划线批注 · 进度 ${b.progress}%`;
 
             const stream = document.getElementById('drawerStream');
             stream.innerHTML = b.highlights.map((h, i) => `
@@ -2206,12 +2206,59 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         }
 
         // --- Local Storage Cache & Fresh Data Sync (零隐私进 Git，秒开全量图书) ---
+        function renderSpotlightAndCompanions() {
+            if (!DATA.books) return;
+
+            // 1. Spotlight (JINGANG)
+            const jg = DATA.books['JINGANG'] || Object.values(DATA.books).find(b => b.title.includes('金剛經'));
+            if (jg) {
+                const elTitle = document.getElementById('spotlightTitle');
+                const elMeta = document.getElementById('spotlightMeta');
+                const elFill = document.getElementById('spotlightProgressFill');
+                const elText = document.getElementById('spotlightProgressText');
+                const elQuote = document.getElementById('spotlightQuote');
+
+                if (elTitle) elTitle.innerText = '《' + jg.title + '》';
+                if (elMeta) elMeta.innerText = `${jg.author} · ${jg.highlights.length} 条划线 (点击翻开所有批注 ➔)`;
+                if (elFill) elFill.style.width = jg.progress + '%';
+                if (elText) elText.innerText = jg.progress + '%';
+                if (elQuote && jg.sample_quote) elQuote.innerText = '“' + jg.sample_quote + '”';
+            }
+
+            // 2. Valuation
+            const val = DATA.books['VALUATION'];
+            if (val) {
+                const elMeta = document.getElementById('compValuationMeta');
+                const elCount = document.getElementById('compValuationCount');
+                if (elMeta) elMeta.innerText = `${val.author} · 已读完 (${val.progress}%)`;
+                if (elCount) elCount.innerText = `${val.highlights.length} 条划线`;
+            }
+
+            // 3. Laozi
+            const lz = DATA.books['LAOZI'];
+            if (lz) {
+                const elMeta = document.getElementById('compLaoziMeta');
+                const elCount = document.getElementById('compLaoziCount');
+                if (elMeta) elMeta.innerText = `${lz.author} · 读过 (${lz.progress}%)`;
+                if (elCount) elCount.innerText = `${lz.highlights.length} 条划线`;
+            }
+
+            // 4. Freedom
+            const fr = DATA.books['FREEDOM'];
+            if (fr) {
+                const elMeta = document.getElementById('compFreedomMeta');
+                const elCount = document.getElementById('compFreedomCount');
+                if (elMeta) elMeta.innerText = `${fr.author} · 精读 (${fr.progress}%)`;
+                if (elCount) elCount.innerText = `${fr.highlights.length} 条划线`;
+            }
+        }
         function applyFreshData(fresh) {
             if (!fresh || fresh.error || !fresh.books) return;
             Object.assign(DATA, fresh);
             try {
                 localStorage.setItem('readingos_cached_data', JSON.stringify(fresh));
             } catch (e) {}
+            renderSpotlightAndCompanions();
             renderHeatmap();
             renderRecentDownloads();
             renderConceptPills();
@@ -2233,6 +2280,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             }
         } catch (e) {}
 
+        renderSpotlightAndCompanions();
         renderHeatmap();
         renderRecentDownloads();
         renderConceptPills();

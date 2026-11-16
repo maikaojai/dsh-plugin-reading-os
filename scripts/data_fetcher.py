@@ -39,7 +39,8 @@ def get_reading_os_data():
 
             # Top active books
             c.execute("""
-            SELECT b.ZASSETID, b.ZTITLE, b.ZAUTHOR, count(a.ZANNOTATIONUUID) as cnt, max(a.ZANNOTATIONCREATIONDATE) as last_time
+            SELECT b.ZASSETID, b.ZTITLE, b.ZAUTHOR, b.ZREADINGPROGRESS, b.ZBOOKHIGHWATERMARKPROGRESS,
+                   count(a.ZANNOTATIONUUID) as cnt, max(a.ZANNOTATIONCREATIONDATE) as last_time
             FROM ZBKLIBRARYASSET b
             JOIN ann.ZAEANNOTATION a ON b.ZASSETID = a.ZANNOTATIONASSETID
             WHERE a.ZANNOTATIONDELETED = 0 AND a.ZANNOTATIONSELECTEDTEXT IS NOT NULL
@@ -48,7 +49,7 @@ def get_reading_os_data():
             """)
             active_rows = c.fetchall()
 
-            for aid, raw_title, raw_author, cnt, last_time in active_rows:
+            for aid, raw_title, raw_author, raw_prog, raw_hw_prog, cnt, last_time in active_rows:
                 if not raw_title or cnt == 0:
                     continue
                 c.execute("""
@@ -64,7 +65,16 @@ def get_reading_os_data():
 
                 clean_title = raw_title.strip()
                 author_clean = (raw_author or "未知作者").strip()
-                progress = 100 if cnt >= 50 else min(95, max(15, cnt * 2))
+
+                # Extract real reading progress directly from Apple Books database
+                prog_val = raw_prog if (raw_prog is not None and raw_prog > 0) else raw_hw_prog
+                if prog_val is not None and prog_val > 0:
+                    if prog_val >= 0.995:
+                        progress = 100
+                    else:
+                        progress = int(prog_val * 100)
+                else:
+                    progress = 100 if cnt >= 50 else min(95, max(15, cnt * 2))
 
                 b_obj = {
                     "key": aid,
