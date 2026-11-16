@@ -860,6 +860,43 @@
             cursor: pointer;
         }
 
+        .drawer-actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px dashed var(--border-main);
+        }
+        .drawer-act-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-secondary);
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .drawer-act-btn:hover {
+            border-color: var(--accent-terracotta);
+            color: var(--accent-terracotta);
+            background: var(--surface);
+        }
+        .drawer-act-btn.primary {
+            background: var(--accent-terracotta);
+            color: #ffffff;
+            border-color: var(--accent-terracotta);
+        }
+        .drawer-act-btn.primary:hover {
+            background: var(--accent-terracotta-hover);
+        }
+
         .drawer-content {
             flex: 1;
             overflow-y: auto;
@@ -1282,6 +1319,14 @@
             </div>
             <button class="drawer-close" onclick="closeDrawer()">✕</button>
         </div>
+        <div class="drawer-actions-bar">
+            <button class="drawer-act-btn primary" onclick="incubateTopicFromDrawer()" title="从本书划线中提炼现实选题、社会痛点与核心概念反思">
+                <span>💡</span> 选题与现实思考
+            </button>
+            <button class="drawer-act-btn" onclick="exportMarkdownReportFromDrawer()" title="导出高信息密度 Markdown 结构化复盘报告">
+                <span>📑</span> 导出 Markdown 报告
+            </button>
+        </div>
         <div class="drawer-content" id="drawerStream"></div>
     </div>
 
@@ -1290,6 +1335,24 @@
         <div class="modal-box">
             <input type="text" id="searchInput" class="modal-input" placeholder="搜索书名、作者或划线句子（如搜'最初和最终的自由'、'克里希那穆提'、'放下'）...">
             <div class="modal-results" id="searchResultsList"></div>
+        </div>
+    </div>
+
+    <!-- ================= EXPORT MARKDOWN MODAL ================= -->
+    <div class="modal-scrim" id="exportModal" onclick="closeExportModalOnMask(event)">
+        <div class="modal-box" style="width: 720px; max-width: 94vw; max-height: 85vh;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border-main);">
+                <div style="font-size: 15px; font-weight: 700; color: var(--ink-primary);" id="exportModalTitle">📑 导出 Markdown 阅读报告</div>
+                <button class="drawer-close" onclick="closeExportModal()" style="font-size: 16px;">✕</button>
+            </div>
+            <div style="position: relative; flex: 1; min-height: 300px; display: flex; flex-direction: column;">
+                <textarea id="markdownExportArea" readonly style="flex: 1; width: 100%; min-height: 380px; max-height: 55vh; padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.6; color: var(--ink-primary); background: var(--surface-subtle); border: 1px solid var(--border-main); border-radius: 8px; resize: none; outline: none;"></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap: 10px; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-main);">
+                <button class="btn-act" onclick="copyExportMarkdown()">📋 复制到剪贴板</button>
+                <button class="btn-act" style="background:var(--accent-terracotta); color:#fff; border-color:var(--accent-terracotta);" onclick="downloadExportMarkdown()">💾 下载 .md 文件</button>
+                <button class="btn-act btn-mute" onclick="closeExportModal()">关闭</button>
+            </div>
         </div>
     </div>
 
@@ -1384,6 +1447,150 @@
             if (!b || !b.highlights[idx]) return;
             const h = b.highlights[idx];
             askDsh(b.title, b.author, h.text, '读书思考');
+        }
+
+        // --- Single-Book Topic Incubation (选题与现实思考) ---
+        function incubateTopicFromDrawer() {
+            if (!currentDrawerBookKey) return;
+            const b = DATA.books[currentDrawerBookKey];
+            if (!b || !b.highlights || !b.highlights.length) {
+                showToast('该书暂无划线批注，无法提炼选题');
+                return;
+            }
+
+            const total = b.highlights.length;
+            let sampleHighlights = [];
+            if (total <= 12) {
+                sampleHighlights = b.highlights;
+            } else {
+                const step = (total - 1) / 11;
+                for (let i = 0; i < 12; i++) {
+                    const idx = Math.round(i * step);
+                    sampleHighlights.push(b.highlights[idx]);
+                }
+            }
+
+            const quotesText = sampleHighlights.map((h, i) => {
+                const notePart = h.note ? ` (思考批注: ${h.note})` : '';
+                return `${i + 1}. “${h.text}”${notePart}`;
+            }).join('\n');
+
+            const prompt = `【读书思考 · 选题与现实思考】
+书名：《${b.title}》
+作者：${b.author}
+划线数量：共 ${total} 条批注
+
+我的核心划线片段（选录）：
+${quotesText}
+
+思考探讨诉求：
+读完《${b.title}》并回顾自己的划线，这些句子是我在阅读中真正有体会与感触的地方。我想把源自自身的这些触动与当下的现实环境做衔接，孵化出值得记录或分享的选题。请帮我按以下层次展开梳理：
+
+1. 现实切入与选题孵化：
+   结合当下真实的社会热点、职场或生活痛点，从上面的划线与体悟中，能提炼出哪 2-3 个引人深思、值得探讨的核心选题或讨论角度？
+
+2. 社会意义与反思价值：
+   先不急于铺陈长文，针对最值得深挖的 1 个选题，提炼其最关键的核心概念：
+   - 它的核心立论是什么？为什么能击中现实痛点？
+   - 逆向审视与反驳：是否存在被忽视的盲区？在什么现实语境下该观点可能失效甚至值得反驳？避免脱离现实走向空谈。
+   - 超越视角的综合：在正向与逆向之上，能沉淀出怎样的本质认知？
+
+3. 值得引发讨论的真问题：
+   提炼出 1 个真正接地气、能在日常工作决策或生活中自我检验的自省问题。`;
+
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'reading-os:start', prompt: prompt }, '*');
+            } else if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(prompt).then(() => {
+                    showToast('✨ 已生成选题与现实思考 Prompt 并复制到剪贴板！');
+                });
+            } else {
+                alert(prompt);
+            }
+        }
+
+        // --- Single-Book High-Density Markdown Report Export ---
+        let currentMarkdownContent = '';
+        let currentMarkdownFilename = '';
+
+        function exportMarkdownReportFromDrawer() {
+            if (!currentDrawerBookKey) return;
+            const b = DATA.books[currentDrawerBookKey];
+            if (!b || !b.highlights || !b.highlights.length) {
+                showToast('该书暂无划线批注，无法导出报告');
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+            const total = b.highlights.length;
+
+            currentMarkdownFilename = `《${b.title}》阅读划线复盘报告.md`;
+
+            let md = `# 《${b.title}》阅读划线复盘报告\n\n`;
+            md += `- **作者**：${b.author}\n`;
+            md += `- **划线总数**：${total} 条批注\n`;
+            md += `- **生成日期**：${dateStr}\n`;
+            md += `- **阅读来源**：Apple Books / 本地阅读空间\n\n`;
+            md += `---\n\n`;
+
+            md += `## 一、全书划线全景汇编\n\n`;
+            md += `> 本报告完整汇集阅读《${b.title}》期间沉淀的全部 ${total} 条划线。这些句子是阅读过程中真切的体会与感触，也是后续选题孵化与深度思考的原始素材。\n\n`;
+
+            b.highlights.forEach((h, i) => {
+                md += `### #${i + 1}\n\n`;
+                md += `> “${h.text}”\n\n`;
+                if (h.note) {
+                    md += `- 💭 **我的批注**：${h.note}\n`;
+                }
+                md += `- ⏱ **划线时间**：\`${h.time}\`\n\n`;
+            });
+
+            md += `---\n\n`;
+            md += `## 二、现实思考与后续落地检视\n\n`;
+            md += `- [ ] **核心概念推演**：本书的核心洞见在当前工作/生活中成立的边界在哪里？\n`;
+            md += `- [ ] **逆向审视**：是否存在被作者视角遮蔽的对立面？在什么语境下可能失效？\n`;
+            md += `- [ ] **选题与输出**：是否有值得延伸为长文、日常手记或现实决策的选题？\n\n`;
+            md += `---\n*由 ReadingOS 个人阅读空间自动生成于 ${now.toLocaleString('zh-CN')}*\n`;
+
+            currentMarkdownContent = md;
+
+            document.getElementById('exportModalTitle').innerText = `📑 《${b.title}》Markdown 阅读报告 (${total} 条划线)`;
+            document.getElementById('markdownExportArea').value = md;
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        function closeExportModalOnMask(e) {
+            if (e.target && e.target.id === 'exportModal') {
+                closeExportModal();
+            }
+        }
+
+        function copyExportMarkdown() {
+            if (!currentMarkdownContent) return;
+            navigator.clipboard.writeText(currentMarkdownContent).then(() => {
+                showToast('📋 已成功复制高密度 Markdown 报告到剪贴板！');
+            }).catch(() => {
+                showToast('⚠️ 复制失败，请手动全选复制');
+            });
+        }
+
+        function downloadExportMarkdown() {
+            if (!currentMarkdownContent) return;
+            const blob = new Blob([currentMarkdownContent], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentMarkdownFilename || '阅读复盘报告.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`💾 已开始下载：${currentMarkdownFilename}`);
         }
 
         function closeDrawer() {
@@ -1726,6 +1933,22 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
+        function applyFreshData(fresh) {
+            if (!fresh || fresh.error) return;
+            Object.assign(DATA, fresh);
+            renderHeatmap();
+            renderRecentDownloads();
+            renderConceptPills();
+            renderConceptGrid();
+            renderUnreadSuggestion();
+            if (document.getElementById('statTotalBooks') && DATA.inventory) {
+                document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
+                document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
+                document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
+                document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
+            }
+        }
+
         async function syncReadingData() {
             const btn = document.getElementById('syncBtn');
             btn.classList.add('spinning');
@@ -1736,18 +1959,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 if (res.ok) {
                     const fresh = await res.json();
                     if (!fresh.error) {
-                        Object.assign(DATA, fresh);
-                        renderHeatmap();
-                        renderRecentDownloads();
-                        renderConceptPills();
-                        renderConceptGrid();
-                        renderUnreadSuggestion();
-                        if (document.getElementById('statTotalBooks')) {
-                            document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
-                            document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
-                            document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
-                            document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
-                        }
+                        applyFreshData(fresh);
                         showToast(`✨ 同步完成！已更新至最新阅读进度与下载书目`);
                         btn.classList.remove('spinning');
                         return;
@@ -1767,6 +1979,12 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         renderConceptPills();
         renderConceptGrid();
         renderUnreadSuggestion();
+
+        // 运行时自动拉取本地真实数据（保持 Git 仓库仅含模板，保护个人阅读隐私）
+        fetch('/reading-os/api/data', { cache: 'no-store' })
+            .then(res => res.json())
+            .then(applyFreshData)
+            .catch(() => {});
     </script>
 </body>
 </html>
