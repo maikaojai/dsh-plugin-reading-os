@@ -190,6 +190,12 @@
 
         .card, .top-bento-row > div, .spotlight-card, .companion-card, .concept-card, .quiet-card {
             min-width: 0;
+            overflow: hidden;
+        }
+
+        .card-drawer-open {
+            border-color: var(--accent-terracotta) !important;
+            box-shadow: 0 0 0 2px var(--accent-soft), var(--card-shadow-hover) !important;
         }
 
         .card {
@@ -334,8 +340,10 @@
         }
         .recent-books-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 10px;
+            width: 100%;
+            min-width: 0;
         }
         .recent-book-mini-card {
             background: var(--surface-subtle);
@@ -346,6 +354,8 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 84px;
+            min-width: 0;
+            overflow: hidden;
             transition: border-color 0.2s ease, transform 0.15s ease;
         }
         .recent-book-mini-card:hover {
@@ -354,18 +364,20 @@
         .rb-top {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: baseline;
             gap: 6px;
+            min-width: 0;
             margin-bottom: 2px;
         }
         .rb-title {
+            flex: 1;
+            min-width: 0;
             font-size: 12px;
             font-weight: 600;
             color: var(--ink-primary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 175px;
         }
         .rb-tag {
             font-size: 9.5px;
@@ -375,6 +387,7 @@
             padding: 1px 4px;
             background: var(--surface);
             border-radius: 3px;
+            white-space: nowrap;
         }
         .rb-author {
             font-size: 11px;
@@ -383,6 +396,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            min-width: 0;
         }
         .rb-desc {
             font-size: 11.5px;
@@ -392,6 +406,7 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            word-break: break-word;
         }
 
         /* Right: Dimension & Flow Panel */
@@ -833,10 +848,10 @@
         .dsh-btn {
             background: var(--surface-subtle);
             border: 1px solid var(--border-main);
-            color: var(--accent-terracotta);
+            color: var(--ink-secondary);
             font-size: 11px;
             font-weight: 500;
-            padding: 4px 10px;
+            padding: 3.5px 9px;
             border-radius: 6px;
             cursor: pointer;
             display: inline-flex;
@@ -848,9 +863,30 @@
             line-height: 1.2;
         }
         .dsh-btn:hover {
+            background: var(--surface);
+            border-color: var(--accent-terracotta);
+            color: var(--accent-terracotta);
+        }
+        .dsh-btn.primary {
+            background: var(--accent-soft);
+            color: var(--accent-terracotta);
+            border-color: rgba(204, 120, 92, 0.35);
+            font-weight: 600;
+        }
+        .dsh-btn.primary:hover {
             background: var(--accent-terracotta);
             border-color: var(--accent-terracotta);
             color: #fff;
+        }
+        .dsh-btn.ghost {
+            background: transparent;
+            border-color: transparent;
+            color: var(--ink-muted);
+        }
+        .dsh-btn.ghost:hover {
+            background: var(--surface-subtle);
+            border-color: var(--border-subtle);
+            color: var(--ink-primary);
         }
 
         /* Toast notification */
@@ -880,7 +916,7 @@
             opacity: 1;
         }
 
-        /* ================= 4. DUAL PRACTICAL CARDS ================= */
+        /* ================= 4. DUAL PRACTICAL CARDS (UNIFIED & REFINED) ================= */
         .dual-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -888,8 +924,7 @@
             margin-bottom: 24px;
         }
 
-        /* 4.1 每日灵光书签 (Lightweight Fade-in Bookmark) */
-        .spark-bookmark-card {
+        .spark-bookmark-card, .unread-deck-card {
             background: var(--surface);
             border: 1px solid var(--border-main);
             border-radius: 14px;
@@ -897,140 +932,39 @@
             box-shadow: var(--card-shadow);
             display: flex;
             flex-direction: column;
-            position: relative;
+            justify-content: space-between;
+            min-height: 146px;
             min-width: 0;
-            transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
+            position: relative;
+            transition: transform 0.22s var(--spring-ease), box-shadow 0.22s var(--spring-ease), border-color 0.2s ease;
         }
-        .spark-bookmark-card:hover {
+        .spark-bookmark-card:hover, .unread-deck-card:hover {
             border-color: var(--accent-terracotta);
             transform: translateY(-2px);
             box-shadow: var(--card-shadow-hover);
         }
-        .spark-bookmark-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 3.5px;
-            height: 100%;
-            background: var(--accent-terracotta);
-            opacity: 0.9;
-            border-radius: 4px 0 0 4px;
-        }
-        .spark-quote-wrap {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            min-height: 48px;
-            margin: 6px 0 10px 0;
-            transition: opacity 0.16s ease, transform 0.16s ease;
-        }
-        .spark-quote-wrap.fading {
-            opacity: 0;
-            transform: translateY(-3px);
-        }
-        .spark-flip-hint {
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--accent-terracotta);
-            cursor: pointer;
-            padding: 2.5px 10px;
-            border-radius: 12px;
-            background: var(--accent-soft);
-            transition: all 0.15s ease;
-            user-select: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            white-space: nowrap;
-        }
-        .spark-flip-hint:hover {
-            background: var(--accent-terracotta);
-            color: #fff;
-        }
 
-        .quiet-label {
-            font-size: 11.5px;
-            font-weight: 600;
-            color: var(--accent-terracotta);
-            white-space: nowrap;
-        }
-        .quiet-quote {
-            font-size: 13.5px;
-            line-height: 1.6;
-            color: var(--ink-primary);
-            word-break: break-word;
-            margin: 0;
-        }
-        .quiet-footer {
-            margin-top: auto;
-            padding-top: 10px;
-            border-top: 1px solid var(--border-main);
+        /* 统一头部：左侧主题标签，右侧切换小药丸 */
+        .card-header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            margin-bottom: 6px;
+            min-width: 0;
+        }
+        .card-kicker {
             font-size: 11.5px;
-            color: var(--ink-muted);
-        }
-        .spark-source-text {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
-        }
-        .quiet-link {
+            font-weight: 600;
             color: var(--accent-terracotta);
-            text-decoration: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: opacity 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             white-space: nowrap;
         }
-        .quiet-link:hover { opacity: 0.8; }
-
-        /* 4.2 沉睡之书 · 待唤醒 (Card Deck Stack) */
-        .unread-deck-card {
-            background: var(--surface);
-            border: 1px solid var(--border-main);
-            border-radius: 14px;
-            padding: 16px 20px;
-            box-shadow: var(--card-shadow);
-            position: relative;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
-        }
-        .unread-deck-card:hover {
-            border-color: var(--accent-terracotta);
-            transform: translateY(-2px);
-            box-shadow: var(--card-shadow-hover);
-        }
-        .unread-deck-card::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 8px;
-            right: 8px;
-            height: 10px;
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-main);
-            border-radius: 12px;
-            z-index: -1;
-            opacity: 0.65;
-            transition: all 0.25s ease;
-        }
-        .unread-deck-card:hover::after {
-            bottom: -7px;
-            opacity: 0.85;
-        }
-        .unread-shuffle-hint {
+        .card-action-pill {
             font-size: 11px;
             font-weight: 500;
-            color: var(--ink-muted);
+            color: var(--ink-secondary);
             cursor: pointer;
             padding: 2.5px 10px;
             border-radius: 12px;
@@ -1043,23 +977,33 @@
             gap: 2px;
             white-space: nowrap;
         }
-        .unread-shuffle-hint:hover {
+        .card-action-pill:hover {
             border-color: var(--accent-terracotta);
             color: var(--accent-terracotta);
             background: var(--accent-soft);
         }
-        .unread-body-wrap {
+
+        /* 统一内容区 */
+        .spark-quote-wrap, .unread-body-wrap {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             min-height: 48px;
-            margin: 6px 0 10px 0;
+            margin: 4px 0 10px 0;
+            min-width: 0;
             transition: opacity 0.16s ease, transform 0.16s ease;
         }
-        .unread-body-wrap.fading {
+        .spark-quote-wrap.fading, .unread-body-wrap.fading {
             opacity: 0;
             transform: translateY(-3px);
+        }
+        .quiet-quote {
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--ink-primary);
+            word-break: break-word;
+            margin: 0;
         }
         .unread-title {
             font-size: 14px;
@@ -1079,73 +1023,41 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .unread-actions {
+
+        /* 统一底部：左侧书名信息，右侧操作按钮 */
+        .card-footer-bar {
             margin-top: auto;
             padding-top: 10px;
             border-top: 1px solid var(--border-main);
             display: flex;
-            gap: 6px;
+            justify-content: space-between;
             align-items: center;
-        }
-        .btn-act {
-            flex: 1 1 auto;
-            min-width: 0;
-            padding: 4.5px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            border: 1px solid var(--border-main);
-            background: var(--surface-subtle);
-            color: var(--ink-primary);
-            text-align: center;
-            transition: all 0.15s ease;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-        }
-        .btn-act:hover {
-            background: var(--surface);
-            border-color: var(--border-focus);
-        }
-        .btn-act.btn-wake {
-            background: var(--accent-soft);
-            color: var(--accent-terracotta);
-            border-color: rgba(204, 120, 92, 0.3);
-            font-weight: 600;
-        }
-        .btn-act.btn-wake:hover {
-            background: var(--accent-terracotta);
-            color: #fff;
-            border-color: var(--accent-terracotta);
-        }
-        .btn-act.btn-mute {
+            gap: 10px;
+            font-size: 11.5px;
             color: var(--ink-muted);
-            border-color: transparent;
-            background: transparent;
+            min-width: 0;
         }
-        .btn-act.btn-mute:hover {
-            background: var(--surface-subtle);
-            color: var(--ink-secondary);
+        .spark-source-text, .unread-source-meta {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
         }
-        .btn-act.btn-wake {
-            background: var(--accent-soft);
-            border-color: rgba(204, 120, 92, 0.35);
+        .spark-source-text {
+            color: var(--ink-muted);
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+        .spark-source-text:hover {
             color: var(--accent-terracotta);
-            font-weight: 600;
         }
-        .btn-act.btn-wake:hover {
-            background: var(--accent-terracotta);
-            border-color: var(--accent-terracotta);
-            color: #fff;
-        }
-        .btn-mute:hover {
-            background: var(--border-main) !important;
-            color: var(--ink-muted) !important;
-        }
-            color: var(--ink-primary) !important;
+        .unread-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
         }
 
         /* Drawer */
@@ -1454,7 +1366,7 @@
         }
 
         /* ================= FLUID & ROCK-SOLID RESPONSIVE ADAPTATIONS ================= */
-        @media (max-width: 768px) {
+        @media (max-width: 840px) {
             .top-bento-row {
                 grid-template-columns: 1fr;
                 gap: 14px;
@@ -1500,9 +1412,6 @@
                 border-top: 1px dashed var(--border-main);
                 width: 100%;
             }
-            .brand-greeting {
-                display: none;
-            }
         }
 
         @media (max-width: 520px) {
@@ -1525,19 +1434,20 @@
                 padding: 4px 8px;
                 font-size: 11px;
             }
-            .quiet-footer {
+            .card-footer-bar {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 8px;
             }
-            .quiet-footer > button {
+            .card-footer-bar > button, .unread-btn-group {
                 align-self: flex-end;
             }
-            .spark-source-text {
+            .spark-source-text, .unread-source-meta {
                 max-width: 100%;
             }
-            .unread-actions {
+            .unread-btn-group {
                 flex-wrap: wrap;
+                gap: 4px;
             }
             .heat-footer {
                 flex-direction: column;
@@ -1564,7 +1474,6 @@
             <div class="brand">
                 <span class="brand-dot"></span>
                 <span>ReadingOS</span>
-                <span class="brand-greeting serif" id="brandGreeting">晨光初起 · 静心翻阅</span>
             </div>
 
             <div class="header-tools">
@@ -1705,7 +1614,7 @@
         </div>
 
         <!-- ================= 2. 正在阅读 (STANDARDIZED BOOK CARD) ================= -->
-        <div class="spotlight-card" onclick="openBookDrawer('JINGANG')">
+        <div class="spotlight-card" onclick="openBookDrawer('JINGANG')" data-book-key="JINGANG">
             <div class="apple-books-app-icon" title="来源：Apple Books">
                 <img src="data:image/png;base64,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" alt="Apple Books">
             </div>
@@ -1734,7 +1643,7 @@
         <!-- ================= 3. 伴图书目 (TRIO - CLICKABLE TO REAL HIGHLIGHTS) ================= -->
         <div class="companion-row">
             <!-- 估值原理 -->
-            <div class="companion-card" onclick="openBookDrawer('VALUATION')">
+            <div class="companion-card" onclick="openBookDrawer('VALUATION')" data-book-key="VALUATION">
                 <div>
                     <div class="c-title" id="compValuationTitle">《估值原理》</div>
                     <div class="c-author" id="compValuationMeta">周洛华 · 已读完 (100%)</div>
@@ -1749,7 +1658,7 @@
             </div>
 
             <!-- 老子他说 -->
-            <div class="companion-card" onclick="openBookDrawer('LAOZI')">
+            <div class="companion-card" onclick="openBookDrawer('LAOZI')" data-book-key="LAOZI">
                 <div>
                     <div class="c-title" id="compLaoziTitle">《老子他说：初续合集》</div>
                     <div class="c-author" id="compLaoziMeta">南怀瑾 · 读过 (24%)</div>
@@ -1764,7 +1673,7 @@
             </div>
 
             <!-- 最初和最终的自由 -->
-            <div class="companion-card" onclick="openBookDrawer('FREEDOM')">
+            <div class="companion-card" onclick="openBookDrawer('FREEDOM')" data-book-key="FREEDOM">
                 <div>
                     <div class="c-title" id="compFreedomTitle">《最初和最终的自由》</div>
                     <div class="c-author" id="compFreedomMeta">克里希那穆提 · 精读 (100%)</div>
@@ -1814,41 +1723,48 @@
             </div>
         </div>
 
-        <!-- ================= 4. DUAL PRACTICAL CARDS ================= -->
+        <!-- ================= 4. DUAL PRACTICAL CARDS (UNIFIED & REFINED) ================= -->
         <div class="dual-row">
             <!-- 4.1 每日灵光书签 (Lightweight Fade-in Bookmark) -->
             <div class="spark-bookmark-card" id="sparkCard">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span class="quiet-label" id="sparkTag">✨ 灵光书签 · 今日偶遇</span>
-                    <span class="spark-flip-hint" onclick="flipDailySpark()" title="点击偶遇下一条灵光">换一条 ↺</span>
+                <div class="card-header-bar">
+                    <div class="card-kicker">
+                        <span id="sparkTag">✨ 灵光书签 · 今日偶遇</span>
+                    </div>
+                    <button class="card-action-pill" onclick="flipDailySpark()" title="偶遇下一条灵光">换一条 ↺</button>
                 </div>
                 <div class="spark-quote-wrap" id="sparkQuoteWrap">
                     <div class="quiet-quote serif" id="sparkText">
                         “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
                     </div>
                 </div>
-                <div class="quiet-footer">
-                    <span class="spark-source-text" id="sparkSource" title="《金剛經白話講座》· 王思迅">《金剛經白話講座》· 王思迅</span>
+                <div class="card-footer-bar">
+                    <span class="spark-source-text" id="sparkSource" title="《金剛經白話講座》· 王思迅" onclick="openBookDrawer('JINGANG')">《金剛經白話講座》· 王思迅</span>
                     <button class="dsh-btn" onclick="askDshCurrentSpark()" title="发送当前灵光至 DSH 对话框进行深度探讨">✨ 联动探讨</button>
                 </div>
             </div>
 
-            <!-- 4.2 沉睡之书 · 待唤醒 (Card Deck Stack) -->
+            <!-- 4.2 沉睡之书 · 待开启 (Unified Design) -->
             <div class="unread-deck-card" id="unreadDeckCard">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span class="quiet-label" style="color:var(--ink-muted);">沉睡之书 · 待唤醒</span>
-                    <span class="unread-shuffle-hint" onclick="shuffleUnreadDeck()" title="换一本沉睡书籍">换一本 ↺</span>
+                <div class="card-header-bar">
+                    <div class="card-kicker">
+                        <span>📚 沉睡典籍 · 待开启</span>
+                    </div>
+                    <button class="card-action-pill" onclick="shuffleUnreadDeck()" title="换一本沉睡书籍">换一本 ↺</button>
                 </div>
                 <div class="unread-body-wrap" id="unreadContentWrap">
-                    <div class="unread-title" id="unreadTitle" title="《也无风雨也无晴》">《也无风雨也无晴》</div>
+                    <div class="unread-title serif" id="unreadTitle" title="《也无风雨也无晴》">《也无风雨也无晴》</div>
                     <div class="unread-desc" id="unreadDesc">
                         PDF 格式 · 下载沉睡中，待开启深度阅读。
                     </div>
                 </div>
-                <div class="unread-actions">
-                    <button class="btn-act btn-wake" onclick="wakeUnreadBook()">✨ 唤醒研读</button>
-                    <button class="btn-act" onclick="quickSkim()">📖 速览10分</button>
-                    <button class="btn-act btn-mute" onclick="markAsRead()">已读过</button>
+                <div class="card-footer-bar">
+                    <span class="unread-source-meta" id="unreadMeta">未读沉淀 · 待开启</span>
+                    <div class="unread-btn-group">
+                        <button class="dsh-btn primary" onclick="wakeUnreadBook()" title="唤醒此书，生成研读引导 Prompt 并复制到剪贴板">✨ 唤醒研读</button>
+                        <button class="dsh-btn" onclick="quickSkim()" title="进入10分钟速览">📖 速览</button>
+                        <button class="dsh-btn ghost" onclick="markAsRead()" title="标记此书已读">已读</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1976,12 +1892,33 @@
             `;
         }
 
-        // --- OPEN DRAWER WITH REAL HIGHLIGHTS ---
+        // --- OPEN DRAWER WITH REAL HIGHLIGHTS (WITH TOGGLE) ---
         let currentDrawerBookKey = null;
+
+        function updateCardActiveState(activeKey) {
+            document.querySelectorAll('.companion-card, .spotlight-card').forEach(el => {
+                el.classList.remove('card-drawer-open');
+            });
+            if (activeKey) {
+                const activeCard = document.querySelector(`[data-book-key="${activeKey}"]`);
+                if (activeCard) activeCard.classList.add('card-drawer-open');
+            }
+        }
+
         function openBookDrawer(bookKey) {
+            const drawer = document.getElementById('drawer');
+            const isCurrentlyOpen = drawer && drawer.classList.contains('active');
+
+            // Toggle: 再次点击当前已展开的书本卡片，直接收起关闭抽屉
+            if (isCurrentlyOpen && currentDrawerBookKey === bookKey) {
+                closeDrawer();
+                return;
+            }
+
             const b = DATA.books[bookKey];
             if (!b) return;
             currentDrawerBookKey = bookKey;
+            updateCardActiveState(bookKey);
 
             document.getElementById('drawerTitle').innerText = '《' + b.title + '》';
             document.getElementById('drawerAuthor').innerText = `${b.author} · 共有 ${b.highlights.length} 条划线批注 · 进度 ${b.progress}%`;
@@ -1999,7 +1936,7 @@
             `).join('');
 
             document.getElementById('drawerScrim').classList.add('active');
-            document.getElementById('drawer').classList.add('active');
+            drawer.classList.add('active');
         }
 
         function askDshFromDrawer(idx) {
@@ -2253,8 +2190,26 @@ ${quotesText}
         }
 
         function closeDrawer() {
-            document.getElementById('drawerScrim').classList.remove('active');
-            document.getElementById('drawer').classList.remove('active');
+            currentDrawerBookKey = null;
+            updateCardActiveState(null);
+            const scrim = document.getElementById('drawerScrim');
+            const drawer = document.getElementById('drawer');
+            if (scrim) scrim.classList.remove('active');
+            if (drawer) drawer.classList.remove('active');
+        }
+
+        function openSparkBook() {
+            const sparks = DATA.sparks || [];
+            const sp = sparks[sparkIdx];
+            if (!sp) return;
+            let matchedKey = null;
+            for (const [k, b] of Object.entries(DATA.books || {})) {
+                if (b.title && (b.title.includes(sp.book) || sp.book.includes(b.title))) {
+                    matchedKey = k;
+                    break;
+                }
+            }
+            openBookDrawer(matchedKey || 'JINGANG');
         }
 
         // --- Daily Spark Cycle ---
@@ -2306,7 +2261,9 @@ ${quotesText}
             if (!activeList.length) {
                 document.getElementById('unreadTitle').innerText = '🎉 所有沉睡典籍已全被唤醒！';
                 document.getElementById('unreadDesc').innerText = '所有下载的书目已全部进入研读流或标记读过。';
-                const actions = document.querySelector('.unread-actions');
+                const elMeta = document.getElementById('unreadMeta');
+                if (elMeta) elMeta.innerText = '已全部唤醒';
+                const actions = document.querySelector('.unread-btn-group');
                 if (actions) actions.style.display = 'none';
                 return;
             }
@@ -2315,7 +2272,9 @@ ${quotesText}
             document.getElementById('unreadTitle').innerText = '《' + b.title + '》';
             document.getElementById('unreadTitle').title = '《' + b.title + '》';
             document.getElementById('unreadDesc').innerText = `${b.ext || 'EPUB'} 格式 · 下载沉睡中，待开启深度阅读与划线记录。`;
-            const actions = document.querySelector('.unread-actions');
+            const elMeta = document.getElementById('unreadMeta');
+            if (elMeta) elMeta.innerText = `${b.ext || 'EPUB'} · 沉睡待读 #${currentUnreadIdx + 1}`;
+            const actions = document.querySelector('.unread-btn-group');
             if (actions) actions.style.display = 'flex';
         }
 
