@@ -74,7 +74,7 @@
 底部放了两个顺手的小卡片：**灵光书签**每次点击随机翻出一句往昔划线，适合工作间隙看一眼；**沉睡之书**则随手翻出以前下载了但还没读的书，提醒自己抽空翻开看看。
 
 <p align="center">
-  <img src="assets/05-dual-practical-cards.png" width="92%" alt="灵光书签与沉睡书籍提醒" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
+  <img src="assets/05-dual-practical-cards.png" width="92%" alt="灵光偶遇与积读提醒" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
 </p>
 
 ---
@@ -91,9 +91,9 @@
 
 ---
 
-### 关于自动刷新
+### 关于数据更新
 
-插件支持静默自动刷新：当你在「图书」App 中读完书、划完线，切回 DeepSeek Harness 窗口时，页面会自动检测并拉取最新数据，无需手动按同步或刷新。
+插件采用手动同步机制：需要更新时，点击顶栏右上角的“同步”按钮，即可读取系统「图书」与本地下载目录的最新数据。默认不进行后台定时轮询，避免频繁触发系统层面的本地数据读取授权弹窗，使用更安心。
 
 ---
 

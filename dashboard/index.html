@@ -2696,39 +2696,6 @@ ${topic ? `讨论切入：${topic}\n` : ''}
 
 
 
-        let isSyncingData = false;
-        let lastSyncTime = 0;
-
-        async function fetchLatestDataSilently() {
-            const now = Date.now();
-            if (isSyncingData || (now - lastSyncTime < 12000)) return;
-            isSyncingData = true;
-            try {
-                const res = await fetch('/reading-os/api/data', { cache: 'no-store' });
-                if (res.ok) {
-                    const fresh = await res.json();
-                    if (fresh && !fresh.error && fresh.books) {
-                        applyFreshData(fresh);
-                        lastSyncTime = Date.now();
-                        isSyncingData = false;
-                        return;
-                    }
-                }
-            } catch (e) {}
-
-            try {
-                const res2 = await fetch('/reading-os/data.local.json', { cache: 'no-store' });
-                if (res2.ok) {
-                    const fresh2 = await res2.json();
-                    if (fresh2 && !fresh2.error && fresh2.books) {
-                        applyFreshData(fresh2);
-                        lastSyncTime = Date.now();
-                    }
-                }
-            } catch (err) {}
-            isSyncingData = false;
-        }
-
         async function syncReadingData() {
             const btn = document.getElementById('syncBtn');
             btn.classList.add('spinning');
@@ -2740,7 +2707,6 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                     const fresh = await res.json();
                     if (!fresh.error) {
                         applyFreshData(fresh);
-                        lastSyncTime = Date.now();
                         showToast(`✨ 同步完成！已更新至最新阅读进度与下载书目`);
                         btn.classList.remove('spinning');
                         return;
@@ -2926,20 +2892,14 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             document.getElementById('recentConversionRate').innerText = DATA.inventory.conversion_rate || '81.5%';
         }
 
-        // 首次加载立即执行一次静默获取
-        fetchLatestDataSilently();
-
-        // 窗口切回或页面可见时自动刷新（用户在苹果图书划线后切回即自动呈现）
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') fetchLatestDataSilently();
-        });
-        window.addEventListener('focus', () => {
-            fetchLatestDataSilently();
-        });
-        // 激活状态下每 45 秒定时静默检测一次
-        setInterval(() => {
-            if (document.visibilityState === 'visible') fetchLatestDataSilently();
-        }, 45000);
+        // 尝试加载本地静态数据
+        fetch('/reading-os/data.local.json', { cache: 'no-store' })
+            .then(res => {
+                if (res.ok) return res.json();
+                throw new Error('static not ready');
+            })
+            .then(applyFreshData)
+            .catch(() => {});
     </script>
 </body>
 </html>
