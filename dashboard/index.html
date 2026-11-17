@@ -936,12 +936,17 @@
             min-height: 146px;
             min-width: 0;
             position: relative;
+            cursor: pointer;
+            user-select: none;
             transition: transform 0.22s var(--spring-ease), box-shadow 0.22s var(--spring-ease), border-color 0.2s ease;
         }
         .spark-bookmark-card:hover, .unread-deck-card:hover {
             border-color: var(--accent-terracotta);
             transform: translateY(-2px);
             box-shadow: var(--card-shadow-hover);
+        }
+        .spark-bookmark-card:active, .unread-deck-card:active {
+            transform: translateY(0) scale(0.995);
         }
 
         /* 统一头部：左侧主题标签，右侧切换小药丸 */
@@ -1726,12 +1731,12 @@
         <!-- ================= 4. DUAL PRACTICAL CARDS (UNIFIED & REFINED) ================= -->
         <div class="dual-row">
             <!-- 4.1 每日灵光书签 (Lightweight Fade-in Bookmark) -->
-            <div class="spark-bookmark-card" id="sparkCard">
+            <div class="spark-bookmark-card" id="sparkCard" onclick="handleSparkCardClick(event)" title="点击卡片任意区域即可换一条灵光">
                 <div class="card-header-bar">
                     <div class="card-kicker">
                         <span id="sparkTag">✨ 灵光书签 · 今日偶遇</span>
                     </div>
-                    <button class="card-action-pill" onclick="flipDailySpark()" title="偶遇下一条灵光">换一条 ↺</button>
+                    <button class="card-action-pill" onclick="event.stopPropagation(); flipDailySpark();" title="偶遇下一条灵光">换一条 ↺</button>
                 </div>
                 <div class="spark-quote-wrap" id="sparkQuoteWrap">
                     <div class="quiet-quote serif" id="sparkText">
@@ -1739,18 +1744,18 @@
                     </div>
                 </div>
                 <div class="card-footer-bar">
-                    <span class="spark-source-text" id="sparkSource" title="《金剛經白話講座》· 王思迅" onclick="openBookDrawer('JINGANG')">《金剛經白話講座》· 王思迅</span>
-                    <button class="dsh-btn" onclick="askDshCurrentSpark()" title="发送当前灵光至 DSH 对话框进行深度探讨">✨ 联动探讨</button>
+                    <span class="spark-source-text" id="sparkSource" title="《金剛經白話講座》· 王思迅 (点击展开划线批注)" onclick="event.stopPropagation(); openSparkBook();">《金剛經白話講座》· 王思迅</span>
+                    <button class="dsh-btn" onclick="event.stopPropagation(); askDshCurrentSpark();" title="发送当前灵光至 DSH 对话框进行深度探讨">✨ 联动探讨</button>
                 </div>
             </div>
 
             <!-- 4.2 沉睡之书 · 待开启 (Unified Design) -->
-            <div class="unread-deck-card" id="unreadDeckCard">
+            <div class="unread-deck-card" id="unreadDeckCard" onclick="handleUnreadCardClick(event)" title="点击卡片任意区域即可换一本沉睡书籍">
                 <div class="card-header-bar">
                     <div class="card-kicker">
                         <span>📚 沉睡典籍 · 待开启</span>
                     </div>
-                    <button class="card-action-pill" onclick="shuffleUnreadDeck()" title="换一本沉睡书籍">换一本 ↺</button>
+                    <button class="card-action-pill" onclick="event.stopPropagation(); shuffleUnreadDeck();" title="换一本沉睡书籍">换一本 ↺</button>
                 </div>
                 <div class="unread-body-wrap" id="unreadContentWrap">
                     <div class="unread-title serif" id="unreadTitle" title="《也无风雨也无晴》">《也无风雨也无晴》</div>
@@ -1760,10 +1765,10 @@
                 </div>
                 <div class="card-footer-bar">
                     <span class="unread-source-meta" id="unreadMeta">未读沉淀 · 待开启</span>
-                    <div class="unread-btn-group">
-                        <button class="dsh-btn primary" onclick="wakeUnreadBook()" title="唤醒此书，生成研读引导 Prompt 并复制到剪贴板">✨ 唤醒研读</button>
-                        <button class="dsh-btn" onclick="quickSkim()" title="进入10分钟速览">📖 速览</button>
-                        <button class="dsh-btn ghost" onclick="markAsRead()" title="标记此书已读">已读</button>
+                    <div class="unread-btn-group" onclick="event.stopPropagation()">
+                        <button class="dsh-btn primary" onclick="event.stopPropagation(); wakeUnreadBook();" title="唤醒此书，生成研读引导 Prompt 并复制到剪贴板">✨ 唤醒研读</button>
+                        <button class="dsh-btn" onclick="event.stopPropagation(); quickSkim();" title="进入10分钟速览">📖 速览</button>
+                        <button class="dsh-btn ghost" onclick="event.stopPropagation(); markAsRead();" title="标记此书已读">已读</button>
                     </div>
                 </div>
             </div>
@@ -2217,6 +2222,12 @@ ${quotesText}
         let sparkIdx = 0;
         let isFlippingSpark = false;
 
+        function handleSparkCardClick(e) {
+            // 点击出处书名或联动探讨按钮时不触发翻牌切换
+            if (e.target.closest('.spark-source-text') || e.target.closest('.dsh-btn')) return;
+            flipDailySpark();
+        }
+
         function flipDailySpark() {
             if (isFlippingSpark) return;
             const sparks = DATA.sparks || [];
@@ -2276,6 +2287,12 @@ ${quotesText}
             if (elMeta) elMeta.innerText = `${b.ext || 'EPUB'} · 沉睡待读 #${currentUnreadIdx + 1}`;
             const actions = document.querySelector('.unread-btn-group');
             if (actions) actions.style.display = 'flex';
+        }
+
+        function handleUnreadCardClick(e) {
+            // 点击底部操作按钮组时不触发切牌换书
+            if (e.target.closest('.unread-btn-group') || e.target.closest('.dsh-btn')) return;
+            shuffleUnreadDeck();
         }
 
         function shuffleUnreadDeck() {
