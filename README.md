@@ -106,8 +106,6 @@
 
 ### 安装方式
 
-#### 方式一：在 DeepSeek Harness 中在线安装（推荐）
-
 1. 打开 **DeepSeek Harness** 桌面客户端；
 2. 点击左侧工具栏底部的 **「🧩 插件」 ➔ 「添加插件」**；
 3. 在地址输入框中填入本仓库地址并点击安装：
@@ -115,18 +113,6 @@
    https://github.com/maikaojai/dsh-plugin-reading-os
    ```
 4. 安装完成后，左侧栏会出现 **`📖 ReadingOS 读书`** 图标。
-
-#### 方式二：本地开发安装
-
-如果你希望微调样式或参与贡献：
-
-```bash
-# 1. 克隆代码仓库到本地
-git clone https://github.com/maikaojai/dsh-plugin-reading-os.git
-
-# 2. 在 DeepSeek Harness 的「添加插件」中填入本地目录绝对路径确认安装
-# 3. 本地修改代码后，在窗口中按 Command + R 即可刷新预览
-```
 
 ---
 
