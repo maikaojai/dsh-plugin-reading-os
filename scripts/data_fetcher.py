@@ -23,6 +23,7 @@ def get_reading_os_data():
     anns = [f for f in glob.glob(ann_pattern) if not f.endswith(("-wal", "-shm"))]
 
     books_dict = {}
+    spotlight_book_key = "JINGANG"
     day_counts = {}
     notes_by_day = {}
     total_apple_books = 0
@@ -38,31 +39,36 @@ def get_reading_os_data():
             c.execute("SELECT count(*) FROM ZBKLIBRARYASSET;")
             total_apple_books = c.fetchone()[0]
 
-            # Top active books
+            # Top active and recently opened books from Apple Books
             c.execute("""
             SELECT b.ZASSETID, b.ZTITLE, b.ZAUTHOR, b.ZREADINGPROGRESS, b.ZBOOKHIGHWATERMARKPROGRESS,
-                   count(a.ZANNOTATIONUUID) as cnt, max(a.ZANNOTATIONCREATIONDATE) as last_time
+                   count(a.ZANNOTATIONUUID) as cnt,
+                   max(a.ZANNOTATIONCREATIONDATE) as last_annotation_ts,
+                   coalesce(b.ZLASTOPENDATE, b.ZLASTENGAGEDDATE) as last_open_ts,
+                   datetime(coalesce(b.ZLASTOPENDATE, b.ZLASTENGAGEDDATE) + 978307200, 'unixepoch', 'localtime') as last_open_str
             FROM ZBKLIBRARYASSET b
-            JOIN ann.ZAEANNOTATION a ON b.ZASSETID = a.ZANNOTATIONASSETID
-            WHERE a.ZANNOTATIONDELETED = 0 AND a.ZANNOTATIONSELECTEDTEXT IS NOT NULL
+            LEFT JOIN ann.ZAEANNOTATION a ON b.ZASSETID = a.ZANNOTATIONASSETID AND a.ZANNOTATIONDELETED = 0 AND a.ZANNOTATIONSELECTEDTEXT IS NOT NULL
+            WHERE b.ZTITLE IS NOT NULL
             GROUP BY b.ZASSETID
-            ORDER BY last_time DESC;
+            ORDER BY max(coalesce(b.ZLASTOPENDATE, 0), coalesce(b.ZLASTENGAGEDDATE, 0), coalesce(max(a.ZANNOTATIONCREATIONDATE), 0)) DESC;
             """)
             active_rows = c.fetchall()
+            if active_rows:
+                spotlight_book_key = active_rows[0][0]
 
-            for aid, raw_title, raw_author, raw_prog, raw_hw_prog, cnt, last_time in active_rows:
-                if not raw_title or cnt == 0:
+            for aid, raw_title, raw_author, raw_prog, raw_hw_prog, cnt, last_ann_ts, last_open_ts, last_open_str in active_rows:
+                if not raw_title:
                     continue
-                c.execute("""
-                SELECT ZANNOTATIONSELECTEDTEXT, ZANNOTATIONNOTE,
-                       datetime(ZANNOTATIONCREATIONDATE + 978307200, 'unixepoch', 'localtime')
-                FROM ann.ZAEANNOTATION
-                WHERE ZANNOTATIONASSETID = ? AND ZANNOTATIONDELETED = 0 AND ZANNOTATIONSELECTEDTEXT IS NOT NULL
-                ORDER BY ZANNOTATIONCREATIONDATE DESC;
-                """, (aid,))
-                hl_rows = c.fetchall()
-                if not hl_rows:
-                    continue
+                hl_rows = []
+                if cnt > 0:
+                    c.execute("""
+                    SELECT ZANNOTATIONSELECTEDTEXT, ZANNOTATIONNOTE,
+                           datetime(ZANNOTATIONCREATIONDATE + 978307200, 'unixepoch', 'localtime')
+                    FROM ann.ZAEANNOTATION
+                    WHERE ZANNOTATIONASSETID = ? AND ZANNOTATIONDELETED = 0 AND ZANNOTATIONSELECTEDTEXT IS NOT NULL
+                    ORDER BY ZANNOTATIONCREATIONDATE DESC;
+                    """, (aid,))
+                    hl_rows = c.fetchall()
 
                 clean_title = raw_title.strip()
                 author_clean = (raw_author or "未知作者").strip()
@@ -84,6 +90,7 @@ def get_reading_os_data():
                     "progress": progress,
                     "highlights_count": len(hl_rows),
                     "sample_quote": hl_rows[0][0].strip() if hl_rows else "",
+                    "last_open_time": last_open_str if last_open_str else (hl_rows[0][2] if hl_rows else ""),
                     "highlights": [
                         {"text": r[0].strip(), "note": r[1].strip() if r[1] else None, "time": r[2]}
                         for r in hl_rows
@@ -388,6 +395,7 @@ def get_reading_os_data():
 
     return {
         "books": books_dict,
+        "spotlight_book_key": spotlight_book_key,
         "heatmap_weeks": heatmap_weeks,
         "notes_by_day": notes_by_day,
         "sparks": sparks,

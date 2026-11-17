@@ -363,10 +363,7 @@
             min-height: 98px;
             min-width: 0;
             overflow: hidden;
-            transition: border-color 0.2s ease, transform 0.15s ease;
-        }
-        .recent-book-mini-card:hover {
-            border-color: var(--border-hover);
+            cursor: default;
         }
         .rb-top {
             display: flex;
@@ -1642,7 +1639,7 @@
             <div class="spotlight-info">
                 <div class="spotlight-header-row">
                     <span style="font-size:11px; font-weight:600; color:var(--accent-terracotta);">正在阅读</span>
-                    <span style="font-size:11px; color:var(--ink-muted);" id="spotlightLastOpen">最后打开：今天</span>
+                    <span style="font-size:11px; color:var(--ink-muted);" id="spotlightLastOpen">最近打开</span>
                 </div>
                 <div class="spotlight-title" id="spotlightTitle">《金剛經白話講座：放下的人生修行》</div>
                 <div class="spotlight-meta" id="spotlightMeta">王思迅 · 274 条划线 (点击翻开所有批注 ➔)</div>
@@ -1940,20 +1937,30 @@
             currentDrawerBookKey = bookKey;
             updateCardActiveState(bookKey);
 
+            const hlCount = b.highlights ? b.highlights.length : 0;
             document.getElementById('drawerTitle').innerText = '《' + b.title + '》';
-            document.getElementById('drawerAuthor').innerText = `${b.author} · 共有 ${b.highlights.length} 条划线批注 · 进度 ${b.progress}%`;
+            document.getElementById('drawerAuthor').innerText = `${b.author} · 共有 ${hlCount} 条划线批注 · 进度 ${b.progress}%`;
 
             const stream = document.getElementById('drawerStream');
-            stream.innerHTML = b.highlights.map((h, i) => `
-                <div class="drawer-item">
-                    <p class="serif" style="line-height:1.6;"><strong>#${i+1}</strong> “${h.text}”</p>
-                    ${h.note ? `<div class="drawer-note">💭 批注：${h.note}</div>` : ''}
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                        <span class="drawer-time">${h.time}</span>
-                        <button class="dsh-btn" style="font-size:10px; padding:2px 7px;" onclick="askDshFromDrawer(${i})">✨ 联动 DSH 探讨</button>
+            if (!b.highlights || b.highlights.length === 0) {
+                stream.innerHTML = `
+                    <div style="padding: 40px 20px; text-align: center; color: var(--ink-muted); font-size: 13px;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">📖</div>
+                        <div>暂无批注划线，可随时在 Apple Books 中阅读标记后点击右上角“同步”。</div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            } else {
+                stream.innerHTML = b.highlights.map((h, i) => `
+                    <div class="drawer-item">
+                        <p class="serif" style="line-height:1.6;"><strong>#${i+1}</strong> “${h.text}”</p>
+                        ${h.note ? `<div class="drawer-note">💭 批注：${h.note}</div>` : ''}
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                            <span class="drawer-time">${h.time}</span>
+                            <button class="dsh-btn" style="font-size:10px; padding:2px 7px;" onclick="askDshFromDrawer(${i})">✨ 联动 DSH 探讨</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
 
             document.getElementById('drawerScrim').classList.add('active');
             drawer.classList.add('active');
@@ -2696,31 +2703,74 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         function renderSpotlightAndCompanions() {
             if (!DATA.books) return;
 
-            // 1. Spotlight (JINGANG)
-            const jg = DATA.books['JINGANG'] || Object.values(DATA.books).find(b => b.title.includes('金剛經'));
-            if (jg) {
+            // 1. Dynamic Spotlight (Recently opened book from Apple Books)
+            let spotKey = DATA.spotlight_book_key;
+            let spotBook = spotKey ? DATA.books[spotKey] : null;
+
+            // Fallback: If not explicitly set, find book with latest last_open_time
+            if (!spotBook && DATA.books) {
+                const list = Object.values(DATA.books).filter(b => b && b.title);
+                list.sort((a, b) => {
+                    const ta = a.last_open_time || (a.highlights && a.highlights[0] ? a.highlights[0].time : '') || '';
+                    const tb = b.last_open_time || (b.highlights && b.highlights[0] ? b.highlights[0].time : '') || '';
+                    return tb.localeCompare(ta);
+                });
+                spotBook = list[0];
+            }
+
+            if (spotBook) {
+                const spotCard = document.querySelector('.spotlight-card');
+                if (spotCard) {
+                    spotCard.setAttribute('data-book-key', spotBook.key);
+                    spotCard.onclick = () => openBookDrawer(spotBook.key);
+                }
                 const elTitle = document.getElementById('spotlightTitle');
                 const elMeta = document.getElementById('spotlightMeta');
                 const elFill = document.getElementById('spotlightProgressFill');
                 const elText = document.getElementById('spotlightProgressText');
                 const elQuote = document.getElementById('spotlightQuote');
+                const elLastOpen = document.getElementById('spotlightLastOpen');
 
-                if (elTitle) elTitle.innerText = '《' + jg.title + '》';
-                if (elMeta) elMeta.innerText = `${jg.author} · ${jg.highlights.length} 条划线 (点击翻开所有批注 ➔)`;
-                if (elFill) elFill.style.width = jg.progress + '%';
-                if (elText) elText.innerText = jg.progress + '%';
-                if (elQuote && jg.sample_quote) elQuote.innerText = '“' + jg.sample_quote + '”';
+                if (elTitle) elTitle.innerText = '《' + spotBook.title + '》';
+                if (elMeta) {
+                    const count = spotBook.highlights ? spotBook.highlights.length : (spotBook.highlights_count || 0);
+                    if (count > 0) {
+                        elMeta.innerText = `${spotBook.author} · ${count} 条划线 (点击翻开所有批注 ➔)`;
+                    } else {
+                        elMeta.innerText = `${spotBook.author} · 正在研读中 (${spotBook.progress}%)`;
+                    }
+                }
+                if (elFill) elFill.style.width = spotBook.progress + '%';
+                if (elText) elText.innerText = spotBook.progress + '%';
+                if (elQuote) {
+                    if (spotBook.sample_quote) {
+                        elQuote.innerText = '“' + spotBook.sample_quote + '”';
+                    } else if (spotBook.highlights && spotBook.highlights[0] && spotBook.highlights[0].text) {
+                        elQuote.innerText = '“' + spotBook.highlights[0].text + '”';
+                    } else {
+                        elQuote.innerText = '“探索未竟之思，开启深度研读之旅。”';
+                    }
+                }
+                if (elLastOpen) elLastOpen.innerText = '最近打开';
             }
 
-            // 2. Valuation
-            const val = DATA.books['VALUATION'];
+            // 2. Valuation (or JINGANG if spotlight is Valuation)
+            let comp1Key = (spotBook && (spotBook.key === 'VALUATION' || spotBook.title.includes('估值原理'))) ? 'JINGANG' : 'VALUATION';
+            const val = DATA.books[comp1Key];
             if (val) {
+                const c1Card = document.querySelector('.companion-row > .companion-card:nth-child(1)');
+                if (c1Card) {
+                    c1Card.setAttribute('data-book-key', comp1Key);
+                    c1Card.onclick = () => openBookDrawer(comp1Key);
+                }
                 const c1Title = document.getElementById('compValuationTitle');
                 const elMeta = document.getElementById('compValuationMeta');
                 const elCount = document.getElementById('compValuationCount');
-                if (c1Title) c1Title.innerText = '《估值原理》';
-                if (elMeta) elMeta.innerText = `${val.author} · 已读完 (${val.progress}%)`;
-                if (elCount) elCount.innerText = `${val.highlights.length} 条划线`;
+                const elQuote = document.getElementById('compValuationQuote');
+                if (c1Title) c1Title.innerText = '《' + val.title + '》';
+                if (elMeta) elMeta.innerText = `${val.author} · ${val.progress >= 100 ? '已读完' : '读过'} (${val.progress}%)`;
+                if (elCount) elCount.innerText = `${val.highlights ? val.highlights.length : (val.highlights_count || 0)} 条划线`;
+                if (elQuote && val.sample_quote) elQuote.innerText = '“' + val.sample_quote + '”';
             }
 
             // 3. Laozi
@@ -2731,7 +2781,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 const elCount = document.getElementById('compLaoziCount');
                 if (c2Title) c2Title.innerText = '《老子他说：初续合集》';
                 if (elMeta) elMeta.innerText = `${lz.author} · 读过 (${lz.progress}%)`;
-                if (elCount) elCount.innerText = `${lz.highlights.length} 条划线`;
+                if (elCount) elCount.innerText = `${lz.highlights ? lz.highlights.length : (lz.highlights_count || 0)} 条划线`;
             }
 
             // 4. Freedom
@@ -2742,7 +2792,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 const elCount = document.getElementById('compFreedomCount');
                 if (c3Title) c3Title.innerText = '《最初和最终的自由》';
                 if (elMeta) elMeta.innerText = `${fr.author} · 精读 (${fr.progress}%)`;
-                if (elCount) elCount.innerText = `${fr.highlights.length} 条划线`;
+                if (elCount) elCount.innerText = `${fr.highlights ? fr.highlights.length : (fr.highlights_count || 0)} 条划线`;
             }
         }
         function applyFreshData(fresh) {
