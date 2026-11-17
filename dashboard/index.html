@@ -883,24 +883,22 @@
         /* ================= 4. DUAL PRACTICAL CARDS ================= */
         .dual-row {
             display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
+            grid-template-columns: 1fr 1fr;
             gap: 16px;
             margin-bottom: 24px;
         }
 
-        /* 4.1 每日灵光书签 (3D Flip Bookmark) */
+        /* 4.1 每日灵光书签 (Lightweight Fade-in Bookmark) */
         .spark-bookmark-card {
             background: var(--surface);
             border: 1px solid var(--border-main);
             border-radius: 14px;
-            padding: 18px 22px;
+            padding: 16px 20px;
             box-shadow: var(--card-shadow);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             position: relative;
-            overflow: hidden;
-            perspective: 800px;
+            min-width: 0;
             transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
         }
         .spark-bookmark-card:hover {
@@ -913,30 +911,30 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 3px;
+            width: 3.5px;
             height: 100%;
             background: var(--accent-terracotta);
-            opacity: 0.85;
+            opacity: 0.9;
             border-radius: 4px 0 0 4px;
         }
-        .spark-card-front {
+        .spark-quote-wrap {
+            flex: 1;
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            transition: transform 0.22s var(--spring-ease), opacity 0.2s ease;
-            transform-origin: center center;
+            align-items: center;
+            min-height: 48px;
+            margin: 6px 0 10px 0;
+            transition: opacity 0.16s ease, transform 0.16s ease;
         }
-        .spark-card-front.flipping {
-            transform: rotateY(90deg) scale(0.96);
-            opacity: 0.25;
+        .spark-quote-wrap.fading {
+            opacity: 0;
+            transform: translateY(-3px);
         }
         .spark-flip-hint {
             font-size: 11px;
             font-weight: 500;
             color: var(--accent-terracotta);
             cursor: pointer;
-            padding: 2px 9px;
+            padding: 2.5px 10px;
             border-radius: 12px;
             background: var(--accent-soft);
             transition: all 0.15s ease;
@@ -944,6 +942,7 @@
             display: inline-flex;
             align-items: center;
             gap: 3px;
+            white-space: nowrap;
         }
         .spark-flip-hint:hover {
             background: var(--accent-terracotta);
@@ -954,21 +953,33 @@
             font-size: 11.5px;
             font-weight: 600;
             color: var(--accent-terracotta);
+            white-space: nowrap;
         }
         .quiet-quote {
-            font-size: 14px;
+            font-size: 13.5px;
             line-height: 1.6;
             color: var(--ink-primary);
-            margin: 10px 0;
+            word-break: break-word;
+            margin: 0;
         }
         .quiet-footer {
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-main);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             font-size: 11.5px;
             color: var(--ink-muted);
-            padding-top: 8px;
-            border-top: 1px solid var(--border-main);
+        }
+        .spark-source-text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
         }
         .quiet-link {
             color: var(--accent-terracotta);
@@ -976,17 +987,21 @@
             cursor: pointer;
             font-weight: 500;
             transition: opacity 0.15s ease;
+            white-space: nowrap;
         }
         .quiet-link:hover { opacity: 0.8; }
 
-        /* 4.2 沉睡之书 · 待唤醒 (Card Deck Stack & Swipe) */
+        /* 4.2 沉睡之书 · 待唤醒 (Card Deck Stack) */
         .unread-deck-card {
             background: var(--surface);
             border: 1px solid var(--border-main);
             border-radius: 14px;
-            padding: 18px 22px;
+            padding: 16px 20px;
             box-shadow: var(--card-shadow);
             position: relative;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
             transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
         }
         .unread-deck-card:hover {
@@ -1012,43 +1027,45 @@
             bottom: -7px;
             opacity: 0.85;
         }
-        .unread-card-layer-front {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            transition: transform 0.25s var(--spring-ease), opacity 0.2s ease;
-            transform-origin: bottom center;
-        }
-        .unread-card-layer-front.swiping {
-            transform: translateX(45px) rotate(4deg);
-            opacity: 0;
-        }
         .unread-shuffle-hint {
             font-size: 11px;
             font-weight: 500;
             color: var(--ink-muted);
             cursor: pointer;
-            padding: 2px 8px;
+            padding: 2.5px 10px;
             border-radius: 12px;
             background: var(--surface-subtle);
-            border: 1px solid var(--border-main);
+            border: 1px solid var(--border-subtle);
             transition: all 0.15s ease;
             user-select: none;
             display: inline-flex;
             align-items: center;
             gap: 2px;
+            white-space: nowrap;
         }
         .unread-shuffle-hint:hover {
             border-color: var(--accent-terracotta);
             color: var(--accent-terracotta);
-            background: var(--surface);
+            background: var(--accent-soft);
+        }
+        .unread-body-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 48px;
+            margin: 6px 0 10px 0;
+            transition: opacity 0.16s ease, transform 0.16s ease;
+        }
+        .unread-body-wrap.fading {
+            opacity: 0;
+            transform: translateY(-3px);
         }
         .unread-title {
             font-size: 14px;
             font-weight: 600;
             color: var(--ink-primary);
-            margin: 6px 0 3px 0;
+            margin: 0 0 3px 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1056,16 +1073,24 @@
         .unread-desc {
             font-size: 11.5px;
             color: var(--ink-muted);
-            line-height: 1.5;
-            margin-bottom: 12px;
+            line-height: 1.45;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .unread-actions {
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-main);
             display: flex;
             gap: 6px;
+            align-items: center;
         }
         .btn-act {
-            flex: 1;
-            padding: 6px 10px;
+            flex: 1 1 auto;
+            min-width: 0;
+            padding: 4.5px 8px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 500;
@@ -1076,16 +1101,34 @@
             text-align: center;
             transition: all 0.15s ease;
             white-space: nowrap;
-            flex-shrink: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
         }
         .btn-act:hover {
+            background: var(--surface);
+            border-color: var(--border-focus);
+        }
+        .btn-act.btn-wake {
+            background: var(--accent-soft);
+            color: var(--accent-terracotta);
+            border-color: rgba(204, 120, 92, 0.3);
+            font-weight: 600;
+        }
+        .btn-act.btn-wake:hover {
             background: var(--accent-terracotta);
-            border-color: var(--accent-terracotta);
             color: #fff;
+            border-color: var(--accent-terracotta);
+        }
+        .btn-act.btn-mute {
+            color: var(--ink-muted);
+            border-color: transparent;
+            background: transparent;
+        }
+        .btn-act.btn-mute:hover {
+            background: var(--surface-subtle);
+            color: var(--ink-secondary);
         }
         .btn-act.btn-wake {
             background: var(--accent-soft);
@@ -1387,73 +1430,127 @@
             padding-right: 4px;
         }
 
-        /* ================= RESPONSIVE ADAPTATIONS FOR DSH & RESIZED WINDOWS ================= */
-        @media (max-width: 960px) {
+        /* Top Bento Flex Balance & Elimination of Dead Blank Space */
+        .top-bento-row > div:nth-child(2) {
+            display: flex;
+            flex-direction: column;
+        }
+        .top-bento-row > div:nth-child(2) .weight-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+        .bento-asset-footer {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 11px;
+            color: var(--ink-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ================= FLUID & ROCK-SOLID RESPONSIVE ADAPTATIONS ================= */
+        @media (max-width: 768px) {
             .top-bento-row {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            .stats-2x2 {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 8px;
-            }
-            .dual-row {
                 grid-template-columns: 1fr;
                 gap: 14px;
             }
+            .recent-books-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 8px;
+            }
+            .drawer {
+                width: min(540px, 94vw);
+            }
         }
 
-        @media (max-width: 780px) {
-            .companion-row {
+        @media (max-width: 700px) {
+            .dual-row {
                 grid-template-columns: 1fr;
                 gap: 12px;
+            }
+            .companion-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
             .concept-grid {
                 grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .stats-2x2 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .recent-books-grid {
-                grid-template-columns: 1fr;
-            }
-            .drawer {
-                width: min(520px, 92vw);
-            }
-        }
-
-        @media (max-width: 640px) {
-            .export-modal-footer {
-                flex-direction: column;
-                align-items: stretch;
                 gap: 10px;
             }
-            .export-modal-hint {
-                text-align: center;
+            .concept-featured-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
-            .export-modal-actions {
-                justify-content: flex-end;
+            .cfb-lead {
+                min-width: 0;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: baseline;
+            }
+            .cfb-quote {
+                padding-left: 0;
+                border-left: none;
+                padding-top: 6px;
+                border-top: 1px dashed var(--border-main);
+                width: 100%;
+            }
+            .brand-greeting {
+                display: none;
             }
         }
 
         @media (max-width: 520px) {
             body {
-                padding: 16px 12px;
+                padding: 12px 10px;
             }
-            .card {
-                padding: 16px 16px;
+            .card, .spotlight-card, .spark-bookmark-card, .unread-deck-card {
+                padding: 14px 12px;
             }
             .spotlight-card {
-                padding: 16px;
-                gap: 14px;
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 10px;
             }
-            .standard-book-icon {
-                width: 36px;
-                height: 50px;
-                font-size: 14px;
+            .spotlight-quote {
+                font-size: 12.5px;
+            }
+            .search-pill {
+                max-width: 130px;
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            .quiet-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .quiet-footer > button {
+                align-self: flex-end;
+            }
+            .spark-source-text {
+                max-width: 100%;
+            }
+            .unread-actions {
+                flex-wrap: wrap;
+            }
+            .heat-footer {
+                flex-direction: column;
+                gap: 6px;
+                align-items: flex-start;
+            }
+            .export-modal-footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .export-modal-actions {
+                justify-content: flex-end;
             }
         }
     </style>
@@ -1537,11 +1634,11 @@
                 <div class="stats-2x2">
                     <div class="stat-subcell">
                         <div class="stat-k">总藏书量</div>
-                        <div class="stat-v"><span id="statTotalBooks">391</span> <span>本</span></div>
+                        <div class="stat-v"><span id="statTotalBooks">400</span> <span>本</span></div>
                     </div>
                     <div class="stat-subcell">
                         <div class="stat-k">近一月下载</div>
-                        <div class="stat-v"><span id="statDownloads30d">12</span> <span>本</span></div>
+                        <div class="stat-v"><span id="statDownloads30d">21</span> <span>本</span></div>
                     </div>
                     <div class="stat-subcell">
                         <div class="stat-k">转化率</div>
@@ -1596,6 +1693,12 @@
                         </div>
                     </div>
         
+                </div>
+
+                <!-- 资产深度沉淀摘要 (Pin to bottom) -->
+                <div class="bento-asset-footer">
+                    <span>深度沉淀领域：底层思维与方法</span>
+                    <span style="color:var(--accent-terracotta); font-weight:500;">36.1 划线/本</span>
                 </div>
             </div>
 
@@ -1713,46 +1816,39 @@
 
         <!-- ================= 4. DUAL PRACTICAL CARDS ================= -->
         <div class="dual-row">
-            <!-- 4.1 每日灵光书签 (3D Flip Bookmark) -->
+            <!-- 4.1 每日灵光书签 (Lightweight Fade-in Bookmark) -->
             <div class="spark-bookmark-card" id="sparkCard">
-                <div class="spark-card-front" id="sparkFront">
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span class="quiet-label" id="sparkTag">✨ 灵光书签 · 今日偶遇</span>
-                            <span class="spark-flip-hint" onclick="flipDailySpark()" title="翻牌抽取下一条灵光">抽一张 🎴</span>
-                        </div>
-                        <div class="quiet-quote serif" id="sparkText">
-                            “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
-                        </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span class="quiet-label" id="sparkTag">✨ 灵光书签 · 今日偶遇</span>
+                    <span class="spark-flip-hint" onclick="flipDailySpark()" title="点击偶遇下一条灵光">换一条 ↺</span>
+                </div>
+                <div class="spark-quote-wrap" id="sparkQuoteWrap">
+                    <div class="quiet-quote serif" id="sparkText">
+                        “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
                     </div>
-                    <div class="quiet-footer">
-                        <span id="sparkSource">《金剛經白話講座》· 王思迅</span>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <button class="dsh-btn" onclick="askDshCurrentSpark()">✨ 联动 DSH 探讨</button>
-                            <span class="quiet-link" onclick="flipDailySpark()">换一条 ↺</span>
-                        </div>
-                    </div>
+                </div>
+                <div class="quiet-footer">
+                    <span class="spark-source-text" id="sparkSource" title="《金剛經白話講座》· 王思迅">《金剛經白話講座》· 王思迅</span>
+                    <button class="dsh-btn" onclick="askDshCurrentSpark()" title="发送当前灵光至 DSH 对话框进行深度探讨">✨ 联动探讨</button>
                 </div>
             </div>
 
-            <!-- 4.2 沉睡之书 · 待唤醒 (Card Deck Stack & Swipe) -->
+            <!-- 4.2 沉睡之书 · 待唤醒 (Card Deck Stack) -->
             <div class="unread-deck-card" id="unreadDeckCard">
-                <div class="unread-card-layer-front" id="unreadFront">
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span class="quiet-label" style="color:var(--ink-muted);">沉睡之书 · 待唤醒</span>
-                            <span class="unread-shuffle-hint" onclick="shuffleUnreadDeck()" title="切牌换一本">切牌 ↺</span>
-                        </div>
-                        <div class="unread-title" id="unreadTitle">《也无风雨也无晴》</div>
-                        <div class="unread-desc" id="unreadDesc">
-                            PDF 格式 · 下载沉睡中，待开启深度阅读。
-                        </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span class="quiet-label" style="color:var(--ink-muted);">沉睡之书 · 待唤醒</span>
+                    <span class="unread-shuffle-hint" onclick="shuffleUnreadDeck()" title="换一本沉睡书籍">换一本 ↺</span>
+                </div>
+                <div class="unread-body-wrap" id="unreadContentWrap">
+                    <div class="unread-title" id="unreadTitle" title="《也无风雨也无晴》">《也无风雨也无晴》</div>
+                    <div class="unread-desc" id="unreadDesc">
+                        PDF 格式 · 下载沉睡中，待开启深度阅读。
                     </div>
-                    <div class="unread-actions">
-                        <button class="btn-act btn-wake" onclick="wakeUnreadBook()">✨ 唤醒研读</button>
-                        <button class="btn-act" onclick="quickSkim()">📖 速览10分</button>
-                        <button class="btn-act btn-mute" onclick="markAsRead()">已读过</button>
-                    </div>
+                </div>
+                <div class="unread-actions">
+                    <button class="btn-act btn-wake" onclick="wakeUnreadBook()">✨ 唤醒研读</button>
+                    <button class="btn-act" onclick="quickSkim()">📖 速览10分</button>
+                    <button class="btn-act btn-mute" onclick="markAsRead()">已读过</button>
                 </div>
             </div>
         </div>
@@ -2162,7 +2258,7 @@ ${quotesText}
         }
 
         // --- Daily Spark Cycle ---
-        // --- 4.1 Daily Spark Bookmark (3D Flip & Shimmer) ---
+        // --- 4.1 Daily Spark Bookmark (Lightweight Fade-in) ---
         let sparkIdx = 0;
         let isFlippingSpark = false;
 
@@ -2172,8 +2268,8 @@ ${quotesText}
             if (!sparks.length) return;
 
             isFlippingSpark = true;
-            const front = document.getElementById('sparkFront');
-            if (front) front.classList.add('flipping');
+            const wrap = document.getElementById('sparkQuoteWrap');
+            if (wrap) wrap.classList.add('fading');
 
             setTimeout(() => {
                 sparkIdx = (sparkIdx + 1) % sparks.length;
@@ -2182,11 +2278,14 @@ ${quotesText}
                 const elSource = document.getElementById('sparkSource');
                 const elTag = document.getElementById('sparkTag');
                 if (elText) elText.innerText = '“' + sp.quote + '”';
-                if (elSource) elSource.innerText = '《' + sp.book + '》· ' + sp.author;
+                if (elSource) {
+                    elSource.innerText = '《' + sp.book + '》· ' + sp.author;
+                    elSource.title = '《' + sp.book + '》· ' + sp.author;
+                }
                 if (elTag) elTag.innerText = `✨ 灵光书签 · 今日偶遇 #${sparkIdx + 1}`;
-                if (front) front.classList.remove('flipping');
-                setTimeout(() => { isFlippingSpark = false; }, 260);
-            }, 200);
+                if (wrap) wrap.classList.remove('fading');
+                setTimeout(() => { isFlippingSpark = false; }, 180);
+            }, 150);
         }
 
         function nextSpark() {
@@ -2214,6 +2313,7 @@ ${quotesText}
             currentUnreadIdx = currentUnreadIdx % activeList.length;
             const b = activeList[currentUnreadIdx];
             document.getElementById('unreadTitle').innerText = '《' + b.title + '》';
+            document.getElementById('unreadTitle').title = '《' + b.title + '》';
             document.getElementById('unreadDesc').innerText = `${b.ext || 'EPUB'} 格式 · 下载沉睡中，待开启深度阅读与划线记录。`;
             const actions = document.querySelector('.unread-actions');
             if (actions) actions.style.display = 'flex';
@@ -2223,15 +2323,15 @@ ${quotesText}
             const activeList = getActiveUnreadList();
             if (!activeList.length || isShufflingDeck) return;
             isShufflingDeck = true;
-            const front = document.getElementById('unreadFront');
-            if (front) front.classList.add('swiping');
+            const wrap = document.getElementById('unreadContentWrap');
+            if (wrap) wrap.classList.add('fading');
 
             setTimeout(() => {
                 currentUnreadIdx = (currentUnreadIdx + 1) % activeList.length;
                 renderUnreadSuggestion();
-                if (front) front.classList.remove('swiping');
-                setTimeout(() => { isShufflingDeck = false; }, 260);
-            }, 200);
+                if (wrap) wrap.classList.remove('fading');
+                setTimeout(() => { isShufflingDeck = false; }, 180);
+            }, 150);
         }
 
         function wakeUnreadBook() {
@@ -2708,6 +2808,13 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         renderConceptPills();
         renderConceptGrid();
         renderUnreadSuggestion();
+
+        if (document.getElementById('statTotalBooks') && DATA.inventory) {
+            document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
+            document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
+            document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
+            document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
+        }
 
         // 自动拉取本地最新阅读数据（优先从本地静态缓存获取，次选 API）
         fetch('/reading-os/data.local.json', { cache: 'no-store' })
