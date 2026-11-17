@@ -188,7 +188,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        .card, .top-bento-row > div, .spotlight-card, .companion-card, .concept-card, .quiet-card {
+        .card, .top-bento-row > div, .spotlight-card, .companion-card, .quiet-card {
             min-width: 0;
             overflow: hidden;
         }
@@ -665,7 +665,8 @@
             font-weight: 500;
             color: var(--accent-terracotta);
             cursor: pointer;
-            padding: 3px 9px;
+            padding: 4px 10px;
+            line-height: 1.2;
             border-radius: 14px;
             background: var(--surface-subtle);
             border: 1px solid var(--border-main);
@@ -693,8 +694,13 @@
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 4px;
-            margin-bottom: 12px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            padding-left: 2px;
+            padding-right: 2px;
+            margin-top: -4px;
+            margin-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
         }
         .concept-pill {
             background: var(--surface);
@@ -787,14 +793,16 @@
             opacity: 0;
             overflow: hidden;
             pointer-events: none;
-            transition: max-height 0.4s var(--spring-ease), opacity 0.3s ease, margin-top 0.3s ease;
+            transition: max-height 0.4s var(--spring-ease), opacity 0.3s ease, margin-top 0.3s ease, padding 0.3s ease;
             margin-top: 0;
+            padding: 0 6px;
         }
         .concept-grid-wrap.expanded {
-            max-height: 480px;
+            max-height: 520px;
             opacity: 1;
             pointer-events: auto;
-            margin-top: 12px;
+            margin-top: 4px;
+            padding: 8px 6px 14px 6px;
         }
 
         .concept-grid {
@@ -811,6 +819,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            min-width: 0;
             transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
         }
         .concept-card:hover {
@@ -2580,6 +2589,9 @@ ${quotesText}
             const icon = document.getElementById('conceptExpandIcon');
             const text = document.getElementById('conceptExpandText');
             if (wrap) {
+                if (!isConceptExpanded) {
+                    wrap.style.overflow = 'hidden';
+                }
                 wrap.classList.toggle('expanded', isConceptExpanded);
             }
             if (icon) {
@@ -2588,6 +2600,15 @@ ${quotesText}
             if (text) {
                 text.innerText = isConceptExpanded ? '收起对比' : '展开 3 本对比';
             }
+        }
+
+        const conceptGridWrapEl = document.getElementById('conceptGridWrap');
+        if (conceptGridWrapEl) {
+            conceptGridWrapEl.addEventListener('transitionend', () => {
+                if (isConceptExpanded) {
+                    conceptGridWrapEl.style.overflow = 'visible';
+                }
+            });
         }
 
         function renderConceptGrid() {
