@@ -8,43 +8,51 @@
         :root[data-theme="cream"] {
             --canvas: #FAF9F5;
             --surface: #FFFFFF;
-            --surface-subtle: #F3F1EC;
-            --border-main: #E8E5DF;
-            --border-hover: #D6D2C8;
+            --surface-subtle: #F5F3EE;
+            --border-main: rgba(214, 208, 198, 0.65);
+            --border-hover: #CC785C;
             --ink-primary: #2B2825;
             --ink-secondary: #57534D;
             --ink-muted: #827E76;
             --ink-dim: #AEA9A0;
             --accent-terracotta: #CC785C;
             --accent-terracotta-hover: #B8674D;
+            --accent-soft: rgba(204, 120, 92, 0.08);
             --heat-0: #EDE9E1;
             --heat-1: #F4DBD2;
             --heat-2: #E8B09F;
             --heat-3: #D97757;
             --heat-4: #B8583E;
-            --card-shadow: 0 1px 3px rgba(45, 38, 30, 0.04), 0 4px 12px rgba(45, 38, 30, 0.02);
+            --card-shadow: 0 1px 3px rgba(45, 38, 30, 0.03), 0 4px 14px rgba(45, 38, 30, 0.02);
+            --card-shadow-hover: 0 6px 20px rgba(45, 38, 30, 0.06), 0 2px 6px rgba(45, 38, 30, 0.03);
             --drawer-shadow: -12px 0 40px rgba(35, 28, 20, 0.08);
+            --spring-ease: cubic-bezier(0.16, 1, 0.3, 1);
+            --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         :root[data-theme="dark"] {
             --canvas: #181716;
             --surface: #22211F;
             --surface-subtle: #2A2926;
-            --border-main: #363430;
-            --border-hover: #4C4944;
+            --border-main: rgba(255, 255, 255, 0.08);
+            --border-hover: #D97757;
             --ink-primary: #F5F4EF;
             --ink-secondary: #C8C5BC;
             --ink-muted: #949086;
             --ink-dim: #636058;
             --accent-terracotta: #D97757;
             --accent-terracotta-hover: #E2886A;
+            --accent-soft: rgba(217, 119, 87, 0.12);
             --heat-0: #262522;
             --heat-1: #472B25;
             --heat-2: #7D4336;
             --heat-3: #B85D47;
             --heat-4: #D97757;
             --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            --card-shadow-hover: 0 6px 22px rgba(0, 0, 0, 0.45);
             --drawer-shadow: -12px 0 40px rgba(0, 0, 0, 0.55);
+            --spring-ease: cubic-bezier(0.16, 1, 0.3, 1);
+            --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         * {
@@ -98,6 +106,15 @@
             height: 7px;
             border-radius: 50%;
             background: var(--accent-terracotta);
+        }
+        .brand-greeting {
+            font-size: 11.5px;
+            font-weight: 400;
+            color: var(--ink-dim);
+            margin-left: 6px;
+            letter-spacing: 0.2px;
+            user-select: none;
+            transition: color 0.3s ease;
         }
 
         .header-tools {
@@ -437,7 +454,7 @@
         /* ================= 2. CURRENTLY READING ================= */
         .spotlight-card {
             background: var(--surface);
-            border: 1px solid var(--border-main);
+            border: 1px solid rgba(204, 120, 92, 0.35);
             border-radius: 14px;
             padding: 20px 24px;
             display: flex;
@@ -446,11 +463,23 @@
             cursor: pointer;
             margin-bottom: 20px;
             box-shadow: var(--card-shadow);
-            transition: all 0.2s ease;
+            transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.25s ease;
+            animation: breathingGlow 5s ease-in-out infinite;
         }
         .spotlight-card:hover {
             border-color: var(--accent-terracotta);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        @keyframes breathingGlow {
+            0%, 100% {
+                box-shadow: 0 2px 10px rgba(204, 120, 92, 0.08), 0 1px 3px rgba(45, 38, 30, 0.02);
+                border-color: rgba(204, 120, 92, 0.3);
+            }
+            50% {
+                box-shadow: 0 6px 24px rgba(204, 120, 92, 0.16), 0 2px 6px rgba(45, 38, 30, 0.04);
+                border-color: rgba(204, 120, 92, 0.7);
+            }
         }
         .apple-books-app-icon {
             width: 52px;
@@ -566,11 +595,15 @@
             flex-direction: column;
             justify-content: space-between;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
         }
         .companion-card:hover {
             border-color: var(--accent-terracotta);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .companion-card:active {
+            transform: translateY(0) scale(0.995);
         }
         .c-title {
             font-size: 13.5px;
@@ -607,6 +640,35 @@
         .concept-section {
             margin-bottom: 22px;
         }
+        .concept-expand-btn {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--accent-terracotta);
+            cursor: pointer;
+            padding: 3px 9px;
+            border-radius: 14px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-main);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            user-select: none;
+            transition: all 0.2s var(--spring-ease);
+        }
+        .concept-expand-btn:hover {
+            border-color: var(--accent-terracotta);
+            background: var(--surface);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .expand-icon {
+            display: inline-block;
+            font-size: 9px;
+            transition: transform 0.3s var(--spring-ease);
+        }
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+
         .concept-pills {
             display: flex;
             gap: 8px;
@@ -626,12 +688,16 @@
             align-items: center;
             gap: 5px;
             white-space: nowrap;
-            transition: all 0.15s ease;
+            transition: transform 0.2s var(--spring-ease), border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
             box-shadow: var(--card-shadow);
         }
         .concept-pill:hover {
             border-color: var(--accent-terracotta);
             color: var(--ink-primary);
+            transform: translateY(-1px);
+        }
+        .concept-pill:active {
+            transform: translateY(0) scale(0.98);
         }
         .concept-pill.active {
             background: var(--accent-terracotta);
@@ -645,6 +711,70 @@
         .pill-cnt {
             font-size: 10px;
             color: var(--ink-muted);
+        }
+
+        /* Featured Resonance Banner (Default compact view for progressive disclosure) */
+        .concept-featured-banner {
+            background: var(--surface);
+            border: 1px solid var(--border-main);
+            border-radius: 12px;
+            padding: 14px 18px;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: transform 0.25s var(--spring-ease), box-shadow 0.25s var(--spring-ease), border-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .concept-featured-banner:hover {
+            border-color: var(--accent-terracotta);
+            transform: translateY(-1px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .cfb-lead {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+        .cfb-badge {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--accent-terracotta);
+            letter-spacing: 0.2px;
+        }
+        .cfb-source {
+            font-size: 11px;
+            color: var(--ink-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cfb-quote {
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: var(--ink-secondary);
+            flex: 1;
+            padding-left: 14px;
+            border-left: 2px solid var(--border-main);
+            margin: 0;
+        }
+
+        .concept-grid-wrap {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+            transition: max-height 0.4s var(--spring-ease), opacity 0.3s ease, margin-top 0.3s ease;
+            margin-top: 0;
+        }
+        .concept-grid-wrap.expanded {
+            max-height: 480px;
+            opacity: 1;
+            pointer-events: auto;
+            margin-top: 12px;
         }
 
         .concept-grid {
@@ -661,11 +791,15 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.2s ease;
+            transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
         }
         .concept-card:hover {
             border-color: var(--accent-terracotta);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .concept-card:active {
+            transform: translateY(0) scale(0.995);
         }
         .cc-head {
             display: flex;
@@ -753,27 +887,79 @@
             gap: 16px;
             margin-bottom: 24px;
         }
-        .quiet-card {
+
+        /* 4.1 每日灵光书签 (3D Flip Bookmark) */
+        .spark-bookmark-card {
             background: var(--surface);
             border: 1px solid var(--border-main);
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 18px 22px;
             box-shadow: var(--card-shadow);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            perspective: 800px;
+            transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
         }
+        .spark-bookmark-card:hover {
+            border-color: var(--accent-terracotta);
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .spark-bookmark-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--accent-terracotta);
+            opacity: 0.85;
+            border-radius: 4px 0 0 4px;
+        }
+        .spark-card-front {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            transition: transform 0.22s var(--spring-ease), opacity 0.2s ease;
+            transform-origin: center center;
+        }
+        .spark-card-front.flipping {
+            transform: rotateY(90deg) scale(0.96);
+            opacity: 0.25;
+        }
+        .spark-flip-hint {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--accent-terracotta);
+            cursor: pointer;
+            padding: 2px 9px;
+            border-radius: 12px;
+            background: var(--accent-soft);
+            transition: all 0.15s ease;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .spark-flip-hint:hover {
+            background: var(--accent-terracotta);
+            color: #fff;
+        }
+
         .quiet-label {
             font-size: 11.5px;
             font-weight: 600;
             color: var(--accent-terracotta);
-            margin-bottom: 8px;
         }
         .quiet-quote {
             font-size: 14px;
             line-height: 1.6;
             color: var(--ink-primary);
-            margin-bottom: 10px;
+            margin: 10px 0;
         }
         .quiet-footer {
             display: flex;
@@ -789,14 +975,83 @@
             text-decoration: none;
             cursor: pointer;
             font-weight: 500;
+            transition: opacity 0.15s ease;
         }
-        .quiet-link:hover { text-decoration: underline; }
+        .quiet-link:hover { opacity: 0.8; }
 
+        /* 4.2 沉睡之书 · 待唤醒 (Card Deck Stack & Swipe) */
+        .unread-deck-card {
+            background: var(--surface);
+            border: 1px solid var(--border-main);
+            border-radius: 14px;
+            padding: 18px 22px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            transition: transform 0.28s var(--spring-ease), box-shadow 0.28s var(--spring-ease), border-color 0.2s ease;
+        }
+        .unread-deck-card:hover {
+            border-color: var(--accent-terracotta);
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .unread-deck-card::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 8px;
+            right: 8px;
+            height: 10px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-main);
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0.65;
+            transition: all 0.25s ease;
+        }
+        .unread-deck-card:hover::after {
+            bottom: -7px;
+            opacity: 0.85;
+        }
+        .unread-card-layer-front {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            transition: transform 0.25s var(--spring-ease), opacity 0.2s ease;
+            transform-origin: bottom center;
+        }
+        .unread-card-layer-front.swiping {
+            transform: translateX(45px) rotate(4deg);
+            opacity: 0;
+        }
+        .unread-shuffle-hint {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-main);
+            transition: all 0.15s ease;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .unread-shuffle-hint:hover {
+            border-color: var(--accent-terracotta);
+            color: var(--accent-terracotta);
+            background: var(--surface);
+        }
         .unread-title {
             font-size: 14px;
             font-weight: 600;
             color: var(--ink-primary);
-            margin-bottom: 4px;
+            margin: 6px 0 3px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .unread-desc {
             font-size: 11.5px;
@@ -832,8 +1087,21 @@
             border-color: var(--accent-terracotta);
             color: #fff;
         }
+        .btn-act.btn-wake {
+            background: var(--accent-soft);
+            border-color: rgba(204, 120, 92, 0.35);
+            color: var(--accent-terracotta);
+            font-weight: 600;
+        }
+        .btn-act.btn-wake:hover {
+            background: var(--accent-terracotta);
+            border-color: var(--accent-terracotta);
+            color: #fff;
+        }
         .btn-mute:hover {
             background: var(--border-main) !important;
+            color: var(--ink-muted) !important;
+        }
             color: var(--ink-primary) !important;
         }
 
@@ -1199,6 +1467,7 @@
             <div class="brand">
                 <span class="brand-dot"></span>
                 <span>ReadingOS</span>
+                <span class="brand-greeting serif" id="brandGreeting">晨光初起 · 静心翻阅</span>
             </div>
 
             <div class="header-tools">
@@ -1414,48 +1683,76 @@
                     <span>跨书主题网络</span>
                     <span style="font-size:11px; font-weight:400; color:var(--ink-muted);">跨越 80+ 本书的思想共鸣</span>
                 </div>
-                <span style="font-size:11px; font-weight:400; color:var(--accent-terracotta);">点击主题展开跨书对比 · 支持一键联动 DSH</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="concept-expand-btn" id="conceptExpandBtn" onclick="toggleConceptExpansion()">
+                        <span id="conceptExpandText">展开 3 本对比</span>
+                        <span id="conceptExpandIcon" class="expand-icon">▾</span>
+                    </span>
+                </div>
             </div>
 
             <!-- Concept Selector Pills -->
             <div class="concept-pills" id="conceptPills"></div>
 
-            <!-- Concept Comparison Grid (3 columns) -->
-            <div class="concept-grid" id="conceptGrid"></div>
+            <!-- Featured Resonance Banner (Compact default view) -->
+            <div class="concept-featured-banner" id="conceptFeaturedBanner" onclick="toggleConceptExpansion()">
+                <div class="cfb-lead">
+                    <span class="cfb-badge" id="cfbBadge">放下与破执 · 共鸣金句</span>
+                    <span class="cfb-source" id="cfbSource">《金剛經白話講座》· 王思迅</span>
+                </div>
+                <div class="cfb-quote serif" id="cfbQuote">
+                    “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
+                </div>
+            </div>
+
+            <!-- Concept Comparison Grid (3 columns, smooth expansion) -->
+            <div class="concept-grid-wrap" id="conceptGridWrap">
+                <div class="concept-grid" id="conceptGrid"></div>
+            </div>
         </div>
 
         <!-- ================= 4. DUAL PRACTICAL CARDS ================= -->
         <div class="dual-row">
-            <!-- 每日划线摘录 -->
-            <div class="quiet-card">
-                <div>
-                    <div class="quiet-label">每日划线摘录</div>
-                    <div class="quiet-quote serif" id="sparkText">
-                        “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
+            <!-- 4.1 每日灵光书签 (3D Flip Bookmark) -->
+            <div class="spark-bookmark-card" id="sparkCard">
+                <div class="spark-card-front" id="sparkFront">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="quiet-label" id="sparkTag">✨ 灵光书签 · 今日偶遇</span>
+                            <span class="spark-flip-hint" onclick="flipDailySpark()" title="翻牌抽取下一条灵光">抽一张 🎴</span>
+                        </div>
+                        <div class="quiet-quote serif" id="sparkText">
+                            “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
+                        </div>
                     </div>
-                </div>
-                <div class="quiet-footer">
-                    <span id="sparkSource">《金剛經白話講座》· 王思迅</span>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <button class="dsh-btn" onclick="askDshCurrentSpark()">✨ 联动 DSH 探讨</button>
-                        <span class="quiet-link" onclick="nextSpark()">换一条 ↺</span>
+                    <div class="quiet-footer">
+                        <span id="sparkSource">《金剛經白話講座》· 王思迅</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button class="dsh-btn" onclick="askDshCurrentSpark()">✨ 联动 DSH 探讨</button>
+                            <span class="quiet-link" onclick="flipDailySpark()">换一条 ↺</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 待读图书建议 (支持“标记为已读”) -->
-            <div class="quiet-card" id="unreadCard">
-                <div>
-                    <div class="quiet-label">待读图书建议</div>
-                    <div class="unread-title" id="unreadTitle">《人生财富靠康波》</div>
-                    <div class="unread-desc" id="unreadDesc">
-                        下载沉睡中 · 如果已通过其他阅读器读过，可直接标记为已读。
+            <!-- 4.2 沉睡之书 · 待唤醒 (Card Deck Stack & Swipe) -->
+            <div class="unread-deck-card" id="unreadDeckCard">
+                <div class="unread-card-layer-front" id="unreadFront">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="quiet-label" style="color:var(--ink-muted);">沉睡之书 · 待唤醒</span>
+                            <span class="unread-shuffle-hint" onclick="shuffleUnreadDeck()" title="切牌换一本">切牌 ↺</span>
+                        </div>
+                        <div class="unread-title" id="unreadTitle">《也无风雨也无晴》</div>
+                        <div class="unread-desc" id="unreadDesc">
+                            PDF 格式 · 下载沉睡中，待开启深度阅读。
+                        </div>
                     </div>
-                </div>
-                <div class="unread-actions">
-                    <button class="btn-act" onclick="markAsRead()">✓ 标记为已读</button>
-                    <button class="btn-act" onclick="quickSkim()">📖 速览10分钟</button>
-                    <button class="btn-act btn-mute" onclick="dismissUnread()">移出书架</button>
+                    <div class="unread-actions">
+                        <button class="btn-act btn-wake" onclick="wakeUnreadBook()">✨ 唤醒研读</button>
+                        <button class="btn-act" onclick="quickSkim()">📖 速览10分</button>
+                        <button class="btn-act btn-mute" onclick="markAsRead()">已读过</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1865,34 +2162,94 @@ ${quotesText}
         }
 
         // --- Daily Spark Cycle ---
+        // --- 4.1 Daily Spark Bookmark (3D Flip & Shimmer) ---
         let sparkIdx = 0;
-        function nextSpark() {
-            sparkIdx = (sparkIdx + 1) % DATA.sparks.length;
-            const sp = DATA.sparks[sparkIdx];
-            document.getElementById('sparkText').innerText = '“' + sp.quote + '”';
-            document.getElementById('sparkSource').innerText = '《' + sp.book + '》· ' + sp.author;
+        let isFlippingSpark = false;
+
+        function flipDailySpark() {
+            if (isFlippingSpark) return;
+            const sparks = DATA.sparks || [];
+            if (!sparks.length) return;
+
+            isFlippingSpark = true;
+            const front = document.getElementById('sparkFront');
+            if (front) front.classList.add('flipping');
+
+            setTimeout(() => {
+                sparkIdx = (sparkIdx + 1) % sparks.length;
+                const sp = sparks[sparkIdx];
+                const elText = document.getElementById('sparkText');
+                const elSource = document.getElementById('sparkSource');
+                const elTag = document.getElementById('sparkTag');
+                if (elText) elText.innerText = '“' + sp.quote + '”';
+                if (elSource) elSource.innerText = '《' + sp.book + '》· ' + sp.author;
+                if (elTag) elTag.innerText = `✨ 灵光书签 · 今日偶遇 #${sparkIdx + 1}`;
+                if (front) front.classList.remove('flipping');
+                setTimeout(() => { isFlippingSpark = false; }, 260);
+            }, 200);
         }
 
-        // --- Unread Queue with localStorage Persistence ---
+        function nextSpark() {
+            flipDailySpark();
+        }
+
+        // --- 4.2 Unread Queue with Card Deck Shuffle & Wake-up Ceremony ---
         let dismissedKeys = JSON.parse(localStorage.getItem('readingos_dismissed_books') || '[]');
         let currentUnreadIdx = 0;
+        let isShufflingDeck = false;
 
         function getActiveUnreadList() {
-            return DATA.unread_queue.filter(b => !dismissedKeys.includes(b.title));
+            return (DATA.unread_queue || []).filter(b => !dismissedKeys.includes(b.title));
         }
 
         function renderUnreadSuggestion() {
             const activeList = getActiveUnreadList();
             if (!activeList.length) {
-                document.getElementById('unreadTitle').innerText = '暂无待读建议';
-                document.getElementById('unreadDesc').innerText = '所有下载的书目已全部流转或读过。';
-                document.querySelector('.unread-actions').style.display = 'none';
+                document.getElementById('unreadTitle').innerText = '🎉 所有沉睡典籍已全被唤醒！';
+                document.getElementById('unreadDesc').innerText = '所有下载的书目已全部进入研读流或标记读过。';
+                const actions = document.querySelector('.unread-actions');
+                if (actions) actions.style.display = 'none';
                 return;
             }
             currentUnreadIdx = currentUnreadIdx % activeList.length;
             const b = activeList[currentUnreadIdx];
             document.getElementById('unreadTitle').innerText = '《' + b.title + '》';
-            document.getElementById('unreadDesc').innerText = b.ext + ' 格式 · 如果已在其他阅读器读过，可直接标记为已读。';
+            document.getElementById('unreadDesc').innerText = `${b.ext || 'EPUB'} 格式 · 下载沉睡中，待开启深度阅读与划线记录。`;
+            const actions = document.querySelector('.unread-actions');
+            if (actions) actions.style.display = 'flex';
+        }
+
+        function shuffleUnreadDeck() {
+            const activeList = getActiveUnreadList();
+            if (!activeList.length || isShufflingDeck) return;
+            isShufflingDeck = true;
+            const front = document.getElementById('unreadFront');
+            if (front) front.classList.add('swiping');
+
+            setTimeout(() => {
+                currentUnreadIdx = (currentUnreadIdx + 1) % activeList.length;
+                renderUnreadSuggestion();
+                if (front) front.classList.remove('swiping');
+                setTimeout(() => { isShufflingDeck = false; }, 260);
+            }, 200);
+        }
+
+        function wakeUnreadBook() {
+            const activeList = getActiveUnreadList();
+            if (!activeList.length) return;
+            const b = activeList[currentUnreadIdx];
+            const prompt = `【沉睡典籍研读导引】
+我刚刚在 ReadingOS 待读书架中唤醒了《${b.title}》（${b.ext || 'EPUB'}）。
+想请教你：
+1. 从第一性原理出发，这本书最核心解决的是什么认知困惑或现实痛点？
+2. 如果我今天只有 15 分钟深度速览，你应该建议我重点攻克哪一到两个核心章节？
+3. 阅读它时，最需要警惕的思维误区或常见偏见是什么？`;
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                showToast(`✨ 已唤醒《${b.title}》！已复制深度导读 Prompt，可直接与 DSH 探讨`);
+            }).catch(() => {
+                showToast(`✨ 已唤醒《${b.title}》！`);
+            });
         }
 
         function markAsRead() {
@@ -1901,25 +2258,12 @@ ${quotesText}
             const b = activeList[currentUnreadIdx];
             dismissedKeys.push(b.title);
             localStorage.setItem('readingos_dismissed_books', JSON.stringify(dismissedKeys));
-            alert('✓ 已将《' + b.title + '》标记为已读，后续不会再推荐。');
-            renderUnreadSuggestion();
-        }
-
-        function dismissUnread() {
-            const activeList = getActiveUnreadList();
-            if (!activeList.length) return;
-            const b = activeList[currentUnreadIdx];
-            dismissedKeys.push(b.title);
-            localStorage.setItem('readingos_dismissed_books', JSON.stringify(dismissedKeys));
-            alert('已将《' + b.title + '》移出待读书架。');
-            renderUnreadSuggestion();
+            showToast(`✓ 已将《${b.title}》标记为已读`);
+            shuffleUnreadDeck();
         }
 
         function quickSkim() {
-            const activeList = getActiveUnreadList();
-            if (!activeList.length) return;
-            const b = activeList[currentUnreadIdx];
-            alert('📖 开始速读《' + b.title + '》：建议花 10 分钟只看目录与结语。');
+            wakeUnreadBook();
         }
 
         // --- Enhanced Three-in-One Search & All Books Shelf ---
@@ -2130,27 +2474,59 @@ ${quotesText}
             `).join('');
         }
 
+        let isConceptExpanded = false;
+
+        function toggleConceptExpansion() {
+            isConceptExpanded = !isConceptExpanded;
+            const wrap = document.getElementById('conceptGridWrap');
+            const icon = document.getElementById('conceptExpandIcon');
+            const text = document.getElementById('conceptExpandText');
+            if (wrap) {
+                wrap.classList.toggle('expanded', isConceptExpanded);
+            }
+            if (icon) {
+                icon.classList.toggle('rotated', isConceptExpanded);
+            }
+            if (text) {
+                text.innerText = isConceptExpanded ? '收起对比' : '展开 3 本对比';
+            }
+        }
+
         function renderConceptGrid() {
             const list = DATA.concept_clusters || [];
             const activeCluster = list.find(c => c.id === currentConceptId) || list[0];
             if (!activeCluster) return;
 
+            // Update compact featured banner (Progressive Disclosure)
+            const sample1 = activeCluster.samples && activeCluster.samples[0] ? activeCluster.samples[0] : null;
+            if (sample1) {
+                const bBadge = document.getElementById('cfbBadge');
+                const bSource = document.getElementById('cfbSource');
+                const bQuote = document.getElementById('cfbQuote');
+                if (bBadge) bBadge.innerText = `${activeCluster.name} · 共鸣金句`;
+                if (bSource) bSource.innerText = `《${sample1.book}》· ${sample1.author}`;
+                if (bQuote) bQuote.innerText = `“${sample1.quote}”`;
+            }
+
+            // Render 3-column grid
             const grid = document.getElementById('conceptGrid');
-            grid.innerHTML = activeCluster.samples.map(s => `
-                <div class="concept-card">
-                    <div>
-                        <div class="cc-head">
-                            <span class="cc-book">《${s.book}》</span>
-                            <span class="cc-author">${s.author}</span>
+            if (grid) {
+                grid.innerHTML = activeCluster.samples.map(s => `
+                    <div class="concept-card">
+                        <div>
+                            <div class="cc-head">
+                                <span class="cc-book">《${s.book}》</span>
+                                <span class="cc-author">${s.author}</span>
+                            </div>
+                            <div class="cc-quote serif">“${s.quote}”</div>
                         </div>
-                        <div class="cc-quote serif">“${s.quote}”</div>
+                        <div class="cc-footer">
+                            <span style="font-size:10.5px; color:var(--ink-muted);">主题：${activeCluster.name}</span>
+                            <button class="dsh-btn" onclick="askDsh('${s.book}', '${s.author}', '${s.quote.replace(/'/g, "\\'")}', '${activeCluster.name}')">✨ 联动 DSH 探讨</button>
+                        </div>
                     </div>
-                    <div class="cc-footer">
-                        <span style="font-size:10.5px; color:var(--ink-muted);">概念：${activeCluster.name}</span>
-                        <button class="dsh-btn" onclick="askDsh('${s.book}', '${s.author}', '${s.quote.replace(/'/g, "\'")}', '${activeCluster.name}')">✨ 联动 DSH 探讨</button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
 
         function selectConcept(id) {
@@ -2298,6 +2674,25 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             }
         }
 
+        function renderAtmosphericGreeting() {
+            const el = document.getElementById('brandGreeting');
+            if (!el) return;
+            const hour = new Date().getHours();
+            let text = '静心阅读 · 思想生花';
+            if (hour >= 5 && hour < 11) {
+                text = '晨光初起 · 静心翻阅';
+            } else if (hour >= 11 && hour < 14) {
+                text = '正午小憩 · 墨香片刻';
+            } else if (hour >= 14 && hour < 18) {
+                text = '午后沉潜 · 且读且思';
+            } else if (hour >= 18 && hour < 23) {
+                text = '夜色微阑 · 思想漫步';
+            } else {
+                text = '夜深人静 · 独处时分';
+            }
+            el.innerText = text;
+        }
+
         // Init: 先尝试从本地浏览器缓存秒开（若已有73本书缓存直接呈现）
         try {
             const cached = JSON.parse(localStorage.getItem('readingos_cached_data') || 'null');
@@ -2306,6 +2701,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             }
         } catch (e) {}
 
+        renderAtmosphericGreeting();
         renderSpotlightAndCompanions();
         renderHeatmap();
         renderRecentDownloads();
