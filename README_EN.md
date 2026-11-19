@@ -130,11 +130,9 @@ This is merely one attempt tailored for a specific way of reading—it is by no 
 
 ---
 
-### Author's Note
+### In Closing
 
-This is my first independent open-source project. Rather than following established design patterns, it was born purely out of my genuine personal habit of reading, highlighting on a Mac, and wanting to revisit those thoughts easily.
-
-If you happen to share a similar reading routine, I hope it brings a touch of calm and clarity to your reading space.
+Finally, if you happen to share a similar reading routine, I hope this provides a quiet, undisturbed space for your reflection.
 
 Crafted with care by [@maikaojai](https://github.com/maikaojai)
 
