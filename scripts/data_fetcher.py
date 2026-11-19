@@ -452,6 +452,14 @@ def get_reading_os_data():
             "tsundoku_rate": "18.5%"
         },
         "dimension_weights": dimension_weights,
+        "system_info": {
+            "bklibrary_path": bklib_path,
+            "annotation_path": ann_path,
+            "downloads_dir": downloads_dir,
+            "status": "connected" if (bklib_path and ann_path) else "not_found",
+            "total_apple_books": total_apple_books,
+            "total_highlights": total_highlights_count
+        },
         "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
 

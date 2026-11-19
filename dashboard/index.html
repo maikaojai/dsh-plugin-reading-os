@@ -1351,6 +1351,19 @@
             outline: none;
         }
         .modal-input:focus { border-color: var(--accent-terracotta); }
+        .setting-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border-main);
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 12px;
+            color: var(--ink-primary);
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        .setting-input:focus { border-color: var(--accent-terracotta); }
         .modal-results {
             margin-top: 14px;
             max-height: 60vh;
@@ -1505,6 +1518,9 @@
                 <button class="sync-btn" onclick="syncReadingData()" id="syncBtn" title="同步 Apple Books 与下载目录最新数据">
                     <span id="syncIcon">🔄</span>
                     <span class="sync-text">同步</span>
+                </button>
+                <button class="theme-toggle-btn" onclick="openSettingsModal()" id="settingsBtn" title="数据源与路径设置">
+                    ⚙️
                 </button>
                 <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn" title="切换模式">
                     🌙
@@ -1854,6 +1870,72 @@
                     <button class="modal-btn" onclick="copyExportMarkdown()">📋 复制到剪贴板</button>
                     <button class="modal-btn primary" onclick="downloadExportMarkdown()">💾 下载 .md 文件</button>
                     <button class="modal-btn mute" onclick="closeExportModal()">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SETTINGS MODAL ================= -->
+    <div class="modal-scrim" id="settingsModal" onclick="closeSettingsModalOnMask(event)">
+        <div class="modal-box" style="width: 580px; max-width: 92vw; padding: 20px 22px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
+                <div style="display:flex; align-items:center; gap: 8px;">
+                    <span style="font-size: 16px;">⚙️</span>
+                    <div>
+                        <div style="font-size: 14.5px; font-weight: 700; color: var(--ink);">数据源与路径设置</div>
+                        <div style="font-size: 11px; color: var(--ink-dim); margin-top: 2px;">查看系统检测状态，或自定义图书与电子书目录</div>
+                    </div>
+                </div>
+                <button class="drawer-close" onclick="closeSettingsModal()" style="font-size: 16px;">✕</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap: 14px; font-size: 12.5px;">
+                <!-- 1. Apple Books Database Status -->
+                <div style="background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                        <span style="font-weight: 600; color: var(--ink);">📖 Apple Books 数据库</span>
+                        <span id="dbStatusBadge" style="font-size: 11px; padding: 2px 8px; border-radius: 99px; background: rgba(56, 161, 105, 0.12); color: #2f855a; font-weight: 500;">
+                            ● 已自动连接
+                        </span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.4; margin-bottom: 10px; font-family: monospace; word-break: break-all;" id="detectedDbPath">
+                        ~/Library/Containers/com.apple.iBooksX/Data/Documents
+                    </div>
+                    <div>
+                        <label style="display:block; font-size: 11.5px; color: var(--ink-muted); margin-bottom: 4px;">自定义数据库路径（留空则自动探测）：</label>
+                        <input type="text" id="customDbInput" class="setting-input" placeholder="留空默认自动探测，如：/Volumes/External/BooksDB" />
+                    </div>
+                </div>
+
+                <!-- 2. E-books Downloads Folder -->
+                <div style="background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                        <span style="font-weight: 600; color: var(--ink);">📥 电子书扫描目录</span>
+                        <span style="font-size: 11px; color: var(--ink-dim);" id="downloadsStatusText">当前：~/Downloads</span>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size: 11.5px; color: var(--ink-muted); margin-bottom: 4px;">自定义下载目录（用于统计未读与积读）：</label>
+                        <input type="text" id="customBooksDirInput" class="setting-input" placeholder="留空默认：~/Downloads，如：/Users/username/Books" />
+                    </div>
+                </div>
+
+                <!-- 3. Permission & Tips -->
+                <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.5; background: rgba(204, 120, 92, 0.06); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(204, 120, 92, 0.18);">
+                    💡 <b>系统权限排查</b>：如果列表读取为空，通常是 macOS 系统的保护拦截了沙盒访问。请在 <b>「系统设置 ➔ 隐私与安全性 ➔ 完全磁盘访问权限」</b> 中为 DeepSeek Harness 开启勾选。
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-subtle);">
+                <button onclick="resetSettingsToDefault()" style="background:none; border:none; font-size:12px; color:var(--ink-dim); cursor:pointer; text-decoration:underline;">
+                    恢复默认检测
+                </button>
+                <div style="display:flex; gap: 8px;">
+                    <button class="dsh-btn" onclick="closeSettingsModal()" style="padding: 5px 12px; background: var(--surface-subtle); color: var(--ink); border: 1px solid var(--border-subtle);">
+                        取消
+                    </button>
+                    <button class="dsh-btn" onclick="saveSettingsAndSync()" style="padding: 5px 14px; background: var(--accent-terracotta); color: #fff; border: none; font-weight: 500;">
+                        保存并同步
+                    </button>
                 </div>
             </div>
         </div>
@@ -2696,13 +2778,65 @@ ${topic ? `讨论切入：${topic}\n` : ''}
 
 
 
+        function openSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            if (!modal) return;
+            const savedDb = localStorage.getItem('reading_os_custom_db') || '';
+            const savedBooks = localStorage.getItem('reading_os_custom_books') || '';
+            document.getElementById('customDbInput').value = savedDb;
+            document.getElementById('customBooksDirInput').value = savedBooks;
+            modal.classList.add('active');
+        }
+
+        function closeSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function closeSettingsModalOnMask(e) {
+            if (e.target.id === 'settingsModal') closeSettingsModal();
+        }
+
+        function resetSettingsToDefault() {
+            localStorage.removeItem('reading_os_custom_db');
+            localStorage.removeItem('reading_os_custom_books');
+            document.getElementById('customDbInput').value = '';
+            document.getElementById('customBooksDirInput').value = '';
+            showToast('已重置为默认自动探测设置');
+        }
+
+        async function saveSettingsAndSync() {
+            const customDb = document.getElementById('customDbInput').value.trim();
+            const customBooks = document.getElementById('customBooksDirInput').value.trim();
+            if (customDb) {
+                localStorage.setItem('reading_os_custom_db', customDb);
+            } else {
+                localStorage.removeItem('reading_os_custom_db');
+            }
+            if (customBooks) {
+                localStorage.setItem('reading_os_custom_books', customBooks);
+            } else {
+                localStorage.removeItem('reading_os_custom_books');
+            }
+            closeSettingsModal();
+            await syncReadingData();
+        }
+
         async function syncReadingData() {
             const btn = document.getElementById('syncBtn');
             btn.classList.add('spinning');
             showToast('⏳ 正在从图书 App 和下载目录同步最新数据...');
 
+            const savedDb = localStorage.getItem('reading_os_custom_db') || '';
+            const savedBooks = localStorage.getItem('reading_os_custom_books') || '';
+            let url = '/reading-os/api/sync';
+            const params = new URLSearchParams();
+            if (savedDb) params.set('customDb', savedDb);
+            if (savedBooks) params.set('booksDir', savedBooks);
+            if (params.toString()) url += '?' + params.toString();
+
             try {
-                const res = await fetch('/reading-os/api/sync', { cache: 'no-store' });
+                const res = await fetch(url, { cache: 'no-store' });
                 if (res.ok) {
                     const fresh = await res.json();
                     if (!fresh.error) {
@@ -2840,6 +2974,28 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             }
             if (document.getElementById('recentConversionRate') && DATA.inventory) {
                 document.getElementById('recentConversionRate').innerText = DATA.inventory.conversion_rate || '81.5%';
+            }
+            if (fresh.system_info) {
+                const pEl = document.getElementById('detectedDbPath');
+                if (pEl && fresh.system_info.bklibrary_path) {
+                    pEl.innerText = fresh.system_info.bklibrary_path;
+                }
+                const badge = document.getElementById('dbStatusBadge');
+                if (badge) {
+                    if (fresh.system_info.status === 'connected') {
+                        badge.innerText = '● 已自动连接';
+                        badge.style.color = '#2f855a';
+                        badge.style.background = 'rgba(56, 161, 105, 0.12)';
+                    } else {
+                        badge.innerText = '⚠️ 未找到数据库';
+                        badge.style.color = '#c53030';
+                        badge.style.background = 'rgba(229, 62, 62, 0.12)';
+                    }
+                }
+                const dEl = document.getElementById('downloadsStatusText');
+                if (dEl && fresh.system_info.downloads_dir) {
+                    dEl.innerText = '当前：' + fresh.system_info.downloads_dir;
+                }
             }
         }
 
