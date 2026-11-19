@@ -83,6 +83,19 @@ Two lightweight cards at the bottom: **Spark Bookmark** surfaces a random past h
 
 ---
 
+#### 6. One-Click DeepSeek Discussion Bridge
+In day-to-day reading, discussing a highlighted passage with AI usually requires: selecting and copying text in Apple Books ➔ switching to the AI chat app ➔ pasting ➔ manually stripping out the system-appended copyright disclaimer ➔ sending the prompt.
+
+ReadingOS streamlines this into a single click:
+- **Zero Copy-Paste**: Click **`✨ 联动探讨`** from any highlight drawer or serendipity card to pass the book title, author, and clean quote directly into the DeepSeek Harness chat window.
+- **Flexible Prompt Preferences**: In the top-right `⚙️` settings, choose between the default structured deep-dive guide, a minimal **"Raw Quote Only (No Prompt)"** mode that leaves full freedom to your own words, or a custom prompt template.
+
+<p align="center">
+  <img src="assets/06-dsh-bridge.gif" width="92%" alt="One-Click DeepSeek Discussion Bridge" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
+</p>
+
+---
+
 ### Suitable Habits & Scope
 
 This is merely one attempt tailored for a specific way of reading—it is by no means a one-size-fits-all solution. Before installing, please check if it fits your daily routine:
