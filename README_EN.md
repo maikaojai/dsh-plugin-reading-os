@@ -31,7 +31,6 @@ In practice, this specific reading habit often encounters several subtle frictio
 - **Exporting is inconvenient**: Native sharing typically requires emailing quotes to oneself and manually piecing notes together paragraph by paragraph.
 - **Switching contexts with AI models is cumbersome**: Quoting a resonant sentence to explore deeper with an AI model requires constant window switching and manual copy-pasting.
 
-**This plugin is not a monolithic all-in-one system; it is simply a quiet, personal companion tailored for this specific habit.**  
 It runs unobtrusively in the DeepSeek Harness sidebar, reads local data directly, and provides a calm, peaceful interface to browse your reading thoughts.
 
 ---
