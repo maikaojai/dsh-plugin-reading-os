@@ -1425,6 +1425,238 @@
             accent-color: var(--accent-terracotta);
             cursor: pointer;
         }
+
+        /* Preferences Modal (Minimalist & Calm) */
+        .pref-modal-box {
+            width: 460px;
+            max-width: 92vw;
+            max-height: 86vh;
+            overflow-y: auto;
+            padding: 22px 24px;
+            background: var(--surface);
+            border: 1px solid var(--border-main);
+            border-radius: 14px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+        }
+        .pref-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+        .pref-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink-primary);
+            line-height: 1.2;
+        }
+        .pref-subtitle {
+            font-size: 11.5px;
+            color: var(--ink-muted);
+            margin-top: 4px;
+        }
+        .pref-section {
+            margin-bottom: 18px;
+        }
+        .pref-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink-primary);
+            margin-bottom: 9px;
+            letter-spacing: 0.2px;
+        }
+        .pref-options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .pref-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border-main);
+            border-radius: 9px;
+            padding: 9px 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .pref-option:hover {
+            border-color: var(--border-hover);
+        }
+        .pref-option.selected {
+            border-color: var(--accent-terracotta);
+            background: var(--accent-soft);
+        }
+        .pref-option input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid var(--ink-dim);
+            border-radius: 50%;
+            margin-top: 2px;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            outline: none;
+        }
+        .pref-option input[type="radio"]::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            transform: scale(0);
+            transition: 0.12s transform ease-in-out;
+            background: var(--accent-terracotta);
+        }
+        .pref-option input[type="radio"]:checked {
+            border-color: var(--accent-terracotta);
+        }
+        .pref-option input[type="radio"]:checked::before {
+            transform: scale(1);
+        }
+        .pref-option-body {
+            flex: 1;
+        }
+        .pref-option-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pref-option-name {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--ink-primary);
+        }
+        .pref-badge-recommend {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--accent-terracotta);
+            background: rgba(204, 120, 92, 0.12);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+        .pref-option-desc {
+            font-size: 11px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+            line-height: 1.35;
+        }
+        .pref-sync-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .pref-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-secondary);
+        }
+        .pref-status-connected {
+            font-size: 11px;
+            font-weight: 500;
+            color: #2F855A;
+            background: rgba(47, 133, 90, 0.1);
+            padding: 2px 8px;
+            border-radius: 99px;
+        }
+        .pref-status-error {
+            font-size: 11px;
+            font-weight: 500;
+            color: #C53030;
+            background: rgba(229, 62, 62, 0.1);
+            padding: 2px 8px;
+            border-radius: 99px;
+        }
+        .pref-field {
+            margin-bottom: 10px;
+        }
+        .pref-tip {
+            font-size: 11px;
+            color: var(--ink-dim);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .pref-advanced-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--ink-muted);
+            cursor: pointer;
+            user-select: none;
+            margin-top: 4px;
+            transition: color 0.15s ease;
+        }
+        .pref-advanced-toggle:hover {
+            color: var(--accent-terracotta);
+        }
+        .pref-footnote {
+            font-size: 11px;
+            color: var(--ink-dim);
+            line-height: 1.45;
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-main);
+        }
+        .pref-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-main);
+        }
+        .pref-btn-link {
+            background: none;
+            border: none;
+            font-size: 11.5px;
+            color: var(--ink-dim);
+            cursor: pointer;
+            padding: 4px 0;
+            transition: color 0.15s ease;
+        }
+        .pref-btn-link:hover {
+            color: var(--ink-secondary);
+            text-decoration: underline;
+        }
+        .pref-btn-cancel {
+            padding: 6px 14px;
+            background: var(--surface);
+            color: var(--ink-secondary);
+            border: 1px solid var(--border-main);
+            border-radius: 7px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .pref-btn-cancel:hover {
+            border-color: var(--border-hover);
+            color: var(--ink-primary);
+        }
+        .pref-btn-save {
+            padding: 6px 16px;
+            background: var(--accent-terracotta);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .pref-btn-save:hover {
+            background: var(--accent-terracotta-hover);
+        }
         .modal-results {
             margin-top: 14px;
             max-height: 60vh;
@@ -1581,10 +1813,10 @@
                     <span id="syncIcon">🔄</span>
                     <span class="sync-text">同步</span>
                 </button>
-                <button class="theme-toggle-btn" onclick="openSettingsModal()" id="settingsBtn" title="数据源与路径设置" data-tooltip="数据源设置">
+                <button class="theme-toggle-btn" onclick="openSettingsModal()" id="settingsBtn" data-tooltip="偏好设置" aria-label="偏好设置">
                     ⚙️
                 </button>
-                <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn" title="切换深色模式" data-tooltip="切换深色模式">
+                <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn" data-tooltip="切换深色模式" aria-label="切换深色模式">
                     🌙
                 </button>
             </div>
@@ -1937,116 +2169,108 @@
         </div>
     </div>
 
-    <!-- ================= SETTINGS MODAL ================= -->
+    <!-- ================= PREFERENCES MODAL ================= -->
     <div class="modal-scrim" id="settingsModal" onclick="closeSettingsModalOnMask(event)">
-        <div class="modal-box" style="width: 580px; max-width: 92vw; max-height: 85vh; overflow-y: auto; padding: 20px 22px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
-                <div style="display:flex; align-items:center; gap: 8px;">
-                    <span style="font-size: 16px;">⚙️</span>
-                    <div>
-                        <div style="font-size: 14.5px; font-weight: 700; color: var(--ink);">偏好与联动设置</div>
-                        <div style="font-size: 11px; color: var(--ink-dim); margin-top: 2px;">设置 DeepSeek 对话提示词偏好与本地数据源路径</div>
-                    </div>
+        <div class="modal-box pref-modal-box">
+            <!-- Header -->
+            <div class="pref-header">
+                <div>
+                    <div class="pref-title">偏好设置</div>
+                    <div class="pref-subtitle">按需定制探讨风格与本地书库</div>
                 </div>
-                <button class="drawer-close" onclick="closeSettingsModal()" style="font-size: 16px;">✕</button>
+                <button class="drawer-close" onclick="closeSettingsModal()" aria-label="关闭" style="font-size: 15px;">✕</button>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap: 14px; font-size: 12.5px;">
-                <!-- 1. DSH 联动提示词偏好 -->
-                <div style="background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-                        <span style="font-weight: 600; color: var(--ink);">✨ DeepSeek 对话提示词</span>
-                        <span style="font-size: 11px; color: var(--ink-dim);">点击「联动探讨」时的预设风格</span>
-                    </div>
-
-                    <div style="display:flex; flex-direction:column; gap: 7px;">
-                        <!-- Option A: 深度研读引导（默认） -->
-                        <label class="prompt-option selected" id="opt_deep">
+            <!-- Body -->
+            <div class="pref-body">
+                <!-- 1. DSH 联动探讨风格 -->
+                <div class="pref-section">
+                    <div class="pref-section-title">探讨提示词风格</div>
+                    <div class="pref-options-group">
+                        <!-- Option A: 深度研读 -->
+                        <label class="pref-option selected" id="opt_deep">
                             <input type="radio" name="promptMode" value="deep" checked onchange="handlePromptModeChange('deep')" />
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; color: var(--ink); font-size: 12px;">深度研读引导（默认）</div>
-                                <div style="font-size: 11px; color: var(--ink-dim); margin-top: 2px; line-height: 1.4;">
-                                    自动附带多维思考框架（立论前提、正反审视、现实自省），适合深挖书里观点的内涵与局限。
+                            <div class="pref-option-body">
+                                <div class="pref-option-header">
+                                    <span class="pref-option-name">深度研读</span>
+                                    <span class="pref-badge-recommend">默认推荐</span>
                                 </div>
+                                <div class="pref-option-desc">立论前提 · 正反视角 · 现实自省多维思考框架</div>
                             </div>
                         </label>
 
-                        <!-- Option B: 仅引用原句（无提示词） -->
-                        <label class="prompt-option" id="opt_raw">
+                        <!-- Option B: 原句直问 -->
+                        <label class="pref-option" id="opt_raw">
                             <input type="radio" name="promptMode" value="raw" onchange="handlePromptModeChange('raw')" />
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; color: var(--ink); font-size: 12px;">仅引用原句（无提示词 · 自由提问）</div>
-                                <div style="font-size: 11px; color: var(--ink-dim); margin-top: 2px; line-height: 1.4;">
-                                    仅发送干净的书名、作者与划线原文（自动剔除系统版权杂质），不预设问题，把思考完全留给自己。
+                            <div class="pref-option-body">
+                                <div class="pref-option-header">
+                                    <span class="pref-option-name">原句直问</span>
                                 </div>
+                                <div class="pref-option-desc">仅发送书名与划线原文，不预设问题，自由思考</div>
                             </div>
                         </label>
 
                         <!-- Option C: 自定义模板 -->
-                        <label class="prompt-option" id="opt_custom">
+                        <label class="pref-option" id="opt_custom">
                             <input type="radio" name="promptMode" value="custom" onchange="handlePromptModeChange('custom')" />
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; color: var(--ink); font-size: 12px;">自定义模板</div>
-                                <div style="font-size: 11px; color: var(--ink-dim); margin-top: 2px; line-height: 1.4;">
-                                    支持使用 <code>{book}</code>、<code>{author}</code>、<code>{quote}</code>、<code>{topic}</code> 占位符自由定制。
+                            <div class="pref-option-body">
+                                <div class="pref-option-header">
+                                    <span class="pref-option-name">自定义模板</span>
                                 </div>
+                                <div class="pref-option-desc">自由编排提示词与变量占位符</div>
                             </div>
                         </label>
 
                         <!-- Custom Prompt Textarea -->
-                        <div id="customPromptContainer" style="display: none; margin-top: 4px; padding: 10px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border-main);">
-                            <div style="font-size: 11px; color: var(--ink-muted); margin-bottom: 5px;">自定义提示词模板：</div>
-                            <textarea id="customPromptInput" class="setting-input" rows="4" style="font-family: inherit; font-size: 11.5px; line-height: 1.5; resize: vertical;" placeholder="例如：请作为读书导师，结合《{book}》· {author} 的这段划线：“{quote}”，帮我做针对性反问与思考扩展。"></textarea>
+                        <div id="customPromptContainer" style="display: none; margin-top: 4px;">
+                            <textarea id="customPromptInput" class="setting-input" rows="3" style="font-family: inherit; font-size: 11.5px; line-height: 1.5; resize: vertical;" placeholder="输入自定义模板，支持变量：{book}、{author}、{quote}、{topic}"></textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. Apple Books Database Status -->
-                <div style="background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-                        <span style="font-weight: 600; color: var(--ink);">📖 Apple Books 数据库</span>
-                        <span id="dbStatusBadge" style="font-size: 11px; padding: 2px 8px; border-radius: 99px; background: rgba(56, 161, 105, 0.12); color: #2f855a; font-weight: 500;">
-                            ● 演示模式：经典公版书架
-                        </span>
+                <!-- 2. 本地书库 -->
+                <div class="pref-section">
+                    <div class="pref-section-title">本地书库</div>
+                    
+                    <div class="pref-sync-row">
+                        <span class="pref-label">Apple Books 划线</span>
+                        <span id="dbStatusBadge" class="pref-status-connected">● 演示模式：经典公版书架</span>
                     </div>
-                    <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.4; margin-bottom: 10px; font-family: monospace; word-break: break-all;" id="detectedDbPath">
-                        ~/Library/Containers/com.apple.iBooksX/Data/Documents
+
+                    <div class="pref-field">
+                        <label class="pref-label" for="customBooksDirInput" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>电子书扫描目录</span>
+                            <span id="downloadsStatusText" style="font-size: 11px; color: var(--ink-dim); font-weight: normal;"></span>
+                        </label>
+                        <input type="text" id="customBooksDirInput" class="setting-input" style="margin-top: 5px;" placeholder="留空默认：~/Downloads" />
+                        <div class="pref-tip">用于统计未读与积读。若存放于其它文件夹或移动硬盘，可填入自定义路径。</div>
                     </div>
-                    <div>
-                        <label style="display:block; font-size: 11.5px; color: var(--ink-muted); margin-bottom: 4px;">自定义数据库路径（留空则自动探测）：</label>
-                        <input type="text" id="customDbInput" class="setting-input" placeholder="留空默认自动探测，如：/Volumes/External/BooksDB" />
+
+                    <!-- Advanced Collapse -->
+                    <div class="pref-advanced-toggle" onclick="toggleAdvancedDbSettings()">
+                        <span id="advToggleIcon" style="display: inline-block; font-size: 10px; transition: transform 0.15s ease;">▸</span> 高级数据源设置
+                    </div>
+                    <div id="advancedDbContainer" style="display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-main);">
+                        <label class="pref-label" for="customDbInput">自定义 Apple Books 数据库路径</label>
+                        <input type="text" id="customDbInput" class="setting-input" style="margin-top: 5px;" placeholder="留空默认自动探测" />
+                        <div class="pref-tip" id="detectedDbTip" style="font-size: 10.5px; color: var(--ink-dim); margin-top: 4px; word-break: break-all;">
+                            当前探测路径：<span id="detectedDbPath" style="font-family: monospace;">经典公版内置样本</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 3. E-books Downloads Folder -->
-                <div style="background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-                        <span style="font-weight: 600; color: var(--ink);">📥 电子书扫描目录</span>
-                        <span style="font-size: 11px; color: var(--ink-dim);" id="downloadsStatusText">当前：~/Downloads</span>
-                    </div>
-                    <div>
-                        <label style="display:block; font-size: 11.5px; color: var(--ink-muted); margin-bottom: 4px;">自定义下载目录（用于统计未读与积读）：</label>
-                        <input type="text" id="customBooksDirInput" class="setting-input" placeholder="留空默认：~/Downloads，如：/Users/username/Books" />
-                    </div>
-                </div>
-
-                <!-- 4. Permission & Tips -->
-                <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.5; background: rgba(204, 120, 92, 0.06); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(204, 120, 92, 0.18);">
-                    💡 <b>系统权限排查</b>：如果划线读取为空，通常是 macOS 系统的保护拦截了沙盒访问。请在 <b>「系统设置 ➔ 隐私与安全性 ➔ 完全磁盘访问权限」</b> 中为 DeepSeek Harness 开启勾选。
+                <!-- Footnote for Permission -->
+                <div class="pref-footnote">
+                    💡 划线如读取为空，可在 macOS「系统设置 ➔ 隐私与安全性 ➔ 完全磁盘访问权限」开启勾选。
                 </div>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-subtle);">
-                <button onclick="resetSettingsToDefault()" style="background:none; border:none; font-size:12px; color:var(--ink-dim); cursor:pointer; text-decoration:underline;">
-                    恢复默认检测
-                </button>
-                <div style="display:flex; gap: 8px;">
-                    <button class="dsh-btn" onclick="closeSettingsModal()" style="padding: 5px 12px; background: var(--surface-subtle); color: var(--ink); border: 1px solid var(--border-subtle);">
-                        取消
-                    </button>
-                    <button class="dsh-btn" onclick="saveSettingsAndSync()" style="padding: 5px 14px; background: var(--accent-terracotta); color: #fff; border: none; font-weight: 500;">
-                        保存并同步
-                    </button>
+            <!-- Footer -->
+            <div class="pref-footer">
+                <button type="button" class="pref-btn-link" onclick="resetSettingsToDefault()">恢复默认</button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="pref-btn-cancel" onclick="closeSettingsModal()">取消</button>
+                    <button type="button" class="pref-btn-save" onclick="saveSettingsAndSync()">保存并同步</button>
                 </div>
             </div>
         </div>
@@ -2064,14 +2288,14 @@
         // --- Theme Toggle ---
         function toggleTheme() {
             const root = document.documentElement;
-            const cur = root.getAttribute('data-theme');
+            const cur = root.getAttribute('data-theme') || 'cream';
             const next = cur === 'cream' ? 'dark' : 'cream';
             root.setAttribute('data-theme', next);
             const btn = document.getElementById('themeBtn');
             btn.innerText = next === 'cream' ? '🌙' : '☀️';
             const tip = next === 'cream' ? '切换深色模式' : '切换浅色模式';
             btn.setAttribute('data-tooltip', tip);
-            btn.title = tip;
+            btn.removeAttribute('title');
         }
 
         // --- Render 365 Days Heatmap ---
@@ -2917,12 +3141,23 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         }
 
         function handlePromptModeChange(mode) {
-            document.querySelectorAll('.prompt-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.pref-option, .prompt-option').forEach(el => el.classList.remove('selected'));
             const target = document.getElementById('opt_' + mode);
             if (target) target.classList.add('selected');
             const container = document.getElementById('customPromptContainer');
             if (container) {
                 container.style.display = (mode === 'custom') ? 'block' : 'none';
+            }
+        }
+
+        function toggleAdvancedDbSettings() {
+            const advBox = document.getElementById('advancedDbContainer');
+            const advIcon = document.getElementById('advToggleIcon');
+            if (!advBox) return;
+            const isHidden = advBox.style.display === 'none';
+            advBox.style.display = isHidden ? 'block' : 'none';
+            if (advIcon) {
+                advIcon.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
             }
         }
 
@@ -2936,6 +3171,17 @@ ${topic ? `讨论切入：${topic}\n` : ''}
 
             document.getElementById('customDbInput').value = savedDb;
             document.getElementById('customBooksDirInput').value = savedBooks;
+
+            // If there's a custom DB saved, open the advanced section so the user sees their custom value
+            const advBox = document.getElementById('advancedDbContainer');
+            const advIcon = document.getElementById('advToggleIcon');
+            if (savedDb && advBox) {
+                advBox.style.display = 'block';
+                if (advIcon) advIcon.style.transform = 'rotate(90deg)';
+            } else if (advBox) {
+                advBox.style.display = 'none';
+                if (advIcon) advIcon.style.transform = 'rotate(0deg)';
+            }
 
             const radios = document.getElementsByName('promptMode');
             for (const r of radios) {
@@ -2965,6 +3211,11 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             localStorage.removeItem('reading_os_custom_prompt');
             document.getElementById('customDbInput').value = '';
             document.getElementById('customBooksDirInput').value = '';
+            const advBox = document.getElementById('advancedDbContainer');
+            const advIcon = document.getElementById('advToggleIcon');
+            if (advBox) advBox.style.display = 'none';
+            if (advIcon) advIcon.style.transform = 'rotate(0deg)';
+
             const radios = document.getElementsByName('promptMode');
             for (const r of radios) {
                 r.checked = (r.value === 'deep');
@@ -2973,7 +3224,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             if (document.getElementById('customPromptInput')) {
                 document.getElementById('customPromptInput').value = '';
             }
-            showToast('已重置为默认自动探测设置');
+            showToast('已恢复为默认偏好设置');
         }
 
         async function saveSettingsAndSync() {
