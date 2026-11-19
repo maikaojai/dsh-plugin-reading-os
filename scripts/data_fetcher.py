@@ -12,15 +12,58 @@ import json
 import sqlite3
 from datetime import datetime, timedelta
 
+def locate_apple_books_db():
+    home = os.path.expanduser("~")
+    bklib_env = os.environ.get("READING_OS_BKLIBRARY_PATH")
+    ann_env = os.environ.get("READING_OS_AEANNOTATION_PATH")
+
+    bklib = bklib_env if bklib_env and os.path.exists(bklib_env) else None
+    ann = ann_env if ann_env and os.path.exists(ann_env) else None
+
+    if bklib and ann:
+        return bklib, ann
+
+    candidates = [
+        os.environ.get("READING_OS_APPLE_BOOKS_DIR"),
+        os.path.join(home, "Library/Containers/com.apple.iBooksX/Data/Documents"),
+        os.path.join(home, "Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks"),
+        os.path.join(home, "Library/Containers/Apple Books/Data/Documents")
+    ]
+
+    for base in candidates:
+        if not base or not os.path.exists(base):
+            continue
+        if not bklib:
+            b_matches = [f for f in glob.glob(os.path.join(base, "BKLibrary/BKLibrary-*.sqlite")) if not f.endswith(("-wal", "-shm"))]
+            if not b_matches:
+                b_matches = [f for f in glob.glob(os.path.join(base, "BKLibrary*.sqlite")) if not f.endswith(("-wal", "-shm"))]
+            if b_matches:
+                bklib = b_matches[0]
+        if not ann:
+            a_matches = [f for f in glob.glob(os.path.join(base, "AEAnnotation/AEAnnotation_*.sqlite")) if not f.endswith(("-wal", "-shm"))]
+            if not a_matches:
+                a_matches = [f for f in glob.glob(os.path.join(base, "AEAnnotation*.sqlite")) if not f.endswith(("-wal", "-shm"))]
+            if a_matches:
+                ann = a_matches[0]
+        if bklib and ann:
+            break
+
+    if not bklib:
+        fuzzy_b = [f for f in glob.glob(os.path.join(home, "Library/Containers/*Books*/Data/Documents/BKLibrary/BKLibrary-*.sqlite")) if not f.endswith(("-wal", "-shm"))]
+        if fuzzy_b:
+            bklib = fuzzy_b[0]
+    if not ann:
+        fuzzy_a = [f for f in glob.glob(os.path.join(home, "Library/Containers/*Books*/Data/Documents/AEAnnotation/AEAnnotation_*.sqlite")) if not f.endswith(("-wal", "-shm"))]
+        if fuzzy_a:
+            ann = fuzzy_a[0]
+
+    return bklib, ann
+
 def get_reading_os_data():
     home = os.path.expanduser("~")
     downloads_dir = os.environ.get("READING_OS_BOOKS_DIR", os.path.join(home, "Downloads"))
 
-    bklib_pattern = os.path.join(home, "Library/Containers/com.apple.iBooksX/Data/Documents/BKLibrary/BKLibrary-*.sqlite")
-    ann_pattern = os.path.join(home, "Library/Containers/com.apple.iBooksX/Data/Documents/AEAnnotation/AEAnnotation_*.sqlite")
-
-    bklibs = [f for f in glob.glob(bklib_pattern) if not f.endswith(("-wal", "-shm"))]
-    anns = [f for f in glob.glob(ann_pattern) if not f.endswith(("-wal", "-shm"))]
+    bklib_path, ann_path = locate_apple_books_db()
 
     books_dict = {}
     spotlight_book_key = "JINGANG"
@@ -29,11 +72,11 @@ def get_reading_os_data():
     total_apple_books = 0
     total_highlights_count = 0
 
-    if bklibs and anns:
+    if bklib_path and ann_path:
         try:
-            conn = sqlite3.connect(f"file:{bklibs[0]}?mode=ro", uri=True)
+            conn = sqlite3.connect(f"file:{bklib_path}?mode=ro", uri=True)
             c = conn.cursor()
-            c.execute(f"ATTACH DATABASE 'file:{anns[0]}?mode=ro' AS ann;")
+            c.execute(f"ATTACH DATABASE 'file:{ann_path}?mode=ro' AS ann;")
 
             # Total apple books
             c.execute("SELECT count(*) FROM ZBKLIBRARYASSET;")

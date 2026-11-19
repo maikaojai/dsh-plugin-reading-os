@@ -20,22 +20,43 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HOME = os.path.expanduser("~")
-BOOKS_DOCS = os.path.join(HOME, "Library/Containers/com.apple.iBooksX/Data/Documents")
-DOWNLOADS_DIR = os.path.join(HOME, "Downloads")
+DEFAULT_BOOKS_DOCS = os.path.join(HOME, "Library/Containers/com.apple.iBooksX/Data/Documents")
+CANDIDATE_BOOKS_DOCS = [
+    os.environ.get("READING_OS_APPLE_BOOKS_DIR"),
+    DEFAULT_BOOKS_DOCS,
+    os.path.join(HOME, "Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks"),
+    os.path.join(HOME, "Library/Containers/Apple Books/Data/Documents")
+]
+DOWNLOADS_DIR = os.environ.get("READING_OS_BOOKS_DIR", os.path.join(HOME, "Downloads"))
 APPLE_CORE_DATA_EPOCH = 978307200  # seconds between 1970-01-01 and 2001-01-01
 
-def find_sqlite(subfolder, pattern):
-    folder = os.path.join(BOOKS_DOCS, subfolder)
-    if not os.path.exists(folder):
-        return None
-    matches = glob.glob(os.path.join(folder, pattern))
-    return matches[0] if matches else None
+def find_sqlite(subfolder, pattern, env_override=None):
+    if env_override and os.path.exists(env_override):
+        return env_override
+
+    for base in CANDIDATE_BOOKS_DOCS:
+        if not base:
+            continue
+        folder = os.path.join(base, subfolder)
+        if os.path.exists(folder):
+            matches = [f for f in glob.glob(os.path.join(folder, pattern)) if not f.endswith(("-wal", "-shm"))]
+            if matches:
+                return matches[0]
+        direct_matches = [f for f in glob.glob(os.path.join(base, pattern)) if not f.endswith(("-wal", "-shm"))]
+        if direct_matches:
+            return direct_matches[0]
+
+    fuzzy_matches = [f for f in glob.glob(os.path.join(HOME, "Library/Containers/*Books*/Data/Documents", subfolder, pattern)) if not f.endswith(("-wal", "-shm"))]
+    if fuzzy_matches:
+        return fuzzy_matches[0]
+
+    return None
 
 class ReadingOS:
     def __init__(self, downloads_dir=DOWNLOADS_DIR):
         self.downloads_dir = downloads_dir
-        self.bklibrary_db = find_sqlite("BKLibrary", "BKLibrary*.sqlite")
-        self.annotation_db = find_sqlite("AEAnnotation", "AEAnnotation*.sqlite")
+        self.bklibrary_db = find_sqlite("BKLibrary", "BKLibrary*.sqlite", os.environ.get("READING_OS_BKLIBRARY_PATH"))
+        self.annotation_db = find_sqlite("AEAnnotation", "AEAnnotation*.sqlite", os.environ.get("READING_OS_AEANNOTATION_PATH"))
         self.books = {}        # asset_id -> book dict
         self.annotations = []  # list of annotation dicts
         self.downloads = []    # list of downloaded file dicts

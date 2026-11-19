@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  <a href="README_EN.md">English</a> · <b>简体中文</b>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Platform-macOS-lightgrey?style=flat-square&logo=apple" alt="macOS Only">
   <img src="https://img.shields.io/badge/Host-DeepSeek%20Harness-blue?style=flat-square" alt="DeepSeek Harness">
   <img src="https://img.shields.io/badge/Privacy-Local--First-green?style=flat-square" alt="Local First">
@@ -91,6 +95,21 @@
 
 ---
 
+### 系统兼容与技术机制
+
+- **已实测验证环境**：MacBook Pro (13-inch) · macOS 15.8.2 Sequoia
+- **兼容范围**：macOS 12+ (Monterey / Ventura / Sonoma / Sequoia)，通用支持 Apple Silicon (M系列芯片) 与 Intel 架构。
+- **关于系统读取权限（完全磁盘访问）**：  
+  插件以只读方式解析 macOS 本地 `com.apple.iBooksX` 数据库。在 macOS Ventura / Sonoma / Sequoia 等较新系统版本中，如果初次同步时未读出数据，通常是系统 TCC 隐私保护拦截了宿主应用对沙盒容器目录的访问。只需在 **「系统设置 ➔ 隐私与安全性 ➔ 完全磁盘访问权限」** 中为 DeepSeek Harness 开启勾选即可。
+- **支持自定义路径（可选配置）**：  
+  插件默认会自动探测标准数据库路径。如果你把书籍数据库或电子书存放在非标准路径或外接硬盘，可通过环境变量灵活覆盖：
+  - `READING_OS_APPLE_BOOKS_DIR`：自定义包含图书 SQLite 的 Documents 目录
+  - `READING_OS_BKLIBRARY_PATH`：直接指定 `BKLibrary*.sqlite` 绝对路径
+  - `READING_OS_AEANNOTATION_PATH`：直接指定 `AEAnnotation*.sqlite` 绝对路径
+  - `READING_OS_BOOKS_DIR`：自定义电子书下载存放目录（默认 `~/Downloads`）
+
+---
+
 ### 关于数据更新
 
 插件采用手动同步机制：需要更新时，点击顶栏右上角的“同步”按钮，即可读取系统「图书」与本地下载目录的最新数据。默认不进行后台定时轮询，避免频繁弹出 macOS 本地文件访问授权提示，使用起来更省心。
@@ -113,6 +132,16 @@
    https://github.com/maikaojai/dsh-plugin-reading-os
    ```
 4. 安装完成后，左侧栏会出现 **`📖 ReadingOS 读书`** 图标。
+
+---
+
+### 作者与心意
+
+这是我的第一个独立开源项目。没有刻意借鉴现有的框架套路，仅仅出于自己日常在 Mac 上翻书、随手划线、又希望能顺手翻阅的真实习惯而生。
+
+如果你也刚好有类似的阅读习惯，希望它能为你提供一份安静、不打扰的思考空间。
+
+Crafted with care by [@maikaojai](https://github.com/maikaojai)
 
 ---
 
