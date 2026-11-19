@@ -3003,10 +3003,6 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             } else {
                 localStorage.removeItem('reading_os_custom_prompt');
             }
-                localStorage.setItem('reading_os_custom_books', customBooks);
-            } else {
-                localStorage.removeItem('reading_os_custom_books');
-            }
             closeSettingsModal();
             await syncReadingData();
         }
