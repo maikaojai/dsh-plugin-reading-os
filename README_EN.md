@@ -91,30 +91,23 @@ This is merely one attempt tailored for a specific way of reading—it is by no 
 | :--- | :--- | :--- |
 | **Operating System** | **macOS** (relies on reading the local SQLite database of Apple Books) | Windows, Linux |
 | **Reading Habit** | Habitually reading EPUB / PDF in **Apple Books on macOS** and highlighting sentences (synced across devices via iCloud) | Primarily using WeChat Read, Kindle, or other third-party cloud apps, or reading without taking highlights |
-| **Book Files** | E-books saved in `~/Downloads` (customizable via environment variables) | Cloud-only reading with no local book files |
+| **Book Files** | E-books saved in `~/Downloads` (customizable in UI settings) | Cloud-only reading with no local book files |
 
 ---
 
-### System Compatibility & Technical Notes
+### Data Reading & Settings
 
-- **Verified Environment**: MacBook Pro (13-inch) · macOS 15.8.2 Sequoia
-- **Compatibility**: macOS 12+ (Monterey / Ventura / Sonoma / Sequoia), universal support for both Apple Silicon (M-series) and Intel chips.
-- **macOS Full Disk Access (FDA)**:  
-  The plugin parses the local `com.apple.iBooksX` database in read-only mode. On modern macOS versions (Ventura / Sonoma / Sequoia), if no data appears upon initial sync, system TCC privacy controls may have restricted access to the sandbox container. Simply grant **Full Disk Access** to DeepSeek Harness under **System Settings ➔ Privacy & Security ➔ Full Disk Access**.
-- **Customizable Paths (Optional)**:  
-  Standard database locations are detected automatically. If your books or library reside on an external drive or non-standard path, configure them via environment variables:
-  - `READING_OS_APPLE_BOOKS_DIR`: Base Documents directory containing Books SQLite files
-  - `READING_OS_BKLIBRARY_PATH`: Exact path to `BKLibrary*.sqlite`
-  - `READING_OS_AEANNOTATION_PATH`: Exact path to `AEAnnotation*.sqlite`
-  - `READING_OS_BOOKS_DIR`: Downloaded e-books folder (defaults to `~/Downloads`)
+- **Automatic Detection Out-of-the-Box**: The plugin automatically detects highlights from macOS Apple Books and scans your `~/Downloads` folder for books. In most cases, it requires zero configuration.
+- **Visual Settings & Custom Paths**: If your books are saved elsewhere or stored on an external SSD, click the **`⚙️` (Data Sources)** button in the top-right corner to customize paths directly—no terminal commands required.
+- **Initial Permission Check**: Operates strictly in read-only mode. If the dashboard appears empty upon first launch, simply grant DeepSeek Harness permission under **System Settings ➔ Privacy & Security ➔ Full Disk Access**.
+- **Verified Environment**: Verified on MacBook Pro (13-inch, macOS 15.8.2 Sequoia); compatible with macOS 12+ across both Apple Silicon and Intel Macs.
 
 ---
 
-### Data Sync & Privacy
+### Sync & Privacy
 
-- **Manual Sync by Default**: Click the "Sync" button in the top-right header whenever you wish to refresh data. No background polling or intrusive file watchers.
-- **Strictly Local-First**: Zero external network requests, zero analytics, zero telemetry.
-- **Read-Only Access**: Queries your local SQLite database in read-only mode (`mode=ro`), never modifying or overwriting your original reading data.
+- **Manual Sync**: Click the "Sync" button in the top header whenever you wish to refresh reading records—no background polling or unwanted popups.
+- **Strictly Local & Read-Only**: Zero network requests, 100% offline. Queries your local database in read-only mode, never modifying your original files.
 
 ---
 
