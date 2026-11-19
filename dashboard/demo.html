@@ -187,6 +187,14 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+        #themeBtn[data-tooltip]::after {
+            left: auto;
+            right: 0;
+            transform: translateY(-2px);
+        }
+        #themeBtn[data-tooltip]:hover::after {
+            transform: translateY(0);
+        }
 
         .sync-btn {
             background: var(--surface);
