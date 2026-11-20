@@ -73,9 +73,9 @@ class ReadingOS:
             return
 
         try:
-            conn = sqlite3.connect(self.bklibrary_db)
+            conn = sqlite3.connect(f"file:{self.bklibrary_db}?mode=ro", uri=True)
             cursor = conn.cursor()
-            cursor.execute(f"ATTACH DATABASE '{self.annotation_db}' AS ann;")
+            cursor.execute(f"ATTACH DATABASE 'file:{self.annotation_db}?mode=ro' AS ann;")
 
             # 1. Load books
             book_query = """
