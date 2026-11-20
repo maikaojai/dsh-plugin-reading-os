@@ -1982,7 +1982,7 @@
                 <div class="heat-grid" id="heatGrid"></div>
                 <div class="probe-box" id="probeBox"></div>
                 <div class="heat-footer">
-                    <span>共 4,427 条划线，覆盖 80 本图书</span>
+                    <span id="heatSummaryText">共 4,427 条划线，覆盖 80 本图书</span>
                     <span style="display:flex; align-items:center; gap:4px;">
                         少
                         <span style="width:7px; height:7px; background:var(--heat-0); border-radius:2px; display:inline-block;"></span>
@@ -2044,7 +2044,7 @@
                 </div>
 
                 <!-- 4 维度权重列表 -->
-                <div class="weight-row">
+                <div class="weight-row" id="dimensionWeightsRow">
 
                     <div class="weight-item">
                         <div class="weight-meta">
@@ -2089,7 +2089,7 @@
                 </div>
 
                 <!-- 资产深度沉淀摘要 (Pin to bottom) -->
-                <div class="bento-asset-footer">
+                <div class="bento-asset-footer" id="dimensionTopSummary">
                     <span>深度沉淀领域：底层思维与方法</span>
                     <span style="color:var(--accent-terracotta); font-weight:500;">36.1 划线/本</span>
                 </div>
@@ -2459,20 +2459,42 @@
         // --- Render 365 Days Heatmap ---
         function renderHeatmap() {
             const grid = document.getElementById('heatGrid');
-            grid.innerHTML = DATA.heatmap_weeks.map(week => `
-                <div class="heat-col">
-                    ${week.map(d => {
-                        let c = d.count;
-                        let color = 'var(--heat-0)';
-                        if (c >= 25) color = 'var(--heat-4)';
-                        else if (c >= 12) color = 'var(--heat-3)';
-                        else if (c >= 5) color = 'var(--heat-2)';
-                        else if (c >= 1) color = 'var(--heat-1)';
-                        return `<div class="heat-cell" style="background-color: ${color};" 
-                                     title="${d.date}: ${c} 条划线" onclick="probeDate('${d.date}', ${c})"></div>`;
-                    }).join('')}
-                </div>
-            `).join('');
+            if (DATA.heatmap_weeks && grid) {
+                grid.innerHTML = DATA.heatmap_weeks.map(week => `
+                    <div class="heat-col">
+                        ${week.map(d => {
+                            let c = d.count;
+                            let color = 'var(--heat-0)';
+                            if (c >= 25) color = 'var(--heat-4)';
+                            else if (c >= 12) color = 'var(--heat-3)';
+                            else if (c >= 5) color = 'var(--heat-2)';
+                            else if (c >= 1) color = 'var(--heat-1)';
+                            return `<div class="heat-cell" style="background-color: ${color};" 
+                                         title="${d.date}: ${c} 条划线" onclick="probeDate('${d.date}', ${c})"></div>`;
+                        }).join('')}
+                    </div>
+                `).join('');
+            }
+
+            // 动态更新热力图底栏划线总数与覆盖书目统计
+            const sumEl = document.getElementById('heatSummaryText');
+            if (sumEl && DATA.books) {
+                let totalHls = 0;
+                let totalBooks = 0;
+                const uniqueList = getUniqueBooksList();
+                uniqueList.forEach(b => {
+                    const c = b.highlights ? b.highlights.length : (b.highlights_count || 0);
+                    if (c > 0) {
+                        totalHls += c;
+                        totalBooks++;
+                    }
+                });
+                if (DATA.system_info) {
+                    if (DATA.system_info.total_highlights) totalHls = Math.max(totalHls, DATA.system_info.total_highlights);
+                    if (DATA.system_info.total_apple_books) totalBooks = Math.max(totalBooks, DATA.system_info.total_apple_books);
+                }
+                sumEl.innerText = `共 ${totalHls.toLocaleString()} 条划线，覆盖 ${totalBooks} 本图书`;
+            }
         }
 
         function probeDate(dateStr, count) {
@@ -3495,47 +3517,82 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 if (elLastOpen) elLastOpen.innerText = '最近打开';
             }
 
-            // 2. Chuanxi (Companion 1)
-            let comp1Key = 'CHUANXI';
-            const val = DATA.books[comp1Key];
-            if (val) {
-                const c1Card = document.querySelector('.companion-row > .companion-card:nth-child(1)');
-                if (c1Card) {
-                    c1Card.setAttribute('data-book-key', comp1Key);
-                    c1Card.onclick = () => openBookDrawer(comp1Key);
+            // 2. Dynamic Companion Cards (Top companion books from user's actual library)
+            const uniqueList = getUniqueBooksList();
+            const compCandidates = uniqueList.filter(b => spotBook ? b.title !== spotBook.title : true);
+            compCandidates.sort((a, b) => {
+                const ca = a.highlights ? a.highlights.length : (a.highlights_count || 0);
+                const cb = b.highlights ? b.highlights.length : (b.highlights_count || 0);
+                if (cb !== ca) return cb - ca;
+                const ta = a.last_open_time || '';
+                const tb = b.last_open_time || '';
+                return tb.localeCompare(ta);
+            });
+
+            const compCards = document.querySelectorAll('.companion-row > .companion-card');
+            compCards.forEach((card, idx) => {
+                if (idx < compCandidates.length) {
+                    const cb = compCandidates[idx];
+                    card.style.display = 'flex';
+                    card.setAttribute('data-book-key', cb.key);
+                    card.onclick = () => openBookDrawer(cb.key);
+
+                    const titleEl = card.querySelector('.c-title');
+                    const metaEl = card.querySelector('.c-author');
+                    const quoteEl = card.querySelector('.c-quote');
+                    const countEl = card.querySelector('.c-footer > span:first-child');
+
+                    const count = cb.highlights ? cb.highlights.length : (cb.highlights_count || 0);
+                    let quote = cb.sample_quote;
+                    if (!quote && cb.highlights && cb.highlights[0]) {
+                        quote = cb.highlights[0].text;
+                    }
+                    if (!quote) quote = '探索未竟之思，记录阅读灵光。';
+
+                    if (titleEl) titleEl.innerText = '《' + cb.title + '》';
+                    if (metaEl) metaEl.innerText = `${cb.author} · ${cb.progress >= 100 ? '已读完' : '精读'} (${cb.progress}%)`;
+                    if (quoteEl) quoteEl.innerText = '“' + quote + '”';
+                    if (countEl) countEl.innerText = `${count} 条划线`;
+                } else {
+                    card.style.display = 'none';
                 }
-                const c1Title = document.getElementById('compValuationTitle');
-                const elMeta = document.getElementById('compValuationMeta');
-                const elCount = document.getElementById('compValuationCount');
-                const elQuote = document.getElementById('compValuationQuote');
-                if (c1Title) c1Title.innerText = '《' + val.title + '》';
-                if (elMeta) elMeta.innerText = `${val.author} · ${val.progress >= 100 ? '已读完' : '读过'} (${val.progress}%)`;
-                if (elCount) elCount.innerText = `${val.highlights ? val.highlights.length : (val.highlights_count || 0)} 条划线`;
-                if (elQuote && val.sample_quote) elQuote.innerText = '“' + val.sample_quote + '”';
-            }
+            });
+        }
 
-            // 3. Laozi (Companion 2)
-            const lz = DATA.books['LAOZI'];
-            if (lz) {
-                const c2Title = document.getElementById('compLaoziTitle');
-                const elMeta = document.getElementById('compLaoziMeta');
-                const elCount = document.getElementById('compLaoziCount');
-                const elQuote = document.getElementById('compLaoziQuote');
-                if (c2Title) c2Title.innerText = '《' + lz.title + '》';
-                if (elMeta) elMeta.innerText = `${lz.author} · 读过 (${lz.progress}%)`;
-                if (elCount) elCount.innerText = `${lz.highlights ? lz.highlights.length : (lz.highlights_count || 0)} 条划线`;
-                if (elQuote && lz.sample_quote) elQuote.innerText = '“' + lz.sample_quote + '”';
-            }
+        // --- Render 4 Dimension Weights Dynamically ---
+        function renderDimensionWeights() {
+            const container = document.getElementById('dimensionWeightsRow');
+            if (!container) return;
+            const weights = DATA.dimension_weights;
+            if (!weights || !weights.length) return;
 
-            // 4. Freedom
-            const fr = DATA.books['FREEDOM'];
-            if (fr) {
-                const c3Title = document.getElementById('compFreedomTitle');
-                const elMeta = document.getElementById('compFreedomMeta');
-                const elCount = document.getElementById('compFreedomCount');
-                if (c3Title) c3Title.innerText = '《论语》';
-                if (elMeta) elMeta.innerText = `${fr.author} · 精读 (${fr.progress}%)`;
-                if (elCount) elCount.innerText = `${fr.highlights ? fr.highlights.length : (fr.highlights_count || 0)} 条划线`;
+            container.innerHTML = weights.map(w => `
+                <div class="weight-item">
+                    <div class="weight-meta">
+                        <span>${escapeHtml(w.category)}</span>
+                        <span style="color:var(--ink-muted);">${w.count} 本 · ${w.highlights ? w.highlights.toLocaleString() : 0} 划线</span>
+                    </div>
+                    <div class="weight-bar-bg">
+                        <div class="weight-bar-fill" style="width: ${w.pct}%; background: ${w.color || 'var(--accent-terracotta)'};"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            const summaryEl = document.getElementById('dimensionTopSummary');
+            if (summaryEl) {
+                let topCat = weights[0];
+                let topRatio = (topCat.highlights || 0) / Math.max(1, topCat.count || 1);
+                weights.forEach(w => {
+                    const ratio = (w.highlights || 0) / Math.max(1, w.count || 1);
+                    if (ratio > topRatio) {
+                        topRatio = ratio;
+                        topCat = w;
+                    }
+                });
+                summaryEl.innerHTML = `
+                    <span>深度沉淀领域：${escapeHtml(topCat.category)}</span>
+                    <span style="color:var(--accent-terracotta); font-weight:500;">${topRatio.toFixed(1)} 划线/本</span>
+                `;
             }
         }
         let lastAppliedDataHash = '';
@@ -3557,6 +3614,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             renderConceptPills();
             renderConceptGrid();
             renderUnreadSuggestion();
+            renderDimensionWeights();
             if (document.getElementById('statTotalBooks') && DATA.inventory) {
                 document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
                 document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
@@ -3599,6 +3657,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         renderConceptPills();
         renderConceptGrid();
         renderUnreadSuggestion();
+        renderDimensionWeights();
 
         if (document.getElementById('statTotalBooks') && DATA.inventory) {
             document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
