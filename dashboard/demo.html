@@ -1391,9 +1391,11 @@
             margin-bottom: 16px;
             padding-bottom: 14px;
             border-bottom: 1px dashed var(--border-main);
+            flex-wrap: wrap;
         }
         .drawer-act-btn {
-            flex: 1;
+            flex: 1 1 180px;
+            min-width: 140px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -1408,7 +1410,6 @@
             cursor: pointer;
             transition: all 0.15s ease;
             white-space: nowrap;
-            flex-shrink: 0;
             line-height: 1.2;
         }
         .drawer-act-btn:hover {
@@ -1891,6 +1892,20 @@
         @media (max-width: 520px) {
             body {
                 padding: 12px 10px;
+            }
+            .drawer {
+                padding: 20px 18px;
+                width: 100vw;
+            }
+            .drawer-actions-bar {
+                gap: 8px;
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+            }
+            .drawer-act-btn {
+                flex: 1 1 100%;
+                font-size: 11.5px;
+                padding: 7px 10px;
             }
             .card, .spotlight-card, .spark-bookmark-card, .unread-deck-card {
                 padding: 14px 12px;
@@ -2635,15 +2650,12 @@ ${quotesText}
 3. 值得引发讨论的真问题：
    提炼出 1 个真正接地气、能在日常工作决策或生活中自我检验的自省问题。`;
 
-            if (window.parent && window.parent !== window) {
-                window.parent.postMessage({ type: 'reading-os:start', prompt: prompt }, '*');
-            } else if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(prompt).then(() => {
-                    showToast('✨ 已生成选题与现实思考 Prompt 并复制到剪贴板！');
-                });
-            } else {
-                alert(prompt);
-            }
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ type: 'reading-os:start', prompt: prompt }, '*');
+                }
+            } catch (e) {}
+            copyTextToClipboard(prompt, '✨ 已生成选题与现实思考 Prompt 并复制到剪贴板！');
         }
 
         // --- Single-Book High-Density Markdown Report & Raw Highlights Export ---
@@ -2801,15 +2813,52 @@ ${quotesText}
             }
         }
 
+        function copyTextToClipboard(text, successMsg, optTextarea) {
+            if (!text) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    if (successMsg) showToast(successMsg);
+                }).catch(() => {
+                    fallbackCopyExecCommand(text, successMsg, optTextarea);
+                });
+            } else {
+                fallbackCopyExecCommand(text, successMsg, optTextarea);
+            }
+        }
+
+        function fallbackCopyExecCommand(text, successMsg, optTextarea) {
+            try {
+                if (optTextarea) {
+                    optTextarea.focus();
+                    optTextarea.select();
+                    if (document.execCommand('copy')) {
+                        if (successMsg) showToast(successMsg);
+                        return;
+                    }
+                }
+                const temp = document.createElement('textarea');
+                temp.value = text;
+                temp.setAttribute('readonly', '');
+                temp.style.position = 'fixed';
+                temp.style.left = '-9999px';
+                document.body.appendChild(temp);
+                temp.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(temp);
+                if (success) {
+                    if (successMsg) showToast(successMsg);
+                    return;
+                }
+            } catch (err) {}
+            showToast('⚠️ 剪贴板受权限限制，请直接全选框内文本复制');
+        }
+
         function copyExportMarkdown() {
             const content = currentExportMode === 'report' ? cachedReportMarkdown : cachedRawMarkdown;
             if (!content) return;
-            navigator.clipboard.writeText(content).then(() => {
-                const label = currentExportMode === 'report' ? '结构化复盘报告' : '全部划线底稿';
-                showToast(`📋 已成功复制【${label}】到剪贴板！`);
-            }).catch(() => {
-                showToast('⚠️ 复制失败，请手动全选复制');
-            });
+            const label = currentExportMode === 'report' ? '结构化复盘报告' : '全部划线底稿';
+            const textarea = document.getElementById('markdownExportArea');
+            copyTextToClipboard(content, `📋 已成功复制【${label}】到剪贴板！`, textarea);
         }
 
         function downloadExportMarkdown() {
@@ -3130,8 +3179,25 @@ ${quotesText}
             if (e.target.id === 'searchModal') closeSearchModal();
         }
 
-        document.getElementById('searchInput').addEventListener('input', (e) => {
+        let searchDebounceTimer = null;
+        let isComposing = false;
+        const searchInputEl = document.getElementById('searchInput');
+
+        searchInputEl.addEventListener('compositionstart', () => {
+            isComposing = true;
+        });
+
+        searchInputEl.addEventListener('compositionend', (e) => {
+            isComposing = false;
             renderSearchResults(e.target.value.toLowerCase().trim());
+        });
+
+        searchInputEl.addEventListener('input', (e) => {
+            if (isComposing) return;
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                renderSearchResults(e.target.value.toLowerCase().trim());
+            }, 120);
         });
 
         window.addEventListener('keydown', (e) => {
@@ -3314,15 +3380,10 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 }
             } catch (e) {}
 
-            navigator.clipboard.writeText(prompt).then(() => {
-                if (mode === 'raw') {
-                    showToast(`✨ 原句已直通 DSH！（书名与划线已就绪，已复制到剪贴板）`);
-                } else {
-                    showToast(`✨ 已就绪！已在 DeepSeekHarness 开启对话（Prompt 同步写入剪贴板）`);
-                }
-            }).catch(() => {
-                showToast(`✨ 研读 Prompt 已就绪！可直接在对话框中粘贴。`);
-            });
+            const toastMsg = mode === 'raw' 
+                ? `✨ 原句已直通 DSH！（书名与划线已就绪，已复制到剪贴板）`
+                : `✨ 已就绪！已在 DeepSeekHarness 开启对话（Prompt 同步写入剪贴板）`;
+            copyTextToClipboard(prompt, toastMsg);
         }
 
         function showToast(msg) {
