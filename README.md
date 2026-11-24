@@ -35,62 +35,33 @@
 
 ---
 
-### 几个主要模块
+### 核心界面与功能概览
 
-#### 1. 一年的划线足迹
-读取本地图书数据库，通过热力图看看过去一年哪几天读得比较多、划了多少线，以及常看的书大概分布在哪些领域。
+#### 1. 全景阅读大盘：足迹热力图 · 动态伴读 · 认知资产
+直接读取 macOS 苹果图书底层数据库，全自动生成过去 365 天阅读足迹热力图；智能呈现最近打开的在读图书与主力伴读书目，并归纳统计四大认知维度的知识沉淀密度。
 
 <p align="center">
-  <img src="assets/01-hero-bento.png" width="92%" alt="一年的划线足迹" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
+  <img src="assets/screenshot-1.png" width="94%" alt="ReadingOS 全景阅读大盘截图" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);" />
 </p>
 
 ---
 
-#### 2. 最近在读的书
-展示最近在 Apple Books 里打开过的书籍与阅读进度，方便下次顺着思绪接着读；旁边也会带上几本常读的书。
+#### 2. 单书研读抽屉：全量划线流 · 选题现实思考 · 一键直通 DeepSeek
+点击任意书籍，右侧优雅滑出全书划线批注流。
+- **一键直通 DeepSeek**：点击「✨ 联动探讨」，自动剥除系统版权杂质，将书名与纯净划线原文直达对话框，免除繁琐的手动复制粘贴。
+- **选题与现实思考**：从全书划线中提炼现实选题、社会痛点与本质反思，辅助灵感孵化。
 
 <p align="center">
-  <img src="assets/02-spotlight-and-companions.png" width="92%" alt="最近在读的书" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
+  <img src="assets/screenshot-2.png" width="94%" alt="ReadingOS 单书划线抽屉与联动探讨截图" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);" />
 </p>
 
 ---
 
-#### 3. 跨书的主题整理
-把散落在不同书里、讨论相似主题（如“知行合一”、“本质与底层”等）的划线放在一起，支持展开 3 本书横向对照，看看不同作者对同一个命题的不同视角与表达。
+#### 3. 结构化复盘导出：高密度 Markdown 报告 · 知识库归档
+支持一键生成具备多维思考框架的结构化复盘报告，或一键导出原汁原味的全书划线底稿。支持剪贴板双保险复制与 `.md` 文本下载，轻松衔接 Obsidian、Notion 或本地知识库。
 
 <p align="center">
-  <img src="assets/03-theme-network.png" width="92%" alt="跨书的主题整理" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
-</p>
-
----
-
-#### 4. 单书划线与 Markdown 导出
-点击任意一本书，右侧滑出抽屉列出全书所有划线与批注。可以直接一键复制或导出干净的 Markdown 笔记，也可以把选中的句子直接发到对话框里聊聊。
-
-<p align="center">
-  <img src="assets/04-reading-drawer.png" width="92%" alt="单书划线与 Markdown 导出" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
-</p>
-
----
-
-#### 5. 灵光偶遇与积读提醒
-底部放了两个顺手的小卡片：**灵光书签**每次点击随机翻出一句往昔划线，适合工作间隙看一眼；**沉睡之书**则随手翻出以前下载了但还没读的书，提醒自己抽空翻开看看。
-
-<p align="center">
-  <img src="assets/05-dual-practical-cards.png" width="92%" alt="灵光偶遇与积读提醒" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
-</p>
-
----
-
-#### 6. 一键直通 DeepSeek 展开探讨
-在日常阅读中，当我们想针对某一句话与 AI 交流时，原来的路径往往是：在 Apple Books 划线 ➔ 复制句子 ➔ 切到 AI 聊天软件 ➔ 粘贴 ➔ 手动删掉系统自动追加的一长串版权信息 ➔ 敲字发送。
-
-ReadingOS 将这个步骤简化为一次点击：
-- **零粘贴直达**：在抽屉或灵光卡片中点击 **`✨ 联动探讨`**，自动提取书名、作者与整洁的划线原文直通 DeepSeek Harness 对话框，省去反复切换与清理版权杂质的繁琐。
-- **提示词随心设置**：在右上角 `⚙️`（偏好设置）中，你可以保留默认的多维研读引导，也可以切换为**「原句直问（自由提问）」**，把发问与思考的空间完全留给自己自由手打，或者编辑专属的提示词模板。
-
-<p align="center">
-  <img src="assets/06-dsh-bridge.gif" width="92%" alt="一键直通 DeepSeek 展开探讨" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
+  <img src="assets/screenshot-3.png" width="94%" alt="ReadingOS 结构化 Markdown 导出截图" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);" />
 </p>
 
 ---

@@ -35,62 +35,33 @@ It runs unobtrusively in the DeepSeek Harness sidebar, reads local data directly
 
 ---
 
-### Core Modules
+### Core Interface & Features Overview
 
-#### 1. Year in Highlights Footprint
-Reads your local Books database to visualize your reading rhythm over the past year through a heatmap—when you read most actively, how many highlights you made, and how your reading distributes across knowledge dimensions.
+#### 1. Panoramic Reading Dashboard: Heatmap · Dynamic Companions · Cognitive Dimensions
+Reads your local Apple Books database on macOS to render an annual reading heatmap; displays currently reading titles and companions while summarizing knowledge density across four cognitive domains.
 
 <p align="center">
-  <img src="assets/01-hero-bento.png" width="92%" alt="Year in Highlights Footprint" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
+  <img src="assets/screenshot-1.png" width="94%" alt="ReadingOS Panoramic Reading Dashboard" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);" />
 </p>
 
 ---
 
-#### 2. Currently Reading & Companions
-Displays books recently opened in Apple Books alongside your current progress, making it effortless to pick up right where your thoughts left off, accompanied by frequently revisited companion books.
+#### 2. Highlights Reading Drawer: Highlight Stream · Topic Incubation · DeepSeek Bridge
+Click any book to slide out a clean drawer with full annotations.
+- **One-Click DeepSeek Bridge**: Click "✨ 联动探讨" to transfer clean quotes directly into DeepSeek Harness chat with zero manual copy-pasting.
+- **Topic & Reality Incubation**: Extracts real-world topics, societal questions, and reflection prompts from book annotations.
 
 <p align="center">
-  <img src="assets/02-spotlight-and-companions.png" width="92%" alt="Currently Reading & Companions" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
+  <img src="assets/screenshot-2.png" width="94%" alt="ReadingOS Single-Book Highlights Drawer" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);" />
 </p>
 
 ---
 
-#### 3. Cross-Book Theme Resonances
-Brings together highlights from different books that share common themes (such as "Unity of Knowledge and Action" or "First Principles"), allowing you to expand 3 books side-by-side to compare how different authors articulate the same idea.
+#### 3. Structured Review & Export: High-Density Markdown · Raw Archive
+Generate structured review reports with reflective frameworks or export raw quotes. Seamlessly copy to clipboard or download as `.md` files for Obsidian, Notion, or local knowledge bases.
 
 <p align="center">
-  <img src="assets/03-theme-network.png" width="92%" alt="Cross-Book Theme Resonances" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
-</p>
-
----
-
-#### 4. Single-Book Highlights Drawer & Markdown Export
-Clicking any book slides out a right drawer containing all highlights and annotations for that title. Easily copy quotes, export a clean Markdown summary, or send a selected sentence directly into the AI chat to discuss.
-
-<p align="center">
-  <img src="assets/04-reading-drawer.png" width="92%" alt="Single-Book Highlights Drawer & Markdown Export" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
-</p>
-
----
-
-#### 5. Daily Spark & Tsundoku Reminder
-Two lightweight cards at the bottom: **Spark Bookmark** surfaces a random past highlight with each click (great for brief work breaks), while **Tsundoku Awakening** recalls downloaded books that have remained unread, gently reminding you to open them.
-
-<p align="center">
-  <img src="assets/05-dual-practical-cards.png" width="92%" alt="Daily Spark & Tsundoku Reminder" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
-</p>
-
----
-
-#### 6. One-Click DeepSeek Discussion Bridge
-In day-to-day reading, discussing a highlighted passage with AI usually requires: selecting and copying text in Apple Books ➔ switching to the AI chat app ➔ pasting ➔ manually stripping out the system-appended copyright disclaimer ➔ sending the prompt.
-
-ReadingOS streamlines this into a single click:
-- **Zero Copy-Paste**: Click **`✨ 联动探讨`** from any highlight drawer or serendipity card to pass the book title, author, and clean quote directly into the DeepSeek Harness chat window.
-- **Flexible Prompt Preferences**: In the top-right `⚙️` settings, choose between the default structured deep-dive guide, a minimal **"Raw Quote Only (No Prompt)"** mode that leaves full freedom to your own words, or a custom prompt template.
-
-<p align="center">
-  <img src="assets/06-dsh-bridge.gif" width="92%" alt="One-Click DeepSeek Discussion Bridge" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
+  <img src="assets/screenshot-3.png" width="94%" alt="ReadingOS Structured Markdown Export" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);" />
 </p>
 
 ---
