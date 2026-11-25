@@ -2614,7 +2614,7 @@
             box.style.display = 'block';
 
             if (!notes.length) {
-                box.innerHTML = `<span style="color:var(--ink-muted);">📅 ${escapeHtml(dateStr)}：未做批注记录</span>`;
+                box.innerHTML = `<span style="color:var(--ink-muted);">📅 ${escapeHtml(dateStr)}：这天还没有划线记录，遇到触动自己的句子，随时在「图书」里划一下就好~</span>`;
                 return;
             }
 
@@ -3048,23 +3048,39 @@ ${quotesText}
 
         function renderUnreadSuggestion() {
             const activeList = getActiveUnreadList();
+            const card = document.getElementById('unreadDeckCard');
+            const shuffleBtn = card ? card.querySelector('.card-action-pill') : null;
+            const actions = document.querySelector('.unread-btn-group');
+            const elMeta = document.getElementById('unreadMeta');
+            const kicker = card ? card.querySelector('.card-kicker span') : null;
+
             if (!activeList.length) {
-                document.getElementById('unreadTitle').innerText = '🎉 所有沉睡典籍已全被唤醒！';
-                document.getElementById('unreadDesc').innerText = '所有下载的书目已全部进入研读流或标记读过。';
-                const elMeta = document.getElementById('unreadMeta');
-                if (elMeta) elMeta.innerText = '已全部唤醒';
-                const actions = document.querySelector('.unread-btn-group');
+                if (shuffleBtn) shuffleBtn.style.display = 'none';
                 if (actions) actions.style.display = 'none';
+                const localCnt = (DATA.inventory && DATA.inventory.local_ebooks_count) || 0;
+                if (localCnt > 0) {
+                    if (kicker) kicker.innerText = '🌿 积读提醒 · 没囤吃灰书';
+                    document.getElementById('unreadTitle').innerText = '下载文件夹都翻过啦';
+                    document.getElementById('unreadTitle').title = '';
+                    document.getElementById('unreadDesc').innerText = '厉害呀！下载文件夹里的书基本都翻过了，一点没积压。';
+                    if (elMeta) elMeta.innerText = '无积压未读';
+                } else {
+                    if (kicker) kicker.innerText = '📚 积读提醒 · 轻松上阵';
+                    document.getElementById('unreadTitle').innerText = '下载目录里没放电子书';
+                    document.getElementById('unreadTitle').title = '';
+                    document.getElementById('unreadDesc').innerHTML = '如果平时在别的目录存了书，点右上角 <span style="color:var(--accent-terracotta); cursor:pointer; text-decoration:underline;" onclick="event.stopPropagation(); openSettingsModal();">⚙️ 换个路径</span> 就能帮你挑出吃灰的那几本。';
+                    if (elMeta) elMeta.innerText = '仅看图书 App';
+                }
                 return;
             }
+            if (kicker) kicker.innerText = '📚 沉睡典籍 · 待开启';
+            if (shuffleBtn) shuffleBtn.style.display = 'inline-flex';
             currentUnreadIdx = currentUnreadIdx % activeList.length;
             const b = activeList[currentUnreadIdx];
             document.getElementById('unreadTitle').innerText = '《' + b.title + '》';
             document.getElementById('unreadTitle').title = '《' + b.title + '》';
             document.getElementById('unreadDesc').innerText = `${b.ext || 'EPUB'} 格式 · 下载沉睡中，待开启深度阅读与划线记录。`;
-            const elMeta = document.getElementById('unreadMeta');
             if (elMeta) elMeta.innerText = `${b.ext || 'EPUB'} · 沉睡待读 #${currentUnreadIdx + 1}`;
-            const actions = document.querySelector('.unread-btn-group');
             if (actions) actions.style.display = 'flex';
         }
 
@@ -3320,14 +3336,14 @@ ${quotesText}
                 const localCnt = (DATA.inventory && DATA.inventory.local_ebooks_count) || 0;
                 if (localCnt === 0) {
                     container.innerHTML = `
-                        <div style="grid-column: 1 / -1; padding: 18px 14px; border-radius: 10px; background: var(--surface-subtle); border: 1px dashed var(--border-main); text-align: center; font-size: 12px; color: var(--ink-muted);">
-                            当前扫描目录暂无本地电子书文件 · <span style="color: var(--accent-terracotta); cursor: pointer; text-decoration: underline;" onclick="openSettingsModal()">更改扫描目录</span>
+                        <div style="grid-column: 1 / -1; padding: 18px 14px; border-radius: 10px; background: var(--surface-subtle); border: 1px dashed var(--border-main); text-align: center; font-size: 12px; color: var(--ink-muted); line-height: 1.6;">
+                            📂 这个文件夹里暂时没看到电子书，如果你的书放在别处，可以 <span style="color: var(--accent-terracotta); cursor: pointer; text-decoration: underline;" onclick="openSettingsModal()">点这里换个目录</span>
                         </div>
                     `;
                 } else {
                     container.innerHTML = `
-                        <div style="grid-column: 1 / -1; padding: 18px 14px; border-radius: 10px; background: var(--surface-subtle); border: 1px dashed var(--border-main); text-align: center; font-size: 12px; color: var(--ink-muted);">
-                            近 30 天内暂无新增下载（历史已扫描 ${localCnt} 本电子书）
+                        <div style="grid-column: 1 / -1; padding: 18px 14px; border-radius: 10px; background: var(--surface-subtle); border: 1px dashed var(--border-main); text-align: center; font-size: 12px; color: var(--ink-muted); line-height: 1.6;">
+                            ☕ 最近一个月没囤新书（手头还有 ${localCnt} 本存货），刚好可以把以前存的慢慢翻一翻
                         </div>
                     `;
                 }
@@ -3371,15 +3387,39 @@ ${quotesText}
             const list = (DATA.concept_clusters || []).filter(c => c.count > 0 && c.samples && c.samples.length > 0);
             const section = document.querySelector('.concept-section');
             const container = document.getElementById('conceptPills');
+            const expandBtn = document.getElementById('conceptExpandBtn');
+            const gridWrap = document.getElementById('conceptGridWrap');
+            const banner = document.getElementById('conceptFeaturedBanner');
+            const subtitle = section ? section.querySelector('.section-title span:nth-child(2)') : null;
+
+            if (section) section.style.display = 'block';
             if (!list.length) {
-                if (section) section.style.display = 'none';
+                if (subtitle) subtitle.innerText = '跨书线索慢慢攒';
+                if (expandBtn) expandBtn.style.display = 'none';
+                if (container) container.style.display = 'none';
+                if (gridWrap) gridWrap.style.display = 'none';
+                if (banner) {
+                    banner.style.cursor = 'default';
+                    banner.onclick = null;
+                    const bBadge = document.getElementById('cfbBadge');
+                    const bSource = document.getElementById('cfbSource');
+                    const bQuote = document.getElementById('cfbQuote');
+                    if (bBadge) bBadge.innerText = '💡 跨书主题 · 慢慢攒';
+                    if (bSource) bSource.innerText = '等待更多划线';
+                    if (bQuote) bQuote.innerText = '等以后不同书里的划线多起来了，这里会把讲同一件事的句子摆在一起，看看不同作者怎么聊同一个话题。';
+                }
                 return;
             }
-            if (section) section.style.display = 'block';
+            if (expandBtn) expandBtn.style.display = 'inline-flex';
+            if (container) container.style.display = 'flex';
+            if (gridWrap) gridWrap.style.display = 'block';
+            if (banner) {
+                banner.style.cursor = 'pointer';
+                banner.onclick = toggleConceptExpansion;
+            }
             if (!list.some(c => c.id === currentConceptId)) {
                 currentConceptId = list[0].id;
             }
-            const subtitle = section ? section.querySelector('.section-title span:nth-child(2)') : null;
             if (subtitle) {
                 const distinctBooks = new Set();
                 list.forEach(c => (c.samples || []).forEach(s => distinctBooks.add(s.book)));
@@ -3729,12 +3769,17 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             }
 
             const spotCard = document.querySelector('.spotlight-card');
+            const progressWrap = spotCard ? spotCard.querySelector('.progress-bar-wrap') : null;
+            const headerRow = spotCard ? spotCard.querySelector('.spotlight-header-row') : null;
             if (spotBook) {
                 if (spotCard) {
                     spotCard.style.display = 'flex';
+                    spotCard.style.cursor = 'pointer';
                     spotCard.setAttribute('data-book-key', spotBook.key);
                     spotCard.onclick = () => openBookDrawer(spotBook.key);
                 }
+                if (progressWrap) progressWrap.style.display = 'flex';
+                if (headerRow) headerRow.style.display = 'flex';
                 const elTitle = document.getElementById('spotlightTitle');
                 const elMeta = document.getElementById('spotlightMeta');
                 const elFill = document.getElementById('spotlightProgressFill');
@@ -3759,12 +3804,24 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                     } else if (spotBook.highlights && spotBook.highlights[0] && spotBook.highlights[0].text) {
                         elQuote.innerText = '“' + spotBook.highlights[0].text + '”';
                     } else {
-                        elQuote.innerText = '“探索未竟之思，开启深度研读之旅。”';
+                        elQuote.innerText = '“这本还没怎么划线，遇到喜欢的句子随手划一下吧~”';
                     }
                 }
                 if (elLastOpen) elLastOpen.innerText = '最近打开';
             } else if (spotCard) {
-                spotCard.style.display = 'none';
+                spotCard.style.display = 'flex';
+                spotCard.style.cursor = 'default';
+                spotCard.onclick = null;
+                if (progressWrap) progressWrap.style.display = 'none';
+                if (headerRow) headerRow.style.display = 'none';
+                const elTitle = document.getElementById('spotlightTitle');
+                const elMeta = document.getElementById('spotlightMeta');
+                const elQuote = document.getElementById('spotlightQuote');
+                if (elTitle) elTitle.innerText = '📖 最近好像没怎么翻书';
+                if (elMeta) elMeta.innerText = '忙归忙，有空也可以打开「图书」看个几页，就当歇口气。';
+                if (elQuote) {
+                    elQuote.innerHTML = `<button class="dsh-btn" style="margin-top:4px;" onclick="syncReadingData()">🔄 同步一下看看</button>`;
+                }
             }
 
             // 2. Dynamic Companion Cards (Top companion books from user's actual library)
@@ -3800,7 +3857,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                     if (!quote && cb.highlights && cb.highlights[0]) {
                         quote = cb.highlights[0].text;
                     }
-                    if (!quote) quote = '探索未竟之思，记录阅读灵光。';
+                    if (!quote) quote = '这本还没怎么划线，遇到喜欢的句子随手划一下吧~';
 
                     if (titleEl) titleEl.innerText = '《' + cb.title + '》';
                     if (metaEl) metaEl.innerText = `${cb.author} · ${cb.progress >= 100 ? '已读完' : '精读'} (${cb.progress}%)`;
@@ -3811,7 +3868,28 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 }
             });
             if (compRow) {
-                compRow.style.display = visibleCompanions > 0 ? 'grid' : 'none';
+                compRow.style.display = 'grid';
+                const emptyCard = document.getElementById('companionEmptyCard');
+                if (visibleCompanions === 0) {
+                    if (!emptyCard) {
+                        const div = document.createElement('div');
+                        div.id = 'companionEmptyCard';
+                        div.className = 'companion-card';
+                        div.style.cursor = 'default';
+                        div.style.minHeight = '104px';
+                        div.innerHTML = `
+                            <div>
+                                <div class="c-title">📚 常翻的书会住在这里</div>
+                                <div class="c-quote serif" style="margin-top:6px;">多读几本并留点划线后，你最常回看的那几本书就会自动出现在这儿啦。</div>
+                            </div>
+                        `;
+                        compRow.appendChild(div);
+                    } else {
+                        emptyCard.style.display = 'flex';
+                    }
+                } else if (emptyCard) {
+                    emptyCard.style.display = 'none';
+                }
             }
         }
 
@@ -3822,11 +3900,12 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             if (!container) return;
             const weights = DATA.dimension_weights || [];
             const totalDimBooks = weights.reduce((acc, w) => acc + (w.count || 0), 0);
+            const totalDimHls = weights.reduce((acc, w) => acc + (w.highlights || 0), 0);
 
             if (!weights.length || totalDimBooks === 0) {
                 container.style.display = 'none';
                 if (summaryEl) {
-                    summaryEl.innerHTML = `<span style="color:var(--ink-muted);">导入书籍后将自动归纳四维知识资产分布</span><span></span>`;
+                    summaryEl.innerHTML = `<span style="color:var(--ink-muted);">🌱 书架还空空的，先去「图书」App 放几本喜欢的书吧</span><span></span>`;
                 }
                 return;
             }
@@ -3845,6 +3924,10 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             `).join('');
 
             if (summaryEl) {
+                if (totalDimHls === 0) {
+                    summaryEl.innerHTML = `<span style="color:var(--ink-muted);">📖 书架已有 ${totalDimBooks} 本书，等划过几句之后，这里会帮你看看平时最常看哪类书</span><span></span>`;
+                    return;
+                }
                 let topCat = weights[0];
                 let topRatio = (topCat.highlights || 0) / Math.max(1, topCat.count || 1);
                 weights.forEach(w => {
@@ -3868,15 +3951,31 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         function renderSparks() {
             const sparks = DATA.sparks || [];
             const sparkCard = document.getElementById('sparkCard');
-            if (!sparks.length) {
-                if (sparkCard) sparkCard.style.display = 'none';
-                return;
-            }
-            if (sparkCard) sparkCard.style.display = 'flex';
-            if (sparkIdx >= sparks.length) sparkIdx = 0;
-            const sp = sparks[sparkIdx];
+            const flipBtn = sparkCard ? sparkCard.querySelector('.card-action-pill') : null;
+            const dshBtn = sparkCard ? sparkCard.querySelector('.dsh-btn') : null;
+            const elTag = document.getElementById('sparkTag');
             const elText = document.getElementById('sparkText');
             const elSource = document.getElementById('sparkSource');
+
+            if (sparkCard) sparkCard.style.display = 'flex';
+            if (!sparks.length) {
+                if (flipBtn) flipBtn.style.display = 'none';
+                if (dshBtn) dshBtn.style.display = 'none';
+                if (elTag) elTag.innerText = '✨ 灵光书签 · 还没存下句子';
+                if (elText) elText.innerText = '“以前划过的句子，过阵子再看常会有新感觉。去翻翻书，记下第一句吧。”';
+                if (elSource) {
+                    elSource.innerText = '暂无划线';
+                    elSource.title = '';
+                    elSource.style.cursor = 'default';
+                }
+                return;
+            }
+            if (flipBtn) flipBtn.style.display = 'inline-flex';
+            if (dshBtn) dshBtn.style.display = 'inline-flex';
+            if (elTag) elTag.innerText = '✨ 灵光书签 · 今日偶遇';
+            if (elSource) elSource.style.cursor = 'pointer';
+            if (sparkIdx >= sparks.length) sparkIdx = 0;
+            const sp = sparks[sparkIdx];
             if (elText) elText.innerText = '“' + sp.quote + '”';
             if (elSource) {
                 elSource.innerText = `《${sp.book}》· ${sp.author}`;
@@ -3901,16 +4000,13 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             if (onboardingEl) onboardingEl.style.display = 'none';
             if (mainEl) mainEl.style.display = 'block';
 
-            // 底部双卡区自适应折叠
-            const hasSparks = DATA.sparks && DATA.sparks.length > 0;
-            const hasUnread = DATA.unread_queue && DATA.unread_queue.length > 0;
             const sparkCard = document.getElementById('sparkCard');
             const unreadCard = document.getElementById('unreadDeckCard');
             const dualRow = document.querySelector('.dual-row');
 
-            if (sparkCard) sparkCard.style.display = hasSparks ? 'flex' : 'none';
-            if (unreadCard) unreadCard.style.display = hasUnread ? 'flex' : 'none';
-            if (dualRow) dualRow.style.display = (hasSparks || hasUnread) ? 'grid' : 'none';
+            if (sparkCard) sparkCard.style.display = 'flex';
+            if (unreadCard) unreadCard.style.display = 'flex';
+            if (dualRow) dualRow.style.display = 'grid';
         }
 
         function renderAllViews() {
