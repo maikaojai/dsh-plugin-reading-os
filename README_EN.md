@@ -109,16 +109,16 @@ This is merely one attempt tailored for a specific way of reading—it is by no 
 
 ### Data Reading & Settings
 
-- **Automatic Detection Out-of-the-Box**: The plugin automatically detects highlights from macOS Apple Books and scans your `~/Downloads` folder for books. In most cases, it requires zero configuration.
-- **Visual Settings & Custom Paths**: If your books are saved elsewhere or stored on an external SSD, click the **`⚙️` (Preferences)** button in the top-right corner to customize paths directly—no terminal commands required.
-- **Initial Permission Check**: Operates strictly in read-only mode. If the dashboard appears empty upon first launch, simply grant DeepSeek Harness permission under **System Settings ➔ Privacy & Security ➔ Full Disk Access**.
+- **Automatic Detection Out-of-the-Box**: The plugin automatically detects highlights from macOS Apple Books and scans your `~/Downloads` folder for books. On first launch without cache, it silently performs an initial sync.
+- **Visual Settings & Custom Paths**: If your books are saved elsewhere or stored on an external SSD, click the **`⚙️` (Preferences)** button in the top-right corner to customize paths directly (shared with both the dashboard and AI tools)—no terminal commands required.
+- **Initial Permission Check**: Operates strictly in read-only mode. If macOS prompts for folder access on first run, simply click **Allow**.
 - **Verified Environment**: Verified on MacBook Pro (13-inch, macOS 15.8.2 Sequoia); compatible with macOS 12+ across both Apple Silicon and Intel Macs.
 
 ---
 
 ### Sync & Privacy
 
-- **Manual Sync**: Click the "Sync" button in the top header whenever you wish to refresh reading records—no background polling or unwanted popups.
+- **On-Demand Sync**: Runs one silent sync on first launch when uncached; click the "Sync" button in the top header whenever you wish to refresh reading records—no background polling.
 - **Strictly Local & Read-Only**: Zero network requests, 100% offline. Queries your local database in read-only mode, never modifying your original files.
 
 ---

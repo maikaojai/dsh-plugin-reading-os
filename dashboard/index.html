@@ -2473,17 +2473,38 @@
             system_info: { status: "loading", total_apple_books: 0, total_highlights: 0 }
         };
 
-        // --- Theme Toggle ---
-        function toggleTheme() {
+        // --- Theme Toggle & Persistence ---
+        function applyTheme(theme, persist = false) {
             const root = document.documentElement;
-            const cur = root.getAttribute('data-theme') || 'cream';
-            const next = cur === 'cream' ? 'dark' : 'cream';
+            const next = theme === 'dark' ? 'dark' : 'cream';
             root.setAttribute('data-theme', next);
             const btn = document.getElementById('themeBtn');
-            btn.innerText = next === 'cream' ? '🌙' : '☀️';
-            const tip = next === 'cream' ? '切换深色模式' : '切换浅色模式';
-            btn.setAttribute('data-tooltip', tip);
-            btn.removeAttribute('title');
+            if (btn) {
+                btn.innerText = next === 'cream' ? '🌙' : '☀️';
+                const tip = next === 'cream' ? '切换深色模式' : '切换浅色模式';
+                btn.setAttribute('data-tooltip', tip);
+                btn.removeAttribute('title');
+            }
+            if (persist) {
+                try { localStorage.setItem('reading_os_theme', next); } catch (e) {}
+            }
+        }
+
+        function initTheme() {
+            let saved = '';
+            try { saved = localStorage.getItem('reading_os_theme') || ''; } catch (e) {}
+            if (saved === 'dark' || saved === 'cream') {
+                applyTheme(saved, false);
+            } else {
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                applyTheme(prefersDark ? 'dark' : 'cream', false);
+            }
+        }
+        initTheme();
+
+        function toggleTheme() {
+            const cur = document.documentElement.getAttribute('data-theme') || 'cream';
+            applyTheme(cur === 'cream' ? 'dark' : 'cream', true);
         }
 
         // --- Render 365 Days Heatmap ---
@@ -3238,12 +3259,22 @@ ${quotesText}
         });
 
         window.addEventListener('keydown', (e) => {
-            if (e.key === '/' && document.activeElement !== document.getElementById('searchInput')) {
+            const tag = document.activeElement ? document.activeElement.tagName : '';
+            const isEditing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (document.activeElement && document.activeElement.isContentEditable);
+
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
                 openSearchModal();
+                return;
+            }
+            if (e.key === '/' && !isEditing) {
+                e.preventDefault();
+                openSearchModal();
+                return;
             }
             if (e.key === 'Escape') {
                 closeSearchModal();
+                closeSettingsModal();
                 closeDrawer();
             }
         });
@@ -3589,6 +3620,11 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             if (document.getElementById('customPromptInput')) {
                 document.getElementById('customPromptInput').value = '';
             }
+            fetch('/reading-os/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ booksDir: '', customDb: '' })
+            }).catch(() => {});
             showToast('已恢复为默认偏好设置');
         }
 
@@ -3620,6 +3656,12 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             } else {
                 localStorage.removeItem('reading_os_custom_prompt');
             }
+            // 同步持久化目录配置到插件后端，供 AI 工具与前端共享
+            fetch('/reading-os/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ booksDir: customBooks, customDb })
+            }).catch(() => {});
             closeSettingsModal();
             await syncReadingData();
         }
@@ -3953,10 +3995,15 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 }
                 const badge = document.getElementById('dbStatusBadge');
                 if (badge) {
+                    const bookCnt = DATA.books ? Object.keys(DATA.books).length : 0;
                     if (DATA.system_info.status === 'connected') {
-                        badge.innerText = '● 已自动连接';
+                        badge.innerText = bookCnt > 0 ? `● 已连接（${bookCnt} 本书）` : '● 已自动连接';
                         badge.style.color = '#2f855a';
                         badge.style.background = 'rgba(56, 161, 105, 0.12)';
+                    } else if (DATA.system_info.status === 'loading') {
+                        badge.innerText = '⏳ 检测中...';
+                        badge.style.color = 'var(--ink-muted)';
+                        badge.style.background = 'var(--surface-subtle)';
                     } else {
                         badge.innerText = '⚠️ 未找到数据库';
                         badge.style.color = '#c53030';

@@ -24,7 +24,7 @@ def get_engine():
 TOOLS = [
     {
         "name": "get_reading_overview",
-        "description": "获取用户的整体阅读操作系统大盘数据，包括下载量、Apple Books藏书量、4400+划线分布、阅读漏斗（已精读/独立PDF阅读/积读率）、四大主题分布与最常研读书单。",
+        "description": "获取用户的整体阅读操作系统大盘数据，包括本地电子书数量、Apple Books藏书量、划线分布、阅读漏斗与主题分布。",
         "inputSchema": {
             "type": "object",
             "properties": {}
@@ -38,7 +38,7 @@ TOOLS = [
             "properties": {
                 "book_title": {
                     "type": "string",
-                    "description": "要查询的书名关键词（如'最初和最终的自由'、'估值原理'、'关于说话的一切'）"
+                    "description": "要查询的书名关键词"
                 },
                 "limit": {
                     "type": "integer",
@@ -51,7 +51,7 @@ TOOLS = [
     },
     {
         "name": "search_highlights",
-        "description": "在全库 4400+ 条划线中全文语义/关键词检索，寻找跨书籍的观点、概念碰撞（如搜索'周期'、'心学'、'逻辑'、'逆向'等）。",
+        "description": "在用户的全库真实划线中全文检索，寻找跨书籍的观点与概念碰撞（如搜索“本质”、“周期”、“规律”等）。",
         "inputSchema": {
             "type": "object",
             "properties": {
