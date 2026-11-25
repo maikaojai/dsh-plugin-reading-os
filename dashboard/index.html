@@ -2329,7 +2329,10 @@
     <!-- ================= SEARCH MODAL ================= -->
     <div class="modal-scrim" id="searchModal" onclick="closeModalOnMask(event)">
         <div class="modal-box">
-            <input type="text" id="searchInput" class="modal-input" placeholder="搜索书名、作者或划线句子（如搜'最初和最终的自由'、'克里希那穆提'、'放下'）...">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <input type="text" id="searchInput" class="modal-input" style="flex:1; min-width:0;" placeholder="搜索书名、作者、划线或批注（按 Esc 或点击右侧关闭）...">
+                <button type="button" id="searchCloseBtn" class="drawer-close" onclick="closeSearchModal()" title="关闭搜索 (Esc)" aria-label="关闭" style="flex-shrink:0; font-size:16px;">✕</button>
+            </div>
             <div class="modal-results" id="searchResultsList"></div>
         </div>
     </div>
