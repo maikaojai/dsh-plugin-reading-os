@@ -59,11 +59,11 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
 
         html {
             background-color: var(--canvas);
+            overflow-x: clip;
         }
 
         body {
@@ -74,7 +74,8 @@
             padding: 24px clamp(16px, 3.5vw, 36px);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
+            overflow-x: clip;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .serif {
@@ -3656,10 +3657,14 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 `;
             }
         }
+        function computeDataHash(d) {
+            if (!d || !d.books) return '';
+            return `${d.system_info ? d.system_info.status : ''}_${d.inventory ? d.inventory.total_books : 0}_${d.inventory ? d.inventory.downloads_30d : 0}_${Object.keys(d.books).length}`;
+        }
         let lastAppliedDataHash = '';
         function applyFreshData(fresh) {
             if (!fresh || fresh.error || !fresh.books) return;
-            const newHash = `${fresh.system_info ? fresh.system_info.status : ''}_${fresh.inventory ? fresh.inventory.total_books : 0}_${fresh.inventory ? fresh.inventory.downloads_30d : 0}_${Object.keys(fresh.books).length}`;
+            const newHash = computeDataHash(fresh);
             if (lastAppliedDataHash && lastAppliedDataHash === newHash) {
                 return; // 数据一致，跳过全量 DOM 销毁与重建，避免二次闪烁
             }
