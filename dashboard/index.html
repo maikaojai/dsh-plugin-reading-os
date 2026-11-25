@@ -3216,6 +3216,7 @@ ${quotesText}
                                 book: bk.title,
                                 author: bk.author,
                                 text: h.text,
+                                note: h.note || '',
                                 time: h.time,
                                 idx: hIdx
                             });
@@ -3261,8 +3262,9 @@ ${quotesText}
                     <div style="font-size:11.5px; font-weight:600; color:var(--ink-dim); margin-bottom:8px; font-variant-numeric:tabular-nums;">✍️ 匹配的划线批注 (${matchedQuotes.length} 处)</div>
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         ${visibleQuotes.map((r, i) => `
-                            <div style="background:var(--surface-subtle); border:1px solid var(--border-subtle); padding:11px 14px; border-radius:8px; font-size:12.5px; line-height:1.6;">
+                            <div style="background:var(--surface-subtle); border:1px solid var(--border-main); padding:11px 14px; border-radius:8px; font-size:12.5px; line-height:1.6;">
                                 <div class="serif" style="color:var(--ink-primary);">“${escapeHtml(r.text)}”</div>
+                                ${r.note ? `<div class="drawer-note" style="margin-top:8px;"><span class="drawer-note-label">💭 我的批注</span>${escapeHtml(r.note)}</div>` : ''}
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:7px; font-size:11px;">
                                     <span style="color:var(--accent-terracotta); cursor:pointer;" onclick="closeSearchModal(); openBookDrawer('${r.bookKey}')">《${escapeHtml(r.book)}》· ${escapeHtml(r.author)} · ${escapeHtml(r.time)} →</span>
                                     <button class="dsh-btn" style="font-size:10.5px; padding:2px 8px;" onclick="askDshFromSearchResults(${i})">✨ 探讨</button>
