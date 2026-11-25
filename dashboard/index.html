@@ -285,7 +285,8 @@
             display: flex;
             gap: 3px;
             overflow-x: auto;
-            padding-bottom: 6px;
+            padding: 6px 5px 8px 5px;
+            margin: -6px -5px 0 -5px;
             -webkit-overflow-scrolling: touch;
         }
         .heat-grid::-webkit-scrollbar {
@@ -304,6 +305,7 @@
             gap: 3px;
         }
         .heat-cell {
+            position: relative;
             width: 10px;
             height: 10px;
             border-radius: 2px;
@@ -756,12 +758,8 @@
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-top: 6px;
-            padding-bottom: 6px;
-            padding-left: 2px;
-            padding-right: 2px;
-            margin-top: -4px;
-            margin-bottom: 10px;
+            padding: 6px 6px 8px 6px;
+            margin: -4px -6px 10px -6px;
             -webkit-overflow-scrolling: touch;
         }
         .concept-pill {
@@ -1456,19 +1454,38 @@
         }
         .drawer-item {
             background: var(--surface-subtle);
-            border-radius: 8px;
-            padding: 12px 14px;
+            border: 1px solid var(--border-main);
+            border-radius: 10px;
+            padding: 13px 15px;
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.65;
             color: var(--ink-primary);
         }
+        .drawer-quote-index {
+            display: inline-block;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--ink-muted);
+            margin-right: 6px;
+            font-variant-numeric: tabular-nums;
+        }
         .drawer-note {
-            margin-top: 6px;
-            padding: 5px 8px;
-            border-radius: 5px;
-            background: var(--surface);
+            margin-top: 10px;
+            padding: 8px 11px;
+            border-radius: 0 7px 7px 0;
+            border-left: 2.5px solid var(--accent-terracotta);
+            background: var(--accent-soft);
+            color: var(--ink-primary);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+        .drawer-note-label {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 600;
             color: var(--accent-terracotta);
-            font-size: 11.5px;
+            margin-bottom: 2px;
         }
         .drawer-time {
             font-size: 10.5px;
@@ -2636,8 +2653,8 @@
             } else {
                 stream.innerHTML = b.highlights.map((h, i) => `
                     <div class="drawer-item">
-                        <p class="serif" style="line-height:1.6;"><strong>#${i+1}</strong> “${escapeHtml(h.text)}”</p>
-                        ${h.note ? `<div class="drawer-note">💭 批注：${escapeHtml(h.note)}</div>` : ''}
+                        <p class="serif" style="line-height:1.65;"><span class="drawer-quote-index">#${i+1}</span>“${escapeHtml(h.text)}”</p>
+                        ${h.note ? `<div class="drawer-note"><span class="drawer-note-label">💭 我的批注</span>${escapeHtml(h.note)}</div>` : ''}
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; gap:8px;">
                             <span class="drawer-time">${escapeHtml(h.time)}</span>
                             <div style="display:flex; align-items:center; gap:6px;">
