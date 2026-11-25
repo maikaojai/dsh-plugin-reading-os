@@ -644,7 +644,7 @@
         /* ================= 3. COMPANION BOOKS ================= */
         .companion-row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 16px;
             margin-bottom: 20px;
         }
@@ -976,9 +976,64 @@
         /* ================= 4. DUAL PRACTICAL CARDS (UNIFIED & REFINED) ================= */
         .dual-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
+        }
+
+        /* ================= ONBOARDING / EMPTY STATE VIEW ================= */
+        .onboarding-card {
+            max-width: 580px;
+            margin: 44px auto;
+            background: var(--surface);
+            border: 1px solid var(--border-main);
+            border-radius: 16px;
+            padding: 32px 30px;
+            box-shadow: var(--card-shadow);
+            text-align: left;
+        }
+        .onboarding-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-terracotta);
+            background: var(--accent-soft);
+            padding: 4px 10px;
+            border-radius: 99px;
+            margin-bottom: 14px;
+        }
+        .onboarding-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--ink-primary);
+            margin-bottom: 8px;
+        }
+        .onboarding-desc {
+            font-size: 13px;
+            color: var(--ink-secondary);
+            line-height: 1.65;
+            margin-bottom: 20px;
+        }
+        .onboarding-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 22px;
+            font-size: 12.5px;
+            color: var(--ink-secondary);
+            line-height: 1.6;
+        }
+        .onboarding-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
         }
 
         .spark-bookmark-card, .unread-deck-card {
@@ -1985,6 +2040,27 @@
             </div>
         </header>
 
+        <!-- ================= ONBOARDING / EMPTY STATE VIEW (UNCONNECTED) ================= -->
+        <div id="onboardingView" style="display:none;">
+            <div class="onboarding-card">
+                <div class="onboarding-badge">📖 本地隐私优先 · 纯只读模式</div>
+                <div class="onboarding-title serif">连接您的本地阅读空间</div>
+                <div class="onboarding-desc" id="onboardingDesc">
+                    暂未读取到 macOS「图书（Apple Books）」本地数据库。ReadingOS 不包含任何云端或预设演示书单，仅呈现您自己真实的阅读足迹与划线批注。
+                </div>
+                <div class="onboarding-steps">
+                    <div><strong>1. 开启系统磁盘权限（最常见）：</strong> 打开 macOS「系统设置 ➔ 隐私与安全性 ➔ 完全磁盘访问权限」，勾选 <strong>DeepSeek Harness</strong>。</div>
+                    <div><strong>2. 确认书库状态：</strong> 确认自带「图书（Apple Books）」App 中已导入书籍并留下过阅读划线。</div>
+                    <div><strong>3. 自定义目录（可选）：</strong> 如果您的书库或电子书存放在非默认目录（如外接硬盘），可点击下方配置路径。</div>
+                </div>
+                <div class="onboarding-actions">
+                    <button class="dsh-btn primary" onclick="syncReadingData()" style="padding:8px 16px; font-size:12.5px;">🔄 已授权，立即同步</button>
+                    <button class="dsh-btn" onclick="openSettingsModal()" style="padding:8px 16px; font-size:12.5px;">⚙️ 配置路径与权限说明</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainDashboardView" style="display:none;">
         <!-- ================= TOP BENTO ROW: HEATMAP + DIMENSION WEIGHTS ================= -->
         <div class="top-bento-row">
 
@@ -2268,6 +2344,8 @@
             </div>
         </div>
 
+        </div><!-- /#mainDashboardView -->
+
     </div>
 
     <!-- ================= SLIDE-OVER DRAWER ================= -->
@@ -2456,7 +2534,19 @@
                 .replace(/'/g, '&#39;');
         }
 
-        const DATA = {"books": {"MEDITATIONS": {"key": "MEDITATIONS", "title": "沉思录", "author": "[古罗马] 马可·奥勒留", "progress": 85, "highlights_count": 168, "sample_quote": "你有力量掌管你的心灵，而不是外界的事件。认识到这一点，你就会找到力量。", "highlights": [{"text": "你有力量掌管你的心灵，而不是外界的事件。认识到这一点，你就会找到力量。", "note": "斯多葛控制二分法：区分何者可控，何者不可控。", "time": "2026-11-16 16:30:12"}, {"text": "没有任何地方能比人自己的灵魂更为宁静、更为清闲。特别是当他心里有这些思想，只要凝神一想，立刻就获得完全的安宁。", "note": "退入内心的宁静城堡，不受外界浮躁喧嚣干扰。", "time": "2026-11-15 21:14:05"}, {"text": "不要表现得好像你能活上一万年一样。命运正悬在你的头上。趁你还活着，趁你还有能力，努力做个好人吧。", "note": "向死而生的日常觉知。", "time": "2026-11-14 14:02:50"}, {"text": "如果一件事对人不是坏事，它就不能使人变坏，也不能从内或从外伤害他。", "note": "外部事变无法伤害内心，除非我们主动给予它伤害我们的意义。", "time": "2026-11-12 09:45:21"}, {"text": "凡是合乎自然的事，对万物都是好的。每一时刻都要专心致志地完成手头的工作，带着坚定不移的尊严与人道精神。", "note": "专注当下本分，不忧未来，不悔过去。", "time": "2026-11-10 11:20:18"}, {"text": "静止的心灵是一座城堡；人没有比这更安全的避难所，只要避入其中，就永远不可攻破。", "note": "修心即是修防线。", "time": "2026-11-08 17:35:40"}, {"text": "看看他们受赞扬时所感到的快乐，这种赞扬难道不是仅仅来自善变之人的唇舌？在永恒的时间长河中，一切虚名皆如过眼云烟。", "note": "摆脱对他人评价的依赖，找回自主自律的平静。", "time": "2026-11-05 15:10:02"}]}, "CHUANXI": {"key": "CHUANXI", "title": "传习录", "author": "王阳明", "progress": 100, "highlights_count": 125, "sample_quote": "知是行之始，行是知之成。圣学只一个功夫，知行不可分作两事。", "highlights": [{"text": "知是行之始，行是知之成。圣学只一个功夫，知行不可分作两事。", "note": "真知必能践行，不行未可谓知。", "time": "2026-11-13 14:20:10"}, {"text": "知之真切笃实处即是行，行之明觉精察处即是知。知行原是一事。", "note": "知与行一体两面，体用不二。", "time": "2026-11-11 10:15:33"}, {"text": "心即理也。此心无私欲之蔽，即是天理，不须外面添一分。", "note": "心外无理，向内探寻良知本体。", "time": "2026-11-09 16:40:22"}, {"text": "破山中贼易，破心中贼难。身之主宰便是心，心之所发便是意，意之本体便是知，意之所用便是物。", "note": "克服内心的执念与私欲是终身功夫。", "time": "2026-11-06 09:30:15"}, {"text": "人须在事上磨练，方立得住，方能‘静亦定，动亦定’。", "note": "事上磨练，才能生出真正的定力与智慧。", "time": "2026-11-03 15:22:45"}]}, "LAOZI": {"key": "LAOZI", "title": "道德经", "author": "老子", "progress": 64, "highlights_count": 81, "sample_quote": "致虚极，守静笃。万物并作，吾以观复。夫物芸芸，各复归其根。", "highlights": [{"text": "致虚极，守静笃。万物并作，吾以观复。夫物芸芸，各复归其根。", "note": "守静归根，顺应生命本真律动。", "time": "2026-11-14 08:30:10"}, {"text": "上善若水。水善利万物而不争，处众人之所恶，故几于道。", "note": "不争之德，居下包容。", "time": "2026-11-12 17:15:20"}, {"text": "知人者智，自知者明。胜人者有力，自胜者强。知足者富，强行者有志。", "note": "向内洞察自己胜过向外战胜他人。", "time": "2026-11-08 11:10:45"}, {"text": "人法地，地法天，天法道，道法自然。", "note": "遵循客观大规律，不妄为、不强求。", "time": "2026-11-04 14:05:30"}]}, "LUNYU": {"key": "LUNYU", "title": "论语", "author": "孔子", "progress": 100, "highlights_count": 96, "sample_quote": "君子求诸己，小人求诸人。造次必于是，颠沛必于是。", "highlights": [{"text": "君子求诸己，小人求诸人。", "note": "反求诸己，一切从审视自我开始。", "time": "2026-11-15 10:20:00"}, {"text": "先行其言而后从之。君子欲讷于言而敏于行。", "note": "行动在先，言语在后，拒绝虚浮。", "time": "2026-11-13 16:45:10"}, {"text": "知者不惑，仁者不忧，勇者不惧。", "note": "三达德，内圣外王的从容气象。", "time": "2026-11-07 09:15:30"}]}, "ZHUANGZI": {"key": "ZHUANGZI", "title": "庄子", "author": "庄周", "progress": 45, "highlights_count": 68, "sample_quote": "至人之用心若镜，不将不迎，应而不藏，故能胜物而不伤。", "highlights": [{"text": "至人之用心若镜，不将不迎，应而不藏，故能胜物而不伤。", "note": "如镜照物，心无所住，随物赋形。", "time": "2026-11-14 15:30:22"}, {"text": "安时而处顺，哀乐不能入也，古者谓是帝之县解。", "note": "顺应天时物化，超越世俗哀乐缠缚。", "time": "2026-11-10 14:10:05"}]}, "SHIJI": {"key": "SHIJI", "title": "史记", "author": "司马迁", "progress": 30, "highlights_count": 112, "sample_quote": "究天人之际，通古今之变，成一家之言。", "highlights": [{"text": "究天人之际，通古今之变，成一家之言。", "note": "贯通历史长河的宏大视野与独立思考精神。", "time": "2026-11-12 11:20:40"}, {"text": "天下熙熙，皆为利来；天下攘攘，皆为利往。", "note": "道出世间利益周期的客观动力法则。", "time": "2026-11-08 16:55:12"}]}, "SUNZI": {"key": "SUNZI", "title": "孙子兵法", "author": "孙武", "progress": 100, "highlights_count": 48, "sample_quote": "知彼知己，百战不殆；不知彼而知己，一胜一负；不知彼不知己，每战必殆。", "highlights": [{"text": "知彼知己，百战不殆；不知彼而知己，一胜一负；不知彼不知己，每战必殆。", "note": "实事求是，以充分信息消除不确定性。", "time": "2026-11-11 09:40:15"}]}, "JINGANG": {"key": "MEDITATIONS", "title": "沉思录", "author": "[古罗马] 马可·奥勒留", "progress": 85, "highlights_count": 168, "sample_quote": "你有力量掌管你的心灵，而不是外界的事件。认识到这一点，你就会找到力量。", "highlights": [{"text": "你有力量掌管你的心灵，而不是外界的事件。认识到这一点，你就会找到力量。", "note": "斯多葛控制二分法：区分何者可控，何者不可控。", "time": "2026-11-16 16:30:12"}, {"text": "没有任何地方能比人自己的灵魂更为宁静、更为清闲。特别是当他心里有这些思想，只要凝神一想，立刻就获得完全的安宁。", "note": "退入内心的宁静城堡，不受外界浮躁喧嚣干扰。", "time": "2026-11-15 21:14:05"}, {"text": "不要表现得好像你能活上一万年一样。命运正悬在你的头上。趁你还活着，趁你还有能力，努力做个好人吧。", "note": "向死而生的日常觉知。", "time": "2026-11-14 14:02:50"}, {"text": "如果一件事对人不是坏事，它就不能使人变坏，也不能从内或从外伤害他。", "note": "外部事变无法伤害内心，除非我们主动给予它伤害我们的意义。", "time": "2026-11-12 09:45:21"}, {"text": "凡是合乎自然的事，对万物都是好的。每一时刻都要专心致志地完成手头的工作，带着坚定不移的尊严与人道精神。", "note": "专注当下本分，不忧未来，不悔过去。", "time": "2026-11-10 11:20:18"}, {"text": "静止的心灵是一座城堡；人没有比这更安全的避难所，只要避入其中，就永远不可攻破。", "note": "修心即是修防线。", "time": "2026-11-08 17:35:40"}, {"text": "看看他们受赞扬时所感到的快乐，这种赞扬难道不是仅仅来自善变之人的唇舌？在永恒的时间长河中，一切虚名皆如过眼云烟。", "note": "摆脱对他人评价的依赖，找回自主自律的平静。", "time": "2026-11-05 15:10:02"}]}, "VALUATION": {"key": "CHUANXI", "title": "传习录", "author": "王阳明", "progress": 100, "highlights_count": 125, "sample_quote": "知是行之始，行是知之成。圣学只一个功夫，知行不可分作两事。", "highlights": [{"text": "知是行之始，行是知之成。圣学只一个功夫，知行不可分作两事。", "note": "真知必能践行，不行未可谓知。", "time": "2026-11-13 14:20:10"}, {"text": "知之真切笃实处即是行，行之明觉精察处即是知。知行原是一事。", "note": "知与行一体两面，体用不二。", "time": "2026-11-11 10:15:33"}, {"text": "心即理也。此心无私欲之蔽，即是天理，不须外面添一分。", "note": "心外无理，向内探寻良知本体。", "time": "2026-11-09 16:40:22"}, {"text": "破山中贼易，破心中贼难。身之主宰便是心，心之所发便是意，意之本体便是知，意之所用便是物。", "note": "克服内心的执念与私欲是终身功夫。", "time": "2026-11-06 09:30:15"}, {"text": "人须在事上磨练，方立得住，方能‘静亦定，动亦定’。", "note": "事上磨练，才能生出真正的定力与智慧。", "time": "2026-11-03 15:22:45"}]}, "FREEDOM": {"key": "LUNYU", "title": "论语", "author": "孔子", "progress": 100, "highlights_count": 96, "sample_quote": "君子求诸己，小人求诸人。造次必于是，颠沛必于是。", "highlights": [{"text": "君子求诸己，小人求诸人。", "note": "反求诸己，一切从审视自我开始。", "time": "2026-11-15 10:20:00"}, {"text": "先行其言而后从之。君子欲讷于言而敏于行。", "note": "行动在先，言语在后，拒绝虚浮。", "time": "2026-11-13 16:45:10"}, {"text": "知者不惑，仁者不忧，勇者不惧。", "note": "三达德，内圣外王的从容气象。", "time": "2026-11-07 09:15:30"}]}}, "spotlight_book_key": "MEDITATIONS", "recent_downloads": [{"title": "沉思录：罗马皇帝的人生哲学", "author": "[古罗马] 马可·奥勒留", "tag": "EPUB · 昨天", "desc": "斯多葛学派哲学经典，记录帝王在动荡戎马岁月中的自我审视与心灵宁静。"}, {"title": "传习录：王阳明心学典藏", "author": "王阳明", "tag": "EPUB · 昨天", "desc": "阳明心学立教之作，系统阐释致良知、知行合一与心即理的东方实践哲学。"}, {"title": "道德经集注", "author": "[魏] 王弼 / 老子", "tag": "PDF · 3天前", "desc": "玄学开山之作，以辩证玄妙的哲思拆解天下万物有无与动静之理。"}, {"title": "庄子今注今译", "author": "陈鼓应 / 庄周", "tag": "EPUB · 5天前", "desc": "通达超脱的生命哲学，借大鹏翱翔与庖丁解牛探讨精神自由与齐物境界。"}, {"title": "史记全本精注", "author": "[西汉] 司马迁", "tag": "EPUB · 1周前", "desc": "究天人之际，通古今之变，以人物本纪与列传勾勒三千年兴亡大周期。"}, {"title": "贞观政要", "author": "[唐] 吴兢", "tag": "PDF · 2周前", "desc": "开元名臣对盛世治道的深刻反思，论居安思危、纳谏修德与制度存续。"}], "concept_clusters": [{"id": "action_practice", "name": "知行合一 · 实践哲学", "count": 125, "books_count": 16, "samples": [{"book": "传习录", "author": "王阳明", "quote": "知是行之始，行是知之成。圣学只一个功夫，知行不可分作两事。真知即所以为行，不行不足谓之知。"}, {"book": "论语", "author": "孔子", "quote": "先行其言而后从之。君子欲讷于言而敏于行。力行近乎仁，笃行而守信。"}, {"book": "孙子兵法", "author": "孙武", "quote": "知彼知己，百战不殆；不知彼而知己，一胜一负；不知彼不知己，每战必殆。见胜不过众人之所知，非善之善者也。"}]}, {"id": "peace_mind", "name": "心性宁静 · 斯多葛与道家", "count": 168, "books_count": 22, "samples": [{"book": "沉思录", "author": "马可·奥勒留", "quote": "你有力量掌管你的心灵，而不是外界的事件。认识到这一点，你就会找到力量。退入内心的宁静城堡，不受外界浮躁侵扰。"}, {"book": "道德经", "author": "老子", "quote": "致虚极，守静笃。万物并作，吾以观复。夫物芸芸，各复归其根。归根曰静，静曰复命。"}, {"book": "庄子", "author": "庄周", "quote": "至人之用心若镜，不将不迎，应而不藏，故能胜物而不伤。安时而处顺，哀乐不能入也。"}]}, {"id": "cycles_history", "name": "见微知著 · 周期与变易", "count": 95, "books_count": 18, "samples": [{"book": "史记", "author": "司马迁", "quote": "究天人之际，通古今之变，成一家之言。物盛则衰，时极则转，天下熙熙皆为利来，天下攘攘皆为利往。"}, {"book": "道德经", "author": "老子", "quote": "反者道之动，弱者道之用。天下万物生于有，有生于无。大智若愚，大巧若拙。"}, {"book": "孙子兵法", "author": "孙武", "quote": "兵无常势，水无常形。能因敌变化而取胜者，谓之神。顺应态势，借周期以制胜。"}]}, {"id": "self_reflection", "name": "向内自省 · 修己安人", "count": 110, "books_count": 20, "samples": [{"book": "传习录", "author": "王阳明", "quote": "破山中贼易，破心中贼难。心即理也，向内探寻良知，不为私欲外物所蔽。"}, {"book": "沉思录", "author": "马可·奥勒留", "quote": "不要表现得好像你能活上一万年一样。命运正悬在头上，趁你还活着，努力做个自律清醒的好人。"}, {"book": "论语", "author": "孔子", "quote": "君子求诸己，小人求诸人。造次必于是，颠沛必于是。内省不疚，夫何忧何惧。"}]}], "sparks": [{"book": "沉思录", "author": "[古罗马] 马可·奥勒留", "quote": "你有力量掌管你的心灵，而不是外界的事件。认识到这一点，你就会找到力量。"}, {"book": "传习录", "author": "王阳明", "quote": "知是行之始，行是知之成。圣学只一个功夫，知行不可分作两事。真知即所以为行。"}, {"book": "道德经", "author": "老子", "quote": "上善若水。水善利万物而不争，处众人之所恶，故几于道。"}, {"book": "论语", "author": "孔子", "quote": "君子求诸己，小人求诸人。造次必于是，颠沛必于是。"}, {"book": "庄子", "author": "庄周", "quote": "至人之用心若镜，不将不迎，应而不藏，故能胜物而不伤。"}, {"book": "孙子兵法", "author": "孙武", "quote": "知彼知己，百战不殆；不知彼而知己，一胜一负；不知彼不知己，每战必殆。"}], "unread_queue": [{"title": "史记·本纪全卷", "ext": "EPUB"}, {"title": "庄子·内篇注疏", "ext": "PDF"}, {"title": "论法的精神", "ext": "EPUB"}, {"title": "西方哲学史", "ext": "EPUB"}, {"title": "资治通鉴精华", "ext": "EPUB"}, {"title": "近思录", "ext": "PDF"}], "inventory": {"total_books": 360, "downloads_30d": 18, "conversion_rate": "88.9%", "tsundoku_rate": "11.1%"}, "dimension_weights": [{"category": "儒道心性与斯多葛哲学", "count": 75, "highlights": 890, "pct": 35, "color": "var(--accent-terracotta)"}, {"category": "经世致用与知行方法论", "count": 42, "highlights": 1120, "pct": 40, "color": "#B8583E"}, {"category": "史鉴兴替与历史大周期", "count": 38, "highlights": 680, "pct": 20, "color": "#7D4336"}, {"category": "科学求真与博雅通识", "count": 25, "highlights": 110, "pct": 5, "color": "#949086"}], "heatmap_weeks": [[{"level": 2, "count": 4, "date": "2026-W00-0"}, {"level": 2, "count": 6, "date": "2026-W00-1"}, {"level": 0, "count": 0, "date": "2026-W00-2"}, {"level": 2, "count": 12, "date": "2026-W00-3"}, {"level": 0, "count": 0, "date": "2026-W00-4"}, {"level": 1, "count": 2, "date": "2026-W00-5"}, {"level": 0, "count": 0, "date": "2026-W00-6"}], [{"level": 0, "count": 0, "date": "2026-W01-0"}, {"level": 2, "count": 12, "date": "2026-W01-1"}, {"level": 0, "count": 0, "date": "2026-W01-2"}, {"level": 2, "count": 12, "date": "2026-W01-3"}, {"level": 1, "count": 5, "date": "2026-W01-4"}, {"level": 2, "count": 4, "date": "2026-W01-5"}, {"level": 3, "count": 9, "date": "2026-W01-6"}], [{"level": 2, "count": 8, "date": "2026-W02-0"}, {"level": 1, "count": 3, "date": "2026-W02-1"}, {"level": 4, "count": 16, "date": "2026-W02-2"}, {"level": 0, "count": 0, "date": "2026-W02-3"}, {"level": 1, "count": 4, "date": "2026-W02-4"}, {"level": 3, "count": 18, "date": "2026-W02-5"}, {"level": 1, "count": 2, "date": "2026-W02-6"}], [{"level": 2, "count": 12, "date": "2026-W03-0"}, {"level": 0, "count": 0, "date": "2026-W03-1"}, {"level": 4, "count": 8, "date": "2026-W03-2"}, {"level": 2, "count": 12, "date": "2026-W03-3"}, {"level": 3, "count": 12, "date": "2026-W03-4"}, {"level": 2, "count": 4, "date": "2026-W03-5"}, {"level": 0, "count": 0, "date": "2026-W03-6"}], [{"level": 0, "count": 0, "date": "2026-W04-0"}, {"level": 1, "count": 2, "date": "2026-W04-1"}, {"level": 3, "count": 6, "date": "2026-W04-2"}, {"level": 1, "count": 5, "date": "2026-W04-3"}, {"level": 2, "count": 8, "date": "2026-W04-4"}, {"level": 0, "count": 0, "date": "2026-W04-5"}, {"level": 1, "count": 4, "date": "2026-W04-6"}], [{"level": 2, "count": 4, "date": "2026-W05-0"}, {"level": 2, "count": 6, "date": "2026-W05-1"}, {"level": 2, "count": 6, "date": "2026-W05-2"}, {"level": 0, "count": 0, "date": "2026-W05-3"}, {"level": 1, "count": 6, "date": "2026-W05-4"}, {"level": 0, "count": 0, "date": "2026-W05-5"}, {"level": 1, "count": 2, "date": "2026-W05-6"}], [{"level": 0, "count": 0, "date": "2026-W06-0"}, {"level": 0, "count": 0, "date": "2026-W06-1"}, {"level": 1, "count": 4, "date": "2026-W06-2"}, {"level": 0, "count": 0, "date": "2026-W06-3"}, {"level": 4, "count": 24, "date": "2026-W06-4"}, {"level": 3, "count": 12, "date": "2026-W06-5"}, {"level": 0, "count": 0, "date": "2026-W06-6"}], [{"level": 1, "count": 5, "date": "2026-W07-0"}, {"level": 0, "count": 0, "date": "2026-W07-1"}, {"level": 0, "count": 0, "date": "2026-W07-2"}, {"level": 2, "count": 12, "date": "2026-W07-3"}, {"level": 1, "count": 6, "date": "2026-W07-4"}, {"level": 1, "count": 6, "date": "2026-W07-5"}, {"level": 1, "count": 3, "date": "2026-W07-6"}], [{"level": 4, "count": 12, "date": "2026-W08-0"}, {"level": 2, "count": 4, "date": "2026-W08-1"}, {"level": 3, "count": 6, "date": "2026-W08-2"}, {"level": 0, "count": 0, "date": "2026-W08-3"}, {"level": 0, "count": 0, "date": "2026-W08-4"}, {"level": 2, "count": 12, "date": "2026-W08-5"}, {"level": 0, "count": 0, "date": "2026-W08-6"}], [{"level": 1, "count": 5, "date": "2026-W09-0"}, {"level": 2, "count": 12, "date": "2026-W09-1"}, {"level": 3, "count": 6, "date": "2026-W09-2"}, {"level": 2, "count": 4, "date": "2026-W09-3"}, {"level": 2, "count": 12, "date": "2026-W09-4"}, {"level": 3, "count": 12, "date": "2026-W09-5"}, {"level": 0, "count": 0, "date": "2026-W09-6"}], [{"level": 1, "count": 5, "date": "2026-W10-0"}, {"level": 0, "count": 0, "date": "2026-W10-1"}, {"level": 2, "count": 8, "date": "2026-W10-2"}, {"level": 4, "count": 12, "date": "2026-W10-3"}, {"level": 2, "count": 4, "date": "2026-W10-4"}, {"level": 3, "count": 12, "date": "2026-W10-5"}, {"level": 3, "count": 18, "date": "2026-W10-6"}], [{"level": 2, "count": 6, "date": "2026-W11-0"}, {"level": 1, "count": 3, "date": "2026-W11-1"}, {"level": 2, "count": 12, "date": "2026-W11-2"}, {"level": 4, "count": 24, "date": "2026-W11-3"}, {"level": 1, "count": 2, "date": "2026-W11-4"}, {"level": 0, "count": 0, "date": "2026-W11-5"}, {"level": 1, "count": 4, "date": "2026-W11-6"}], [{"level": 0, "count": 0, "date": "2026-W12-0"}, {"level": 0, "count": 0, "date": "2026-W12-1"}, {"level": 2, "count": 4, "date": "2026-W12-2"}, {"level": 0, "count": 0, "date": "2026-W12-3"}, {"level": 1, "count": 2, "date": "2026-W12-4"}, {"level": 4, "count": 24, "date": "2026-W12-5"}, {"level": 3, "count": 9, "date": "2026-W12-6"}], [{"level": 2, "count": 12, "date": "2026-W13-0"}, {"level": 0, "count": 0, "date": "2026-W13-1"}, {"level": 2, "count": 12, "date": "2026-W13-2"}, {"level": 1, "count": 3, "date": "2026-W13-3"}, {"level": 4, "count": 12, "date": "2026-W13-4"}, {"level": 2, "count": 10, "date": "2026-W13-5"}, {"level": 4, "count": 16, "date": "2026-W13-6"}], [{"level": 1, "count": 6, "date": "2026-W14-0"}, {"level": 1, "count": 3, "date": "2026-W14-1"}, {"level": 0, "count": 0, "date": "2026-W14-2"}, {"level": 1, "count": 6, "date": "2026-W14-3"}, {"level": 2, "count": 12, "date": "2026-W14-4"}, {"level": 0, "count": 0, "date": "2026-W14-5"}, {"level": 0, "count": 0, "date": "2026-W14-6"}], [{"level": 2, "count": 6, "date": "2026-W15-0"}, {"level": 0, "count": 0, "date": "2026-W15-1"}, {"level": 0, "count": 0, "date": "2026-W15-2"}, {"level": 1, "count": 6, "date": "2026-W15-3"}, {"level": 0, "count": 0, "date": "2026-W15-4"}, {"level": 2, "count": 6, "date": "2026-W15-5"}, {"level": 2, "count": 12, "date": "2026-W15-6"}], [{"level": 2, "count": 6, "date": "2026-W16-0"}, {"level": 3, "count": 15, "date": "2026-W16-1"}, {"level": 0, "count": 0, "date": "2026-W16-2"}, {"level": 0, "count": 0, "date": "2026-W16-3"}, {"level": 1, "count": 5, "date": "2026-W16-4"}, {"level": 1, "count": 2, "date": "2026-W16-5"}, {"level": 2, "count": 4, "date": "2026-W16-6"}], [{"level": 0, "count": 0, "date": "2026-W17-0"}, {"level": 2, "count": 4, "date": "2026-W17-1"}, {"level": 0, "count": 0, "date": "2026-W17-2"}, {"level": 0, "count": 0, "date": "2026-W17-3"}, {"level": 1, "count": 5, "date": "2026-W17-4"}, {"level": 0, "count": 0, "date": "2026-W17-5"}, {"level": 1, "count": 2, "date": "2026-W17-6"}], [{"level": 1, "count": 6, "date": "2026-W18-0"}, {"level": 0, "count": 0, "date": "2026-W18-1"}, {"level": 2, "count": 12, "date": "2026-W18-2"}, {"level": 3, "count": 6, "date": "2026-W18-3"}, {"level": 4, "count": 12, "date": "2026-W18-4"}, {"level": 0, "count": 0, "date": "2026-W18-5"}, {"level": 1, "count": 3, "date": "2026-W18-6"}], [{"level": 3, "count": 6, "date": "2026-W19-0"}, {"level": 0, "count": 0, "date": "2026-W19-1"}, {"level": 0, "count": 0, "date": "2026-W19-2"}, {"level": 1, "count": 5, "date": "2026-W19-3"}, {"level": 1, "count": 6, "date": "2026-W19-4"}, {"level": 2, "count": 10, "date": "2026-W19-5"}, {"level": 0, "count": 0, "date": "2026-W19-6"}], [{"level": 1, "count": 2, "date": "2026-W20-0"}, {"level": 2, "count": 12, "date": "2026-W20-1"}, {"level": 0, "count": 0, "date": "2026-W20-2"}, {"level": 1, "count": 2, "date": "2026-W20-3"}, {"level": 2, "count": 12, "date": "2026-W20-4"}, {"level": 4, "count": 24, "date": "2026-W20-5"}, {"level": 0, "count": 0, "date": "2026-W20-6"}], [{"level": 4, "count": 8, "date": "2026-W21-0"}, {"level": 3, "count": 6, "date": "2026-W21-1"}, {"level": 2, "count": 6, "date": "2026-W21-2"}, {"level": 1, "count": 6, "date": "2026-W21-3"}, {"level": 0, "count": 0, "date": "2026-W21-4"}, {"level": 2, "count": 12, "date": "2026-W21-5"}, {"level": 0, "count": 0, "date": "2026-W21-6"}], [{"level": 2, "count": 12, "date": "2026-W22-0"}, {"level": 2, "count": 8, "date": "2026-W22-1"}, {"level": 0, "count": 0, "date": "2026-W22-2"}, {"level": 2, "count": 6, "date": "2026-W22-3"}, {"level": 1, "count": 3, "date": "2026-W22-4"}, {"level": 2, "count": 8, "date": "2026-W22-5"}, {"level": 1, "count": 2, "date": "2026-W22-6"}], [{"level": 0, "count": 0, "date": "2026-W23-0"}, {"level": 2, "count": 12, "date": "2026-W23-1"}, {"level": 4, "count": 8, "date": "2026-W23-2"}, {"level": 2, "count": 12, "date": "2026-W23-3"}, {"level": 1, "count": 4, "date": "2026-W23-4"}, {"level": 3, "count": 9, "date": "2026-W23-5"}, {"level": 1, "count": 3, "date": "2026-W23-6"}], [{"level": 1, "count": 6, "date": "2026-W24-0"}, {"level": 2, "count": 12, "date": "2026-W24-1"}, {"level": 4, "count": 24, "date": "2026-W24-2"}, {"level": 0, "count": 0, "date": "2026-W24-3"}, {"level": 3, "count": 12, "date": "2026-W24-4"}, {"level": 4, "count": 8, "date": "2026-W24-5"}, {"level": 4, "count": 12, "date": "2026-W24-6"}], [{"level": 1, "count": 2, "date": "2026-W25-0"}, {"level": 2, "count": 6, "date": "2026-W25-1"}, {"level": 1, "count": 6, "date": "2026-W25-2"}, {"level": 0, "count": 0, "date": "2026-W25-3"}, {"level": 1, "count": 4, "date": "2026-W25-4"}, {"level": 2, "count": 8, "date": "2026-W25-5"}, {"level": 4, "count": 8, "date": "2026-W25-6"}], [{"level": 0, "count": 0, "date": "2026-W26-0"}, {"level": 1, "count": 4, "date": "2026-W26-1"}, {"level": 0, "count": 0, "date": "2026-W26-2"}, {"level": 1, "count": 3, "date": "2026-W26-3"}, {"level": 2, "count": 8, "date": "2026-W26-4"}, {"level": 0, "count": 0, "date": "2026-W26-5"}, {"level": 1, "count": 5, "date": "2026-W26-6"}], [{"level": 2, "count": 4, "date": "2026-W27-0"}, {"level": 0, "count": 0, "date": "2026-W27-1"}, {"level": 3, "count": 9, "date": "2026-W27-2"}, {"level": 2, "count": 8, "date": "2026-W27-3"}, {"level": 2, "count": 6, "date": "2026-W27-4"}, {"level": 1, "count": 2, "date": "2026-W27-5"}, {"level": 1, "count": 2, "date": "2026-W27-6"}], [{"level": 3, "count": 9, "date": "2026-W28-0"}, {"level": 2, "count": 4, "date": "2026-W28-1"}, {"level": 1, "count": 6, "date": "2026-W28-2"}, {"level": 3, "count": 15, "date": "2026-W28-3"}, {"level": 4, "count": 12, "date": "2026-W28-4"}, {"level": 4, "count": 12, "date": "2026-W28-5"}, {"level": 3, "count": 9, "date": "2026-W28-6"}], [{"level": 3, "count": 6, "date": "2026-W29-0"}, {"level": 0, "count": 0, "date": "2026-W29-1"}, {"level": 4, "count": 20, "date": "2026-W29-2"}, {"level": 3, "count": 9, "date": "2026-W29-3"}, {"level": 1, "count": 2, "date": "2026-W29-4"}, {"level": 1, "count": 2, "date": "2026-W29-5"}, {"level": 3, "count": 9, "date": "2026-W29-6"}], [{"level": 0, "count": 0, "date": "2026-W30-0"}, {"level": 4, "count": 16, "date": "2026-W30-1"}, {"level": 1, "count": 3, "date": "2026-W30-2"}, {"level": 0, "count": 0, "date": "2026-W30-3"}, {"level": 2, "count": 10, "date": "2026-W30-4"}, {"level": 1, "count": 2, "date": "2026-W30-5"}, {"level": 4, "count": 16, "date": "2026-W30-6"}], [{"level": 1, "count": 6, "date": "2026-W31-0"}, {"level": 1, "count": 6, "date": "2026-W31-1"}, {"level": 1, "count": 2, "date": "2026-W31-2"}, {"level": 0, "count": 0, "date": "2026-W31-3"}, {"level": 4, "count": 12, "date": "2026-W31-4"}, {"level": 2, "count": 8, "date": "2026-W31-5"}, {"level": 0, "count": 0, "date": "2026-W31-6"}], [{"level": 2, "count": 8, "date": "2026-W32-0"}, {"level": 2, "count": 8, "date": "2026-W32-1"}, {"level": 1, "count": 6, "date": "2026-W32-2"}, {"level": 0, "count": 0, "date": "2026-W32-3"}, {"level": 3, "count": 9, "date": "2026-W32-4"}, {"level": 1, "count": 5, "date": "2026-W32-5"}, {"level": 0, "count": 0, "date": "2026-W32-6"}], [{"level": 4, "count": 24, "date": "2026-W33-0"}, {"level": 2, "count": 6, "date": "2026-W33-1"}, {"level": 1, "count": 2, "date": "2026-W33-2"}, {"level": 4, "count": 16, "date": "2026-W33-3"}, {"level": 2, "count": 4, "date": "2026-W33-4"}, {"level": 2, "count": 8, "date": "2026-W33-5"}, {"level": 2, "count": 10, "date": "2026-W33-6"}], [{"level": 1, "count": 4, "date": "2026-W34-0"}, {"level": 2, "count": 6, "date": "2026-W34-1"}, {"level": 1, "count": 5, "date": "2026-W34-2"}, {"level": 2, "count": 6, "date": "2026-W34-3"}, {"level": 2, "count": 8, "date": "2026-W34-4"}, {"level": 1, "count": 2, "date": "2026-W34-5"}, {"level": 1, "count": 3, "date": "2026-W34-6"}], [{"level": 1, "count": 6, "date": "2026-W35-0"}, {"level": 2, "count": 8, "date": "2026-W35-1"}, {"level": 1, "count": 5, "date": "2026-W35-2"}, {"level": 2, "count": 12, "date": "2026-W35-3"}, {"level": 1, "count": 3, "date": "2026-W35-4"}, {"level": 2, "count": 8, "date": "2026-W35-5"}, {"level": 2, "count": 12, "date": "2026-W35-6"}], [{"level": 1, "count": 3, "date": "2026-W36-0"}, {"level": 2, "count": 6, "date": "2026-W36-1"}, {"level": 3, "count": 9, "date": "2026-W36-2"}, {"level": 0, "count": 0, "date": "2026-W36-3"}, {"level": 0, "count": 0, "date": "2026-W36-4"}, {"level": 1, "count": 2, "date": "2026-W36-5"}, {"level": 1, "count": 6, "date": "2026-W36-6"}], [{"level": 0, "count": 0, "date": "2026-W37-0"}, {"level": 2, "count": 10, "date": "2026-W37-1"}, {"level": 1, "count": 3, "date": "2026-W37-2"}, {"level": 2, "count": 4, "date": "2026-W37-3"}, {"level": 3, "count": 6, "date": "2026-W37-4"}, {"level": 3, "count": 9, "date": "2026-W37-5"}, {"level": 0, "count": 0, "date": "2026-W37-6"}], [{"level": 4, "count": 24, "date": "2026-W38-0"}, {"level": 1, "count": 6, "date": "2026-W38-1"}, {"level": 0, "count": 0, "date": "2026-W38-2"}, {"level": 3, "count": 15, "date": "2026-W38-3"}, {"level": 0, "count": 0, "date": "2026-W38-4"}, {"level": 1, "count": 6, "date": "2026-W38-5"}, {"level": 4, "count": 24, "date": "2026-W38-6"}], [{"level": 1, "count": 5, "date": "2026-W39-0"}, {"level": 2, "count": 12, "date": "2026-W39-1"}, {"level": 1, "count": 6, "date": "2026-W39-2"}, {"level": 1, "count": 3, "date": "2026-W39-3"}, {"level": 2, "count": 10, "date": "2026-W39-4"}, {"level": 1, "count": 3, "date": "2026-W39-5"}, {"level": 3, "count": 12, "date": "2026-W39-6"}], [{"level": 3, "count": 18, "date": "2026-W40-0"}, {"level": 1, "count": 3, "date": "2026-W40-1"}, {"level": 1, "count": 2, "date": "2026-W40-2"}, {"level": 2, "count": 6, "date": "2026-W40-3"}, {"level": 1, "count": 4, "date": "2026-W40-4"}, {"level": 3, "count": 6, "date": "2026-W40-5"}, {"level": 0, "count": 0, "date": "2026-W40-6"}], [{"level": 0, "count": 0, "date": "2026-W41-0"}, {"level": 2, "count": 6, "date": "2026-W41-1"}, {"level": 0, "count": 0, "date": "2026-W41-2"}, {"level": 1, "count": 6, "date": "2026-W41-3"}, {"level": 1, "count": 2, "date": "2026-W41-4"}, {"level": 0, "count": 0, "date": "2026-W41-5"}, {"level": 1, "count": 6, "date": "2026-W41-6"}], [{"level": 4, "count": 8, "date": "2026-W42-0"}, {"level": 3, "count": 18, "date": "2026-W42-1"}, {"level": 1, "count": 2, "date": "2026-W42-2"}, {"level": 4, "count": 16, "date": "2026-W42-3"}, {"level": 3, "count": 15, "date": "2026-W42-4"}, {"level": 2, "count": 12, "date": "2026-W42-5"}, {"level": 3, "count": 9, "date": "2026-W42-6"}], [{"level": 1, "count": 4, "date": "2026-W43-0"}, {"level": 1, "count": 2, "date": "2026-W43-1"}, {"level": 1, "count": 5, "date": "2026-W43-2"}, {"level": 2, "count": 10, "date": "2026-W43-3"}, {"level": 4, "count": 24, "date": "2026-W43-4"}, {"level": 2, "count": 10, "date": "2026-W43-5"}, {"level": 2, "count": 4, "date": "2026-W43-6"}], [{"level": 0, "count": 0, "date": "2026-W44-0"}, {"level": 1, "count": 5, "date": "2026-W44-1"}, {"level": 0, "count": 0, "date": "2026-W44-2"}, {"level": 1, "count": 4, "date": "2026-W44-3"}, {"level": 0, "count": 0, "date": "2026-W44-4"}, {"level": 1, "count": 5, "date": "2026-W44-5"}, {"level": 1, "count": 5, "date": "2026-W44-6"}], [{"level": 1, "count": 2, "date": "2026-W45-0"}, {"level": 1, "count": 6, "date": "2026-W45-1"}, {"level": 0, "count": 0, "date": "2026-W45-2"}, {"level": 4, "count": 12, "date": "2026-W45-3"}, {"level": 2, "count": 4, "date": "2026-W45-4"}, {"level": 3, "count": 9, "date": "2026-W45-5"}, {"level": 0, "count": 0, "date": "2026-W45-6"}], [{"level": 0, "count": 0, "date": "2026-W46-0"}, {"level": 0, "count": 0, "date": "2026-W46-1"}, {"level": 0, "count": 0, "date": "2026-W46-2"}, {"level": 2, "count": 12, "date": "2026-W46-3"}, {"level": 4, "count": 20, "date": "2026-W46-4"}, {"level": 2, "count": 8, "date": "2026-W46-5"}, {"level": 0, "count": 0, "date": "2026-W46-6"}], [{"level": 2, "count": 4, "date": "2026-W47-0"}, {"level": 3, "count": 9, "date": "2026-W47-1"}, {"level": 4, "count": 8, "date": "2026-W47-2"}, {"level": 2, "count": 8, "date": "2026-W47-3"}, {"level": 2, "count": 10, "date": "2026-W47-4"}, {"level": 1, "count": 3, "date": "2026-W47-5"}, {"level": 0, "count": 0, "date": "2026-W47-6"}], [{"level": 2, "count": 6, "date": "2026-W48-0"}, {"level": 0, "count": 0, "date": "2026-W48-1"}, {"level": 3, "count": 18, "date": "2026-W48-2"}, {"level": 3, "count": 18, "date": "2026-W48-3"}, {"level": 3, "count": 12, "date": "2026-W48-4"}, {"level": 2, "count": 8, "date": "2026-W48-5"}, {"level": 0, "count": 0, "date": "2026-W48-6"}], [{"level": 2, "count": 4, "date": "2026-W49-0"}, {"level": 3, "count": 15, "date": "2026-W49-1"}, {"level": 0, "count": 0, "date": "2026-W49-2"}, {"level": 4, "count": 20, "date": "2026-W49-3"}, {"level": 2, "count": 10, "date": "2026-W49-4"}, {"level": 0, "count": 0, "date": "2026-W49-5"}, {"level": 2, "count": 8, "date": "2026-W49-6"}], [{"level": 2, "count": 12, "date": "2026-W50-0"}, {"level": 3, "count": 15, "date": "2026-W50-1"}, {"level": 1, "count": 6, "date": "2026-W50-2"}, {"level": 1, "count": 3, "date": "2026-W50-3"}, {"level": 3, "count": 6, "date": "2026-W50-4"}, {"level": 1, "count": 5, "date": "2026-W50-5"}, {"level": 0, "count": 0, "date": "2026-W50-6"}], [{"level": 1, "count": 6, "date": "2026-W51-0"}, {"level": 2, "count": 8, "date": "2026-W51-1"}, {"level": 0, "count": 0, "date": "2026-W51-2"}, {"level": 3, "count": 9, "date": "2026-W51-3"}, {"level": 1, "count": 4, "date": "2026-W51-4"}, {"level": 3, "count": 12, "date": "2026-W51-5"}, {"level": 1, "count": 6, "date": "2026-W51-6"}], [{"level": 2, "count": 8, "date": "2026-W52-0"}, {"level": 2, "count": 12, "date": "2026-W52-1"}, {"level": 4, "count": 8, "date": "2026-W52-2"}, {"level": 0, "count": 0, "date": "2026-W52-3"}, {"level": 1, "count": 6, "date": "2026-W52-4"}, {"level": 3, "count": 15, "date": "2026-W52-5"}, {"level": 2, "count": 10, "date": "2026-W52-6"}]], "notes_by_day": {}};
+        const DATA = {
+            books: {},
+            spotlight_book_key: "",
+            recent_downloads: [],
+            concept_clusters: [],
+            sparks: [],
+            unread_queue: [],
+            inventory: { total_books: 0, downloads_30d: 0, local_ebooks_count: 0, conversion_rate: "0%", tsundoku_rate: "0%" },
+            dimension_weights: [],
+            heatmap_weeks: [],
+            notes_by_day: {},
+            system_info: { status: "loading", total_apple_books: 0, total_highlights: 0 }
+        };
 
         // --- Theme Toggle ---
         function toggleTheme() {
@@ -2474,18 +2564,24 @@
         // --- Render 365 Days Heatmap ---
         function renderHeatmap() {
             const grid = document.getElementById('heatGrid');
-            if (DATA.heatmap_weeks && grid) {
-                grid.innerHTML = DATA.heatmap_weeks.map(week => `
+            let weeks = DATA.heatmap_weeks;
+            if (!weeks || !weeks.length) {
+                weeks = Array.from({ length: 52 }, () => Array.from({ length: 7 }, () => ({ date: '', count: 0 })));
+            }
+            if (grid) {
+                grid.innerHTML = weeks.map(week => `
                     <div class="heat-col">
                         ${week.map(d => {
-                            let c = d.count;
+                            let c = d.count || 0;
                             let color = 'var(--heat-0)';
                             if (c >= 25) color = 'var(--heat-4)';
                             else if (c >= 12) color = 'var(--heat-3)';
                             else if (c >= 5) color = 'var(--heat-2)';
                             else if (c >= 1) color = 'var(--heat-1)';
+                            const titleAttr = d.date ? `${d.date}: ${c} 条划线` : '暂无记录';
+                            const clickAttr = d.date ? `onclick="probeDate('${escapeHtml(d.date)}', ${c})"` : '';
                             return `<div class="heat-cell" style="background-color: ${color};" 
-                                         title="${d.date}: ${c} 条划线" onclick="probeDate('${d.date}', ${c})"></div>`;
+                                         title="${titleAttr}" ${clickAttr}></div>`;
                         }).join('')}
                     </div>
                 `).join('');
@@ -3215,12 +3311,34 @@ ${quotesText}
         let recentPage = 0;
         function renderRecentDownloads() {
             const list = DATA.recent_downloads || [];
-            if (!list.length) return;
+            const container = document.getElementById('recentBooksGrid');
+            const navTools = document.querySelector('.recent-nav-tools');
+            if (!container) return;
+
+            if (!list.length) {
+                if (navTools) navTools.style.display = 'none';
+                const localCnt = (DATA.inventory && DATA.inventory.local_ebooks_count) || 0;
+                if (localCnt === 0) {
+                    container.innerHTML = `
+                        <div style="grid-column: 1 / -1; padding: 18px 14px; border-radius: 10px; background: var(--surface-subtle); border: 1px dashed var(--border-main); text-align: center; font-size: 12px; color: var(--ink-muted);">
+                            当前扫描目录暂无本地电子书文件 · <span style="color: var(--accent-terracotta); cursor: pointer; text-decoration: underline;" onclick="openSettingsModal()">更改扫描目录</span>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div style="grid-column: 1 / -1; padding: 18px 14px; border-radius: 10px; background: var(--surface-subtle); border: 1px dashed var(--border-main); text-align: center; font-size: 12px; color: var(--ink-muted);">
+                            近 30 天内暂无新增下载（历史已扫描 ${localCnt} 本电子书）
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            if (navTools) navTools.style.display = 'flex';
             const totalPages = Math.ceil(list.length / 2);
             recentPage = (recentPage % totalPages + totalPages) % totalPages;
             const start = recentPage * 2;
             const pair = list.slice(start, start + 2);
-            const container = document.getElementById('recentBooksGrid');
             container.innerHTML = pair.map(b => `
                 <div class="recent-book-mini-card">
                     <div>
@@ -3250,8 +3368,24 @@ ${quotesText}
         let currentConceptId = 'detachment';
 
         function renderConceptPills() {
-            const list = DATA.concept_clusters || [];
+            const list = (DATA.concept_clusters || []).filter(c => c.count > 0 && c.samples && c.samples.length > 0);
+            const section = document.querySelector('.concept-section');
             const container = document.getElementById('conceptPills');
+            if (!list.length) {
+                if (section) section.style.display = 'none';
+                return;
+            }
+            if (section) section.style.display = 'block';
+            if (!list.some(c => c.id === currentConceptId)) {
+                currentConceptId = list[0].id;
+            }
+            const subtitle = section ? section.querySelector('.section-title span:nth-child(2)') : null;
+            if (subtitle) {
+                const distinctBooks = new Set();
+                list.forEach(c => (c.samples || []).forEach(s => distinctBooks.add(s.book)));
+                const maxBooks = Math.max(distinctBooks.size, ...list.map(c => c.books_count || 0));
+                subtitle.innerText = `跨越 ${maxBooks} 本书的思想共鸣`;
+            }
             container.innerHTML = list.map(c => `
                 <div class="concept-pill ${c.id === currentConceptId ? 'active' : ''}" onclick="selectConcept('${escapeHtml(c.id)}')">
                     <span>${escapeHtml(c.name)}</span>
@@ -3291,7 +3425,8 @@ ${quotesText}
         }
 
         function renderConceptGrid() {
-            const list = DATA.concept_clusters || [];
+            const list = (DATA.concept_clusters || []).filter(c => c.count > 0 && c.samples && c.samples.length > 0);
+            if (!list.length) return;
             const activeCluster = list.find(c => c.id === currentConceptId) || list[0];
             if (!activeCluster) return;
 
@@ -3524,10 +3659,10 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             await syncReadingData();
         }
 
-        async function syncReadingData() {
+        async function syncReadingData(silent = false) {
             const btn = document.getElementById('syncBtn');
             btn.classList.add('spinning');
-            showToast('⏳ 正在从图书 App 和下载目录同步最新数据...');
+            if (!silent) showToast('⏳ 正在从图书 App 和下载目录同步最新数据...');
 
             const savedDb = localStorage.getItem('reading_os_custom_db') || '';
             const savedBooks = localStorage.getItem('reading_os_custom_books') || '';
@@ -3543,23 +3678,31 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                     const fresh = await res.json();
                     btn.classList.remove('spinning');
                     if (fresh && fresh.error) {
-                        showToast(`⚠️ 同步遇到问题: ${fresh.error}`);
+                        if (!silent) showToast(`⚠️ 同步遇到问题: ${fresh.error}`);
+                        updateAdaptiveLayout();
                         return;
                     }
                     if (fresh) {
                         applyFreshData(fresh);
-                        showToast(`✨ 同步完成！已更新至最新阅读进度与下载书目`);
+                        if (!silent) {
+                            if (fresh.system_info && fresh.system_info.status === 'not_found' && Object.keys(fresh.books || {}).length === 0) {
+                                showToast('⚠️ 未检测到本地 Apple Books 数据库，请检查磁盘权限');
+                            } else {
+                                showToast(`✨ 同步完成！已更新至最新阅读进度与下载书目`);
+                            }
+                        }
                         return;
                     }
                 } else {
                     btn.classList.remove('spinning');
-                    showToast(`⚠️ 同步请求异常 (HTTP ${res.status})`);
+                    if (!silent) showToast(`⚠️ 同步请求异常 (HTTP ${res.status})`);
+                    updateAdaptiveLayout();
                     return;
                 }
             } catch (e) {
                 btn.classList.remove('spinning');
-                // 独立文件预览或单机静态模式提示
-                showToast('✨ 当前数据已展示，若在 DSH 中可实时同步');
+                if (!silent) showToast('⚠️ 无法连接到本地同步接口，请在 DeepSeek Harness 中打开');
+                updateAdaptiveLayout();
                 return;
             }
 
@@ -3585,9 +3728,10 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 spotBook = list[0];
             }
 
+            const spotCard = document.querySelector('.spotlight-card');
             if (spotBook) {
-                const spotCard = document.querySelector('.spotlight-card');
                 if (spotCard) {
+                    spotCard.style.display = 'flex';
                     spotCard.setAttribute('data-book-key', spotBook.key);
                     spotCard.onclick = () => openBookDrawer(spotBook.key);
                 }
@@ -3619,6 +3763,8 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                     }
                 }
                 if (elLastOpen) elLastOpen.innerText = '最近打开';
+            } else if (spotCard) {
+                spotCard.style.display = 'none';
             }
 
             // 2. Dynamic Companion Cards (Top companion books from user's actual library)
@@ -3633,9 +3779,12 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 return tb.localeCompare(ta);
             });
 
+            const compRow = document.querySelector('.companion-row');
             const compCards = document.querySelectorAll('.companion-row > .companion-card');
+            let visibleCompanions = 0;
             compCards.forEach((card, idx) => {
                 if (idx < compCandidates.length) {
+                    visibleCompanions++;
                     const cb = compCandidates[idx];
                     card.style.display = 'flex';
                     card.setAttribute('data-book-key', cb.key);
@@ -3661,14 +3810,27 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                     card.style.display = 'none';
                 }
             });
+            if (compRow) {
+                compRow.style.display = visibleCompanions > 0 ? 'grid' : 'none';
+            }
         }
 
         // --- Render 4 Dimension Weights Dynamically ---
         function renderDimensionWeights() {
             const container = document.getElementById('dimensionWeightsRow');
+            const summaryEl = document.getElementById('dimensionTopSummary');
             if (!container) return;
-            const weights = DATA.dimension_weights;
-            if (!weights || !weights.length) return;
+            const weights = DATA.dimension_weights || [];
+            const totalDimBooks = weights.reduce((acc, w) => acc + (w.count || 0), 0);
+
+            if (!weights.length || totalDimBooks === 0) {
+                container.style.display = 'none';
+                if (summaryEl) {
+                    summaryEl.innerHTML = `<span style="color:var(--ink-muted);">导入书籍后将自动归纳四维知识资产分布</span><span></span>`;
+                }
+                return;
+            }
+            container.style.display = 'flex';
 
             container.innerHTML = weights.map(w => `
                 <div class="weight-item">
@@ -3682,7 +3844,6 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                 </div>
             `).join('');
 
-            const summaryEl = document.getElementById('dimensionTopSummary');
             if (summaryEl) {
                 let topCat = weights[0];
                 let topRatio = (topCat.highlights || 0) / Math.max(1, topCat.count || 1);
@@ -3704,46 +3865,87 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             return `${d.system_info ? d.system_info.status : ''}_${d.inventory ? d.inventory.total_books : 0}_${d.inventory ? d.inventory.downloads_30d : 0}_${Object.keys(d.books).length}`;
         }
         let lastAppliedDataHash = '';
-        function applyFreshData(fresh) {
-            if (!fresh || fresh.error || !fresh.books) return;
-            const newHash = computeDataHash(fresh);
-            if (lastAppliedDataHash && lastAppliedDataHash === newHash) {
-                return; // 数据一致，跳过全量 DOM 销毁与重建，避免二次闪烁
+        function renderSparks() {
+            const sparks = DATA.sparks || [];
+            const sparkCard = document.getElementById('sparkCard');
+            if (!sparks.length) {
+                if (sparkCard) sparkCard.style.display = 'none';
+                return;
             }
-            lastAppliedDataHash = newHash;
+            if (sparkCard) sparkCard.style.display = 'flex';
+            if (sparkIdx >= sparks.length) sparkIdx = 0;
+            const sp = sparks[sparkIdx];
+            const elText = document.getElementById('sparkText');
+            const elSource = document.getElementById('sparkSource');
+            if (elText) elText.innerText = '“' + sp.quote + '”';
+            if (elSource) {
+                elSource.innerText = `《${sp.book}》· ${sp.author}`;
+                elSource.title = `《${sp.book}》· ${sp.author} (点击展开划线批注)`;
+            }
+        }
 
-            Object.assign(DATA, fresh);
-            try {
-                localStorage.setItem('readingos_cached_data', JSON.stringify(fresh));
-            } catch (e) {}
+        function updateAdaptiveLayout() {
+            const onboardingEl = document.getElementById('onboardingView');
+            const mainEl = document.getElementById('mainDashboardView');
+            const hasBooks = DATA.books && Object.keys(DATA.books).length > 0;
+            const status = DATA.system_info ? DATA.system_info.status : 'loading';
+            const localEbooks = (DATA.inventory && DATA.inventory.local_ebooks_count) || 0;
+
+            // 未授权/未连上数据库且无任何书籍与电子书时，展示干净的空白引导页
+            if (status !== 'connected' && !hasBooks && localEbooks === 0) {
+                if (onboardingEl) onboardingEl.style.display = 'block';
+                if (mainEl) mainEl.style.display = 'none';
+                return;
+            }
+
+            if (onboardingEl) onboardingEl.style.display = 'none';
+            if (mainEl) mainEl.style.display = 'block';
+
+            // 底部双卡区自适应折叠
+            const hasSparks = DATA.sparks && DATA.sparks.length > 0;
+            const hasUnread = DATA.unread_queue && DATA.unread_queue.length > 0;
+            const sparkCard = document.getElementById('sparkCard');
+            const unreadCard = document.getElementById('unreadDeckCard');
+            const dualRow = document.querySelector('.dual-row');
+
+            if (sparkCard) sparkCard.style.display = hasSparks ? 'flex' : 'none';
+            if (unreadCard) unreadCard.style.display = hasUnread ? 'flex' : 'none';
+            if (dualRow) dualRow.style.display = (hasSparks || hasUnread) ? 'grid' : 'none';
+        }
+
+        function renderAllViews() {
+            renderAtmosphericGreeting();
             renderSpotlightAndCompanions();
             renderHeatmap();
             renderRecentDownloads();
             renderConceptPills();
             renderConceptGrid();
+            renderSparks();
             renderUnreadSuggestion();
             renderDimensionWeights();
+            updateAdaptiveLayout();
+
             if (document.getElementById('statTotalBooks') && DATA.inventory) {
-                document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
-                document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
-                document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
-                document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
+                document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books ?? 0;
+                document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d ?? 0;
+                document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate || '0%';
+                document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate || '0%';
             }
             if (document.getElementById('recentDownloadsCount')) {
-                const cnt = (DATA.inventory && DATA.inventory.downloads_30d) || (DATA.recent_downloads ? DATA.recent_downloads.length : 12);
+                const cnt = (DATA.inventory && DATA.inventory.downloads_30d) ?? (DATA.recent_downloads ? DATA.recent_downloads.length : 0);
                 document.getElementById('recentDownloadsCount').innerText = cnt;
             }
             if (document.getElementById('recentConversionRate') && DATA.inventory) {
-                document.getElementById('recentConversionRate').innerText = DATA.inventory.conversion_rate || '81.5%';
+                document.getElementById('recentConversionRate').innerText = DATA.inventory.conversion_rate || '0%';
             }
-            if (fresh.system_info) {
+            if (DATA.system_info) {
                 const pEl = document.getElementById('detectedDbPath');
-                if (pEl && fresh.system_info.bklibrary_path) {
-                    pEl.innerText = fresh.system_info.bklibrary_path;
+                if (pEl) {
+                    pEl.innerText = DATA.system_info.bklibrary_path || '未检测到 Apple Books 数据库';
                 }
                 const badge = document.getElementById('dbStatusBadge');
                 if (badge) {
-                    if (fresh.system_info.status === 'connected') {
+                    if (DATA.system_info.status === 'connected') {
                         badge.innerText = '● 已自动连接';
                         badge.style.color = '#2f855a';
                         badge.style.background = 'rgba(56, 161, 105, 0.12)';
@@ -3754,10 +3956,31 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                     }
                 }
                 const dEl = document.getElementById('downloadsStatusText');
-                if (dEl && fresh.system_info.downloads_dir) {
-                    dEl.innerText = '当前：' + fresh.system_info.downloads_dir;
+                if (dEl && DATA.system_info.downloads_dir) {
+                    dEl.innerText = '当前：' + DATA.system_info.downloads_dir;
                 }
             }
+        }
+
+        function applyFreshData(fresh) {
+            if (!fresh || fresh.error || !fresh.books) return;
+            const newHash = computeDataHash(fresh);
+            if (lastAppliedDataHash && lastAppliedDataHash === newHash) {
+                return; // 数据一致，跳过全量 DOM 销毁与重建，避免二次闪烁
+            }
+            lastAppliedDataHash = newHash;
+
+            Object.assign(DATA, fresh);
+            if (fresh.system_info && fresh.system_info.status === 'connected') {
+                try {
+                    localStorage.setItem('readingos_cached_data', JSON.stringify(fresh));
+                } catch (e) {}
+            } else if (fresh.system_info && fresh.system_info.status === 'not_found') {
+                try {
+                    localStorage.removeItem('readingos_cached_data');
+                } catch (e) {}
+            }
+            renderAllViews();
         }
 
         function renderAtmosphericGreeting() {
@@ -3779,46 +4002,28 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             el.innerText = text;
         }
 
-        // Init: 先尝试从本地浏览器缓存秒开（若已有73本书缓存直接呈现）
+        // Init: 优先读取当前用户的本地缓存秒开；若无缓存则静默自动连接本地库，未授权则呈现空白引导页
+        let hasValidCache = false;
         try {
             const cached = JSON.parse(localStorage.getItem('readingos_cached_data') || 'null');
-            if (cached && cached.books && Object.keys(cached.books).length > 4) {
+            if (cached && cached.books && Object.keys(cached.books).length > 0 && cached.system_info && cached.system_info.status === 'connected') {
                 Object.assign(DATA, cached);
                 lastAppliedDataHash = computeDataHash(DATA);
+                hasValidCache = true;
             }
         } catch (e) {}
 
-        renderAtmosphericGreeting();
-        renderSpotlightAndCompanions();
-        renderHeatmap();
-        renderRecentDownloads();
-        renderConceptPills();
-        renderConceptGrid();
-        renderUnreadSuggestion();
-        renderDimensionWeights();
-
-        if (document.getElementById('statTotalBooks') && DATA.inventory) {
-            document.getElementById('statTotalBooks').innerText = DATA.inventory.total_books;
-            document.getElementById('statDownloads30d').innerText = DATA.inventory.downloads_30d;
-            document.getElementById('statConversion').innerText = DATA.inventory.conversion_rate;
-            document.getElementById('statTsundoku').innerText = DATA.inventory.tsundoku_rate;
+        if (hasValidCache) {
+            renderAllViews();
+        } else {
+            renderAtmosphericGreeting();
+            syncReadingData(true).then(() => {
+                if (DATA.system_info && DATA.system_info.status === 'loading') {
+                    DATA.system_info.status = 'not_found';
+                    updateAdaptiveLayout();
+                }
+            });
         }
-        if (document.getElementById('recentDownloadsCount')) {
-            const cnt = (DATA.inventory && DATA.inventory.downloads_30d) || (DATA.recent_downloads ? DATA.recent_downloads.length : 12);
-            document.getElementById('recentDownloadsCount').innerText = cnt;
-        }
-        if (document.getElementById('recentConversionRate') && DATA.inventory) {
-            document.getElementById('recentConversionRate').innerText = DATA.inventory.conversion_rate || '81.5%';
-        }
-
-        // 尝试加载本地静态数据
-        fetch('/reading-os/data.local.json', { cache: 'no-store' })
-            .then(res => {
-                if (res.ok) return res.json();
-                throw new Error('static not ready');
-            })
-            .then(applyFreshData)
-            .catch(() => {});
     </script>
 </body>
 </html>

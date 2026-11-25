@@ -66,7 +66,7 @@ def get_reading_os_data():
     bklib_path, ann_path = locate_apple_books_db()
 
     books_dict = {}
-    spotlight_book_key = "JINGANG"
+    spotlight_book_key = ""
     day_counts = {}
     notes_by_day = {}
     total_apple_books = 0
@@ -141,16 +141,6 @@ def get_reading_os_data():
                     ]
                 }
                 books_dict[aid] = b_obj
-
-                # Backward compatibility aliases for spotlight and companions
-                if "金剛經白話講座" in clean_title and "JINGANG" not in books_dict:
-                    books_dict["JINGANG"] = b_obj
-                elif "估值原理" in clean_title and "VALUATION" not in books_dict:
-                    books_dict["VALUATION"] = b_obj
-                elif "老子他说" in clean_title and "LAOZI" not in books_dict:
-                    books_dict["LAOZI"] = b_obj
-                elif "最初和最终的自由" in clean_title and "FREEDOM" not in books_dict:
-                    books_dict["FREEDOM"] = b_obj
 
             # Heatmap counts
             c.execute("""
@@ -336,21 +326,6 @@ def get_reading_os_data():
     recent_downloads = [
         parse_book_metadata(f, m) for m, f in recent_30d_files
     ]
-    if not recent_downloads:
-        recent_downloads = [
-            {
-                "title": "聪明人的个人成长",
-                "author": "【美】史蒂夫·帕弗利纳",
-                "tag": "EPUB · 5天前",
-                "desc": "围绕“真实、爱、能量”三大基本原则，构建系统化自我进化框架，涵盖习惯重塑、清醒自主与心智成长。"
-            },
-            {
-                "title": "唤醒创作力：写给被卡住的创作者",
-                "author": "【美】朱莉娅·卡梅伦",
-                "tag": "EPUB · 5天前",
-                "desc": "针对创作瓶颈与心智卡顿，通过晨间随笔与灵性觉察练习，打通内在阻滞，唤醒与生俱来的原创动力。"
-            }
-        ]
 
     # Deduplicate books by title for accurate statistics
     unique_books = []
@@ -456,12 +431,8 @@ def get_reading_os_data():
             sparks.append({"quote": txt, "book": b_title, "author": b_author})
             if len(sparks) >= 20:
                 break
-    if not sparks:
-        sparks = [
-            {"quote": "所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。", "book": "金剛經白話講座", "author": "王思迅"},
-            {"quote": "估值不仅是对资产未来现金流的折现，更是在不确定性中为风险与期权定价的艺术。", "book": "估值原理", "author": "周洛华"},
-            {"quote": "真相无法靠别人给你。你必须自己去发现它。倾听是有艺术的，必须舍弃所有的偏见和预设。", "book": "最初和最终的自由", "author": "克里希那穆提"}
-        ]
+    if len(sparks) == 0:
+        sparks = []
 
     # 4. Dynamic Cross-Book Concept Network
     concept_defs = [
@@ -487,15 +458,14 @@ def get_reading_os_data():
                     if 16 <= len(txt) <= 240 and b["title"] not in sample_books_seen and len(samples) < 3:
                         sample_books_seen.add(b["title"])
                         samples.append({"book": b["title"], "author": b["author"], "quote": txt})
-        if not samples:
-            samples = [{"book": "ReadingOS 提示", "author": "本地书库", "quote": f"当前书库暂无包含「{cname}」关键词的划线，在 Apple Books 中标记后点击同步即可自动聚合。"}]
-        concept_clusters.append({
-            "id": cid,
-            "name": cname,
-            "count": hit_count,
-            "books_count": len(hit_books),
-            "samples": samples
-        })
+        if hit_count > 0 and samples:
+            concept_clusters.append({
+                "id": cid,
+                "name": cname,
+                "count": hit_count,
+                "books_count": len(hit_books),
+                "samples": samples
+            })
 
     return {
         "books": books_dict,
@@ -509,6 +479,7 @@ def get_reading_os_data():
         "inventory": {
             "total_books": total_books,
             "downloads_30d": len(recent_30d_files),
+            "local_ebooks_count": len(downloads_list),
             "conversion_rate": conversion_rate_str,
             "tsundoku_rate": tsundoku_rate_str
         },
