@@ -981,61 +981,6 @@
             margin-bottom: 24px;
         }
 
-        /* ================= ONBOARDING / EMPTY STATE VIEW ================= */
-        .onboarding-card {
-            max-width: 580px;
-            margin: 44px auto;
-            background: var(--surface);
-            border: 1px solid var(--border-main);
-            border-radius: 16px;
-            padding: 32px 30px;
-            box-shadow: var(--card-shadow);
-            text-align: left;
-        }
-        .onboarding-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--accent-terracotta);
-            background: var(--accent-soft);
-            padding: 4px 10px;
-            border-radius: 99px;
-            margin-bottom: 14px;
-        }
-        .onboarding-title {
-            font-size: 19px;
-            font-weight: 600;
-            color: var(--ink-primary);
-            margin-bottom: 8px;
-        }
-        .onboarding-desc {
-            font-size: 13px;
-            color: var(--ink-secondary);
-            line-height: 1.65;
-            margin-bottom: 20px;
-        }
-        .onboarding-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 16px 18px;
-            margin-bottom: 22px;
-            font-size: 12.5px;
-            color: var(--ink-secondary);
-            line-height: 1.6;
-        }
-        .onboarding-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-
         .spark-bookmark-card, .unread-deck-card {
             background: var(--surface);
             border: 1px solid var(--border-main);
@@ -2040,27 +1985,7 @@
             </div>
         </header>
 
-        <!-- ================= ONBOARDING / EMPTY STATE VIEW (UNCONNECTED) ================= -->
-        <div id="onboardingView" style="display:none;">
-            <div class="onboarding-card">
-                <div class="onboarding-badge">📖 本地隐私优先 · 纯只读模式</div>
-                <div class="onboarding-title serif">连接您的本地阅读空间</div>
-                <div class="onboarding-desc" id="onboardingDesc">
-                    暂未读取到 macOS「图书（Apple Books）」本地数据库。ReadingOS 不包含任何云端或预设演示书单，仅呈现您自己真实的阅读足迹与划线批注。
-                </div>
-                <div class="onboarding-steps">
-                    <div><strong>1. 开启系统磁盘权限（最常见）：</strong> 打开 macOS「系统设置 ➔ 隐私与安全性 ➔ 完全磁盘访问权限」，勾选 <strong>DeepSeek Harness</strong>。</div>
-                    <div><strong>2. 确认书库状态：</strong> 确认自带「图书（Apple Books）」App 中已导入书籍并留下过阅读划线。</div>
-                    <div><strong>3. 自定义目录（可选）：</strong> 如果您的书库或电子书存放在非默认目录（如外接硬盘），可点击下方配置路径。</div>
-                </div>
-                <div class="onboarding-actions">
-                    <button class="dsh-btn primary" onclick="syncReadingData()" style="padding:8px 16px; font-size:12.5px;">🔄 已授权，立即同步</button>
-                    <button class="dsh-btn" onclick="openSettingsModal()" style="padding:8px 16px; font-size:12.5px;">⚙️ 配置路径与权限说明</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="mainDashboardView" style="display:none;">
+        <div id="mainDashboardView">
         <!-- ================= TOP BENTO ROW: HEATMAP + DIMENSION WEIGHTS ================= -->
         <div class="top-bento-row">
 
@@ -2502,7 +2427,7 @@
 
                 <!-- Footnote for Permission -->
                 <div class="pref-footnote">
-                    💡 划线如读取为空，可在 macOS「系统设置 ➔ 隐私与安全性 ➔ 完全磁盘访问权限」开启勾选。
+                    💡 如首次无法读取目录，请在系统弹窗中点击“允许”文件夹访问；若存放在自定义路径，可在上方修改。
                 </div>
             </div>
 
@@ -3726,7 +3651,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
                         applyFreshData(fresh);
                         if (!silent) {
                             if (fresh.system_info && fresh.system_info.status === 'not_found' && Object.keys(fresh.books || {}).length === 0) {
-                                showToast('⚠️ 未检测到本地 Apple Books 数据库，请检查磁盘权限');
+                                showToast('⚠️ 暂未检测到「图书」数据，可先导入书籍或点右上角 ⚙️ 查看目录');
                             } else {
                                 showToast(`✨ 同步完成！已更新至最新阅读进度与下载书目`);
                             }
@@ -3984,20 +3909,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         }
 
         function updateAdaptiveLayout() {
-            const onboardingEl = document.getElementById('onboardingView');
             const mainEl = document.getElementById('mainDashboardView');
-            const hasBooks = DATA.books && Object.keys(DATA.books).length > 0;
-            const status = DATA.system_info ? DATA.system_info.status : 'loading';
-            const localEbooks = (DATA.inventory && DATA.inventory.local_ebooks_count) || 0;
-
-            // 未授权/未连上数据库且无任何书籍与电子书时，展示干净的空白引导页
-            if (status !== 'connected' && !hasBooks && localEbooks === 0) {
-                if (onboardingEl) onboardingEl.style.display = 'block';
-                if (mainEl) mainEl.style.display = 'none';
-                return;
-            }
-
-            if (onboardingEl) onboardingEl.style.display = 'none';
             if (mainEl) mainEl.style.display = 'block';
 
             const sparkCard = document.getElementById('sparkCard');
@@ -4098,7 +4010,7 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             el.innerText = text;
         }
 
-        // Init: 优先读取当前用户的本地缓存秒开；若无缓存则静默自动连接本地库，未授权则呈现空白引导页
+        // Init: 优先读取当前用户的本地缓存秒开；无论是否有缓存都先渲染主界面，无缓存时静默同步本地库
         let hasValidCache = false;
         try {
             const cached = JSON.parse(localStorage.getItem('readingos_cached_data') || 'null');
@@ -4109,16 +4021,9 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             }
         } catch (e) {}
 
-        if (hasValidCache) {
-            renderAllViews();
-        } else {
-            renderAtmosphericGreeting();
-            syncReadingData(true).then(() => {
-                if (DATA.system_info && DATA.system_info.status === 'loading') {
-                    DATA.system_info.status = 'not_found';
-                    updateAdaptiveLayout();
-                }
-            });
+        renderAllViews();
+        if (!hasValidCache) {
+            syncReadingData(true);
         }
     </script>
 </body>
