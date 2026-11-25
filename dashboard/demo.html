@@ -2519,17 +2519,17 @@
             box.style.display = 'block';
 
             if (!notes.length) {
-                box.innerHTML = `<span style="color:var(--ink-muted);">📅 ${dateStr}：未做批注记录</span>`;
+                box.innerHTML = `<span style="color:var(--ink-muted);">📅 ${escapeHtml(dateStr)}：未做批注记录</span>`;
                 return;
             }
 
             box.innerHTML = `
                 <div style="font-weight:600; color:var(--accent-terracotta); margin-bottom:6px;">
-                    📅 ${dateStr} · 记录了 ${count} 条划线：
+                    📅 ${escapeHtml(dateStr)} · 记录了 ${count} 条划线：
                 </div>
                 <div style="display:flex; flex-direction:column; gap:4px; line-height:1.5;">
                     ${notes.slice(0, 3).map(n => `
-                        <div>“${n.text.slice(0, 90)}...” <span style="color:var(--accent-terracotta); font-size:11px;">《${n.book}》</span></div>
+                        <div>“${escapeHtml(n.text.slice(0, 90))}...” <span style="color:var(--accent-terracotta); font-size:11px;">《${escapeHtml(n.book)}》</span></div>
                     `).join('')}
                 </div>
             `;
@@ -3226,12 +3226,12 @@ ${quotesText}
                 <div class="recent-book-mini-card">
                     <div>
                         <div class="rb-top">
-                            <span class="rb-title" title="《${b.title}》">《${b.title}》</span>
-                            <span class="rb-tag">${b.tag}</span>
+                            <span class="rb-title" title="《${escapeHtml(b.title)}》">《${escapeHtml(b.title)}》</span>
+                            <span class="rb-tag">${escapeHtml(b.tag)}</span>
                         </div>
-                        <div class="rb-author">${b.author}</div>
+                        <div class="rb-author">${escapeHtml(b.author)}</div>
                     </div>
-                    <div class="rb-desc serif">“${b.desc}”</div>
+                    <div class="rb-desc serif">“${escapeHtml(b.desc)}”</div>
                 </div>
             `).join('');
             document.getElementById('recentPageIndicator').innerText = `${recentPage + 1} / ${totalPages}`;
@@ -3254,8 +3254,8 @@ ${quotesText}
             const list = DATA.concept_clusters || [];
             const container = document.getElementById('conceptPills');
             container.innerHTML = list.map(c => `
-                <div class="concept-pill ${c.id === currentConceptId ? 'active' : ''}" onclick="selectConcept('${c.id}')">
-                    <span>${c.name}</span>
+                <div class="concept-pill ${c.id === currentConceptId ? 'active' : ''}" onclick="selectConcept('${escapeHtml(c.id)}')">
+                    <span>${escapeHtml(c.name)}</span>
                     <span class="pill-cnt">${c.count}条 · ${c.books_count}本书</span>
                 </div>
             `).join('');
@@ -3308,24 +3308,36 @@ ${quotesText}
             }
 
             // Render 3-column grid
+            window.currentConceptSamples = (activeCluster.samples || []).map(s => ({
+                book: s.book,
+                author: s.author,
+                quote: s.quote,
+                topic: activeCluster.name
+            }));
             const grid = document.getElementById('conceptGrid');
             if (grid) {
-                grid.innerHTML = activeCluster.samples.map(s => `
+                grid.innerHTML = window.currentConceptSamples.map((s, idx) => `
                     <div class="concept-card">
                         <div>
                             <div class="cc-head">
-                                <span class="cc-book">《${s.book}》</span>
-                                <span class="cc-author">${s.author}</span>
+                                <span class="cc-book">《${escapeHtml(s.book)}》</span>
+                                <span class="cc-author">${escapeHtml(s.author)}</span>
                             </div>
-                            <div class="cc-quote serif">“${s.quote}”</div>
+                            <div class="cc-quote serif">“${escapeHtml(s.quote)}”</div>
                         </div>
                         <div class="cc-footer">
-                            <span style="font-size:10.5px; color:var(--ink-muted);">主题：${activeCluster.name}</span>
-                            <button class="dsh-btn" onclick="askDsh('${s.book}', '${s.author}', '${s.quote.replace(/'/g, "\\'")}', '${activeCluster.name}')">✨ 联动 DSH 探讨</button>
+                            <span style="font-size:10.5px; color:var(--ink-muted);">主题：${escapeHtml(s.topic)}</span>
+                            <button class="dsh-btn" onclick="askDshFromConcept(${idx})">✨ 联动 DSH 探讨</button>
                         </div>
                     </div>
                 `).join('');
             }
+        }
+
+        function askDshFromConcept(idx) {
+            const item = window.currentConceptSamples && window.currentConceptSamples[idx];
+            if (!item) return;
+            askDsh(item.book, item.author, item.quote, item.topic);
         }
 
         function selectConcept(id) {

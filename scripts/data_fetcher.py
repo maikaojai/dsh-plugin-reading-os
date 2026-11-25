@@ -76,7 +76,7 @@ def get_reading_os_data():
         try:
             conn = sqlite3.connect(f"file:{bklib_path}?mode=ro", uri=True)
             c = conn.cursor()
-            c.execute(f"ATTACH DATABASE 'file:{ann_path}?mode=ro' AS ann;")
+            c.execute("ATTACH DATABASE ? AS ann;", (f"file:{ann_path}?mode=ro",))
 
             # Total apple books
             c.execute("SELECT count(*) FROM ZBKLIBRARYASSET;")
