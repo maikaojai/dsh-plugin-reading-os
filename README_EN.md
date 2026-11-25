@@ -87,7 +87,9 @@ In day-to-day reading, discussing a highlighted passage with AI usually requires
 
 ReadingOS streamlines this into a single click:
 - **Zero Copy-Paste**: Click **`✨ 联动探讨`** from any highlight drawer or serendipity card to pass the book title, author, and clean quote directly into the DeepSeek Harness chat window.
+- **Ask Directly in Chat (Built-in AI Tools)**: The plugin registers 4 local tools for DeepSeek (`reading_search_highlights`, `reading_get_overview`, `reading_get_concept_network`, `reading_get_book_highlights`). Even without opening the panel, you can ask DeepSeek in chat about highlights on a topic or book from your own library.
 - **Flexible Prompt Preferences**: In the top-right `⚙️` settings, choose between the default structured deep-dive guide, a minimal **"Raw Quote Only (No Prompt)"** mode that leaves full freedom to your own words, or a custom prompt template.
+- **Shortcuts & Dark Mode**: Press `⌘K` or `/` for instant full-library search, and toggle between Light / Dark themes (auto-following system appearance on first launch).
 
 <p align="center">
   <img src="assets/06-dsh-bridge.gif" width="92%" alt="One-Click DeepSeek Discussion Bridge" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);" />
@@ -112,7 +114,7 @@ This is merely one attempt tailored for a specific way of reading—it is by no 
 - **Automatic Detection Out-of-the-Box**: The plugin automatically detects highlights from macOS Apple Books and scans your `~/Downloads` folder for books. On first launch without cache, it silently performs an initial sync.
 - **Visual Settings & Custom Paths**: If your books are saved elsewhere or stored on an external SSD, click the **`⚙️` (Preferences)** button in the top-right corner to customize paths directly (shared with both the dashboard and AI tools)—no terminal commands required.
 - **Initial Permission Check**: Operates strictly in read-only mode. If macOS prompts for folder access on first run, simply click **Allow**.
-- **Verified Environment**: Verified on MacBook Pro (13-inch, macOS 15.8.2 Sequoia); compatible with macOS 12+ across both Apple Silicon and Intel Macs.
+- **Verified Environment**: Verified on MacBook Pro (13-inch, macOS 15.8.2 Sequoia); compatible with macOS 12+ (Apple Silicon & Intel) and DeepSeek Harness `>= 0.2.0-rc.1`, with zero third-party Python dependencies.
 
 ---
 

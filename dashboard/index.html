@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReadingOS · 个人阅读空间</title>
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('reading_os_theme');
+                if (t !== 'dark' && t !== 'cream') {
+                    t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'cream';
+                }
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
     <style>
         :root[data-theme="cream"] {
             --canvas: #FAF9F5;
@@ -2234,12 +2245,10 @@
                     <button class="card-action-pill" onclick="event.stopPropagation(); flipDailySpark();" title="偶遇下一条灵光">换一条 ↺</button>
                 </div>
                 <div class="spark-quote-wrap" id="sparkQuoteWrap">
-                    <div class="quiet-quote serif" id="sparkText">
-                        “所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。”
-                    </div>
+                    <div class="quiet-quote serif" id="sparkText"></div>
                 </div>
                 <div class="card-footer-bar">
-                    <span class="spark-source-text" id="sparkSource" title="《金剛經白話講座》· 王思迅 (点击展开划线批注)" onclick="event.stopPropagation(); openSparkBook();">《金剛經白話講座》· 王思迅</span>
+                    <span class="spark-source-text" id="sparkSource" onclick="event.stopPropagation(); openSparkBook();"></span>
                     <button class="dsh-btn" onclick="event.stopPropagation(); askDshCurrentSpark();" title="发送当前灵光至 DSH 对话框进行深度探讨">✨ 联动探讨</button>
                 </div>
             </div>
@@ -2253,10 +2262,8 @@
                     <button class="card-action-pill" onclick="event.stopPropagation(); shuffleUnreadDeck();" title="换一本沉睡书籍">换一本 ↺</button>
                 </div>
                 <div class="unread-body-wrap" id="unreadContentWrap">
-                    <div class="unread-title serif" id="unreadTitle" title="《也无风雨也无晴》">《也无风雨也无晴》</div>
-                    <div class="unread-desc" id="unreadDesc">
-                        PDF 格式 · 下载沉睡中，待开启深度阅读。
-                    </div>
+                    <div class="unread-title serif" id="unreadTitle"></div>
+                    <div class="unread-desc" id="unreadDesc"></div>
                 </div>
                 <div class="card-footer-bar">
                     <span class="unread-source-meta" id="unreadMeta">未读沉淀 · 待开启</span>
@@ -4068,9 +4075,17 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             }
         } catch (e) {}
 
-        renderAllViews();
-        if (!hasValidCache) {
-            syncReadingData(true);
+        if (hasValidCache) {
+            renderAllViews();
+        } else {
+            renderAtmosphericGreeting();
+            renderHeatmap();
+            updateAdaptiveLayout();
+            syncReadingData(true).finally(() => {
+                if (!lastAppliedDataHash) {
+                    renderAllViews();
+                }
+            });
         }
     </script>
 </body>
