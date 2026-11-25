@@ -1,9 +1,12 @@
 {
   "name": "dsh-plugin-reading-os",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "description": "ReadingOS · macOS 本地图书划线与阅读记录插件，支持与 DeepSeek 对话联动",
   "type": "module",
   "main": "lib/index.js",
+  "scripts": {
+    "test": "bash scripts/smoke_test.sh"
+  },
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client.js",

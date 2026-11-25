@@ -650,6 +650,14 @@
             font-size: 11.5px;
             font-weight: 600;
             color: var(--ink-primary);
+            font-variant-numeric: tabular-nums;
+        }
+        #mainDashboardView {
+            transition: opacity 0.22s ease;
+        }
+        #mainDashboardView.initial-syncing .spark-bookmark-card,
+        #mainDashboardView.initial-syncing .unread-deck-card {
+            opacity: 0.72;
         }
 
         /* ================= 3. COMPANION BOOKS ================= */
@@ -2630,9 +2638,12 @@
                     <div class="drawer-item">
                         <p class="serif" style="line-height:1.6;"><strong>#${i+1}</strong> “${escapeHtml(h.text)}”</p>
                         ${h.note ? `<div class="drawer-note">💭 批注：${escapeHtml(h.note)}</div>` : ''}
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; gap:8px;">
                             <span class="drawer-time">${escapeHtml(h.time)}</span>
-                            <button class="dsh-btn" style="font-size:10px; padding:2px 7px;" onclick="askDshFromDrawer(${i})">✨ 联动 DSH 探讨</button>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <button class="dsh-btn" style="font-size:10px; padding:2px 7px;" onclick="copySingleHighlight(${i})" title="复制干净的划线原文">📋 复制</button>
+                                <button class="dsh-btn" style="font-size:10px; padding:2px 7px;" onclick="askDshFromDrawer(${i})">✨ 联动 DSH 探讨</button>
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -2640,6 +2651,14 @@
 
             document.getElementById('drawerScrim').classList.add('active');
             drawer.classList.add('active');
+        }
+
+        function copySingleHighlight(idx) {
+            if (!currentDrawerBookKey) return;
+            const b = DATA.books[currentDrawerBookKey];
+            if (!b || !b.highlights[idx]) return;
+            const cleanQuote = (b.highlights[idx].text || '').trim();
+            copyTextToClipboard(cleanQuote, '📋 已复制干净划线原文');
         }
 
         function askDshFromDrawer(idx) {
@@ -2714,6 +2733,21 @@ ${quotesText}
         let currentReportFilename = '';
         let currentRawFilename = '';
 
+        function buildMarkdownFrontmatter(b, dateStr) {
+            const safeYaml = (v) => '"' + String(v || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+            return [
+                '---',
+                `title: ${safeYaml(b.title)}`,
+                `author: ${safeYaml(b.author || '未知作者')}`,
+                `progress: ${Number(b.progress || 0)}%`,
+                `highlights: ${b.highlights ? b.highlights.length : 0}`,
+                `exported_at: ${dateStr}`,
+                'source: Apple Books',
+                '---',
+                ''
+            ].join('\n') + '\n';
+        }
+
         function generateSynthesisReportMarkdown(b) {
             const now = new Date();
             const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
@@ -2734,7 +2768,8 @@ ${quotesText}
                 selectedQuotes = selectedQuotes.slice(0, 8);
             }
 
-            let md = `# 《${b.title}》结构化阅读复盘报告\n\n`;
+            let md = buildMarkdownFrontmatter(b, dateStr);
+            md += `# 《${b.title}》结构化阅读复盘报告\n\n`;
             md += `- **作者**：${b.author}\n`;
             md += `- **划线体量**：共 ${total} 处心智划线与批注\n`;
             md += `- **完成进度**：约 ${b.progress}%\n`;
@@ -2787,7 +2822,8 @@ ${quotesText}
             const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
             const total = b.highlights.length;
 
-            let md = `# 《${b.title}》全书划线批注底稿\n\n`;
+            let md = buildMarkdownFrontmatter(b, dateStr);
+            md += `# 《${b.title}》全书划线批注底稿\n\n`;
             md += `- **作者**：${b.author}\n`;
             md += `- **划线总数**：全部 ${total} 条批注（一条不漏）\n`;
             md += `- **导出时间**：${dateStr}\n`;
@@ -3199,12 +3235,15 @@ ${quotesText}
                 `;
             }
 
-            // Render Highlights Section
+            // Render Highlights Section (batched for smooth rendering on large libraries)
             if (matchedQuotes.length) {
+                const limit = window.searchQuotesLimit || 50;
+                const visibleQuotes = matchedQuotes.slice(0, limit);
+                const remaining = matchedQuotes.length - visibleQuotes.length;
                 html += `
-                    <div style="font-size:11.5px; font-weight:600; color:var(--ink-dim); margin-bottom:8px;">✍️ 匹配的划线批注 (${matchedQuotes.length} 处)</div>
+                    <div style="font-size:11.5px; font-weight:600; color:var(--ink-dim); margin-bottom:8px; font-variant-numeric:tabular-nums;">✍️ 匹配的划线批注 (${matchedQuotes.length} 处)</div>
                     <div style="display:flex; flex-direction:column; gap:8px;">
-                        ${matchedQuotes.slice(0, 10).map((r, i) => `
+                        ${visibleQuotes.map((r, i) => `
                             <div style="background:var(--surface-subtle); border:1px solid var(--border-subtle); padding:11px 14px; border-radius:8px; font-size:12.5px; line-height:1.6;">
                                 <div class="serif" style="color:var(--ink-primary);">“${escapeHtml(r.text)}”</div>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:7px; font-size:11px;">
@@ -3214,20 +3253,33 @@ ${quotesText}
                             </div>
                         `).join('')}
                     </div>
+                    ${remaining > 0 ? `
+                        <div style="text-align:center; margin-top:12px;">
+                            <button class="dsh-btn" style="font-size:11.5px; padding:5px 14px;" onclick="loadMoreSearchQuotes()">展开更多划线（还有 ${remaining} 条）</button>
+                        </div>
+                    ` : ''}
                 `;
             }
 
             listEl.innerHTML = html;
         }
 
+        function loadMoreSearchQuotes() {
+            window.searchQuotesLimit = (window.searchQuotesLimit || 50) + 50;
+            const kw = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+            renderSearchResults(kw);
+        }
+
         // --- Search Modal ---
         function openSearchModal() {
+            window.searchQuotesLimit = 50;
             document.getElementById('searchModal').classList.add('active');
             renderSearchResults(document.getElementById('searchInput').value.toLowerCase().trim());
             setTimeout(() => document.getElementById('searchInput').focus(), 50);
         }
 
         function openAllBooksModal() {
+            window.searchQuotesLimit = 50;
             document.getElementById('searchModal').classList.add('active');
             document.getElementById('searchInput').value = '';
             renderSearchResults('');
@@ -4036,7 +4088,10 @@ ${topic ? `讨论切入：${topic}\n` : ''}
             if (fresh.system_info && fresh.system_info.status === 'connected') {
                 try {
                     localStorage.setItem('readingos_cached_data', JSON.stringify(fresh));
-                } catch (e) {}
+                } catch (e) {
+                    // 大书库超出 localStorage 配额时清理旧缓存，避免影响当前会话渲染
+                    try { localStorage.removeItem('readingos_cached_data'); } catch (_) {}
+                }
             } else if (fresh.system_info && fresh.system_info.status === 'not_found') {
                 try {
                     localStorage.removeItem('readingos_cached_data');
@@ -4078,10 +4133,17 @@ ${topic ? `讨论切入：${topic}\n` : ''}
         if (hasValidCache) {
             renderAllViews();
         } else {
+            const mainEl = document.getElementById('mainDashboardView');
+            if (mainEl) mainEl.classList.add('initial-syncing');
+            const sparkEl = document.getElementById('sparkText');
+            const unreadEl = document.getElementById('unreadTitle');
+            if (sparkEl) sparkEl.innerText = '正在翻开你的书架…';
+            if (unreadEl) unreadEl.innerText = '正在读取本地书目…';
             renderAtmosphericGreeting();
             renderHeatmap();
             updateAdaptiveLayout();
             syncReadingData(true).finally(() => {
+                if (mainEl) mainEl.classList.remove('initial-syncing');
                 if (!lastAppliedDataHash) {
                     renderAllViews();
                 }
