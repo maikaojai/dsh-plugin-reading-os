@@ -84,7 +84,7 @@ def get_reading_os_data():
 
             # Top active and recently opened books from Apple Books
             c.execute("""
-            SELECT b.ZASSETID, b.ZTITLE, b.ZAUTHOR, b.ZREADINGPROGRESS, b.ZBOOKHIGHWATERMARKPROGRESS,
+            SELECT b.ZASSETID, b.ZTITLE, b.ZAUTHOR, b.ZGENRE, b.ZREADINGPROGRESS, b.ZBOOKHIGHWATERMARKPROGRESS,
                    count(a.ZANNOTATIONUUID) as cnt,
                    max(a.ZANNOTATIONCREATIONDATE) as last_annotation_ts,
                    coalesce(b.ZLASTOPENDATE, b.ZLASTENGAGEDDATE) as last_open_ts,
@@ -99,7 +99,7 @@ def get_reading_os_data():
             if active_rows:
                 spotlight_book_key = active_rows[0][0]
 
-            for aid, raw_title, raw_author, raw_prog, raw_hw_prog, cnt, last_ann_ts, last_open_ts, last_open_str in active_rows:
+            for aid, raw_title, raw_author, raw_genre, raw_prog, raw_hw_prog, cnt, last_ann_ts, last_open_ts, last_open_str in active_rows:
                 if not raw_title:
                     continue
                 hl_rows = []
@@ -130,6 +130,7 @@ def get_reading_os_data():
                     "key": aid,
                     "title": clean_title,
                     "author": author_clean,
+                    "genre": (raw_genre or "").strip(),
                     "progress": progress,
                     "highlights_count": len(hl_rows),
                     "sample_quote": hl_rows[0][0].strip() if hl_rows else "",
@@ -351,90 +352,150 @@ def get_reading_os_data():
             }
         ]
 
-    total_books = (total_apple_books or 272) + len(downloads_list)
+    # Deduplicate books by title for accurate statistics
+    unique_books = []
+    seen_titles = set()
+    for b in books_dict.values():
+        t = b.get("title", "")
+        if t and t not in seen_titles:
+            seen_titles.add(t)
+            unique_books.append(b)
 
-    dimension_weights = [
-        {"category": "底层思维与方法", "count": 36, "highlights": 1299, "pct": 38, "color": "#B8583E"},
-        {"category": "哲学与心智修行", "count": 80, "highlights": 953, "pct": 28, "color": "var(--accent-terracotta)"},
-        {"category": "投资、周期与商业", "count": 40, "highlights": 763, "pct": 22, "color": "#7D4336"},
-        {"category": "科学、人文与通识", "count": 30, "highlights": 120, "pct": 12, "color": "#949086"}
-    ]
+    # 1. Dynamic Total Books & Download-to-Read Conversion / Tsundoku Rate
+    def normalize_title(s):
+        s = re.sub(r'\(.*?\)|（.*?）|\[.*?\]|【.*?】', '', s)
+        s = re.sub(r'[《》\s·:：\-_=]+', '', s).lower()
+        return s
 
-    sparks = [
-        {"quote": "所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。", "book": "金剛經白話講座", "author": "王思迅"},
-        {"quote": "估值不仅是对资产未来现金流的折现，更是在不确定性中为风险与期权定价的艺术。", "book": "估值原理", "author": "周洛华"},
-        {"quote": "真相无法靠别人给你。你必须自己去发现它。倾听是有艺术的，必须舍弃所有的偏见和预设。", "book": "最初和最终的自由", "author": "克里希那穆提"},
-        {"quote": "一个命题的有效性在根本上取决于它与整个命题网络的关系，我们利用这种整体的融贯性来克服局部的易谬性。", "book": "关于说话的一切", "author": "汤质"}
-    ]
+    apple_norm_titles = [(normalize_title(b["title"]), b) for b in unique_books if b.get("title")]
+    matched_read = 0
+    unmatched_downloads = 0
+    for fname in downloads_list:
+        meta = parse_book_metadata(fname, 0)
+        dl_norm = normalize_title(meta["title"])
+        matched_book = None
+        if dl_norm:
+            for a_norm, b_obj in apple_norm_titles:
+                if dl_norm in a_norm or a_norm in dl_norm:
+                    matched_book = b_obj
+                    break
+        if matched_book:
+            if matched_book.get("highlights_count", 0) > 0 or matched_book.get("progress", 0) >= 5:
+                matched_read += 1
+        else:
+            unmatched_downloads += 1
 
-    concept_clusters = [
-        {
-            "id": "detachment",
-            "name": "放下与破执",
-            "count": 85,
-            "books_count": 12,
-            "samples": [
-                {"book": "金剛經白話講座", "author": "王思迅", "quote": "所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。"},
-                {"book": "纳瓦尔宝典", "author": "埃里克·乔根森", "quote": "要直面现实，就要放下自我，消除自我意识，忘记自我判断，平复自我情绪。"},
-                {"book": "最初和最终的自由", "author": "克里希那穆提", "quote": "真相无法靠别人给你。你必须自己去发现它。倾听是有艺术的，必须舍弃所有的偏见和预设。"}
-            ]
-        },
-        {
-            "id": "essence",
-            "name": "本质与底层",
-            "count": 87,
-            "books_count": 21,
-            "samples": [
-                {"book": "天幕红尘", "author": "豆豆", "quote": "其本质是‘更适应条件’和‘更符合需要’的意思。见路不走，实事求是。"},
-                {"book": "底层逻辑", "author": "刘润", "quote": "这个世界上，只有一种真正的英雄主义，那就是认清了生活的真相后还依然热爱它。"},
-                {"book": "道德经", "author": "老子", "quote": "人如何能够层层超越？当你逐渐淡泊于外物，且使心灵越来越宁静、越来越纯正的时候，天道的真相终将大显。"}
-            ]
-        },
-        {
-            "id": "uncertainty",
-            "name": "风险与期权",
-            "count": 75,
-            "books_count": 10,
-            "samples": [
-                {"book": "估值原理", "author": "周洛华", "quote": "估值不仅是对资产未来现金流的折现，更是在不确定性中为风险与期权定价的艺术。"},
-                {"book": "原则", "author": "瑞·达利欧", "quote": "知道自己在什么时候不能有明确的意见，不急于下结论。通过平衡风险来保持较大的回报，并降低下行波动。"},
-                {"book": "薛兆丰经济学讲义", "author": "薛兆丰", "quote": "正是因为利息是对人们延迟消费、接受不确定性的一种补偿，只要把时间因素考虑在内，收取利息就是天经地义的。"}
-            ]
-        },
-        {
-            "id": "law_dialectic",
-            "name": "规律与辩证",
-            "count": 80,
-            "books_count": 16,
-            "samples": [
-                {"book": "天幕红尘", "author": "豆豆", "quote": "佛法才让你依法不依人，马克思主义才跟你说事物规律不以人的意志为转移。实事求是才是真科学。"},
-                {"book": "老子他说", "author": "南怀瑾", "quote": "人法地，地法天，天法道，道法自然。顺应客观大规律，方能在周期中保全自身。"},
-                {"book": "毛主席语录", "author": "毛泽东", "quote": "分析的方法就是辩证的方法。所谓分析，就是分析事物的矛盾。不熟悉生活，对于矛盾不真正了解，就不可能有中肯的分析。"}
-            ]
-        },
-        {
-            "id": "action_practice",
-            "name": "知行与实践",
-            "count": 88,
-            "books_count": 22,
-            "samples": [
-                {"book": "天幕红尘", "author": "豆豆", "quote": "见路不走不是让你非跟别人一样或不一样，是让你以结果对条件的需要去取舍。你的预期果对条件有什么要求，你就去准备这些条件。"},
-                {"book": "见识", "author": "吴军", "quote": "注意你的想法，因为它能决定你的行动；注意你的行动，因为它能变成你的习惯；注意你的习惯，因为它能决定你的命运。"},
-                {"book": "关于说话的一切", "author": "汤质", "quote": "一个命题的有效性在根本上取决于它与整个命题网络的关系，我们利用这种整体的融贯性来克服局部的易谬性。"}
-            ]
-        },
-        {
-            "id": "freedom",
-            "name": "自由与觉察",
-            "count": 128,
-            "books_count": 21,
-            "samples": [
-                {"book": "最初和最终的自由", "author": "克里希那穆提", "quote": "自由不是逃避，也不是选择，自由是在纯粹觉察中完全没有选择的心智状态。"},
-                {"book": "天幕红尘", "author": "豆豆", "quote": "自由！就是你不在公众视野里，没有公众评价，没有公众要求，没人知道也没人在意你是谁。"},
-                {"book": "底层逻辑", "author": "刘润", "quote": "本金（1+收益率）^时间 - 欲望 = 财富自由。只要非劳动收入大于消费欲望，就达到了内心的从容自由。"}
-            ]
-        }
+    total_books = total_apple_books + unmatched_downloads
+    if downloads_list:
+        conv_pct = round((matched_read / len(downloads_list)) * 100, 1)
+        tsun_pct = round(100.0 - conv_pct, 1)
+        conversion_rate_str = f"{conv_pct}%"
+        tsundoku_rate_str = f"{tsun_pct}%"
+    elif unique_books:
+        read_books_cnt = sum(1 for b in unique_books if b.get("highlights_count", 0) > 0 or b.get("progress", 0) >= 5)
+        conv_pct = round((read_books_cnt / len(unique_books)) * 100, 1)
+        tsun_pct = round(100.0 - conv_pct, 1)
+        conversion_rate_str = f"{conv_pct}%"
+        tsundoku_rate_str = f"{tsun_pct}%"
+    else:
+        conversion_rate_str = "0.0%"
+        tsundoku_rate_str = "0.0%"
+
+    # 2. Dynamic 4-Dimension Knowledge Asset Weights
+    dim_specs = [
+        ("底层思维与方法", "#B8583E", ["思维", "逻辑", "认知", "方法", "原则", "说话", "写作", "学习", "系统", "心理", "心智", "习惯", "成长", "效率", "思考", "决策", "沟通"]),
+        ("哲学与心智修行", "var(--accent-terracotta)", ["哲学", "佛", "禅", "道", "心经", "金刚", "老子", "庄子", "论语", "传习", "阳明", "修行", "自由", "沉思", "存在", "宗教", "伦理", "心灵", "克里希那", "道德经"]),
+        ("投资、周期与商业", "#7D4336", ["投资", "估值", "周期", "经济", "金融", "商业", "股票", "基金", "财务", "管理", "创业", "博弈", "货币", "资本", "资产", "风险", "市场", "巴菲特", "芒格"]),
+        ("科学、人文与通识", "#949086", [])
     ]
+    dim_stats = [{"category": name, "count": 0, "highlights": 0, "color": color} for name, color, _ in dim_specs]
+
+    for b in unique_books:
+        text_for_cls = f"{b.get('title', '')} {b.get('genre', '')} {b.get('author', '')}".lower()
+        assigned = 3  # default to general humanities/science
+        for idx in range(3):
+            if any(kw in text_for_cls for kw in dim_specs[idx][2]):
+                assigned = idx
+                break
+        dim_stats[assigned]["count"] += 1
+        dim_stats[assigned]["highlights"] += b.get("highlights_count", 0)
+
+    total_dim_hls = sum(d["highlights"] for d in dim_stats)
+    total_dim_cnt = sum(d["count"] for d in dim_stats)
+    dimension_weights = []
+    for d in dim_stats:
+        if total_dim_hls > 0:
+            pct = round((d["highlights"] / total_dim_hls) * 100)
+        elif total_dim_cnt > 0:
+            pct = round((d["count"] / total_dim_cnt) * 100)
+        else:
+            pct = 25
+        dimension_weights.append({
+            "category": d["category"],
+            "count": d["count"],
+            "highlights": d["highlights"],
+            "pct": pct,
+            "color": d["color"]
+        })
+
+    # 3. Dynamic Daily Spark Bookmarks Pool (prioritizing noted & well-formed highlights)
+    spark_candidates = []
+    for b in unique_books:
+        for h in b.get("highlights", []):
+            txt = h.get("text", "").strip()
+            if 18 <= len(txt) <= 220:
+                score = (2 if h.get("note") else 0) + (1 if 30 <= len(txt) <= 130 else 0)
+                spark_candidates.append((score, b["title"], b["author"], txt))
+
+    spark_candidates.sort(key=lambda x: x[0], reverse=True)
+    sparks = []
+    spark_books_seen = set()
+    for _, b_title, b_author, txt in spark_candidates:
+        if b_title not in spark_books_seen:
+            spark_books_seen.add(b_title)
+            sparks.append({"quote": txt, "book": b_title, "author": b_author})
+            if len(sparks) >= 20:
+                break
+    if not sparks:
+        sparks = [
+            {"quote": "所有的「法」，从最高意义来说，都是行动的方法、实践的体悟，是内在圆满自在的心，以及放下的能力。", "book": "金剛經白話講座", "author": "王思迅"},
+            {"quote": "估值不仅是对资产未来现金流的折现，更是在不确定性中为风险与期权定价的艺术。", "book": "估值原理", "author": "周洛华"},
+            {"quote": "真相无法靠别人给你。你必须自己去发现它。倾听是有艺术的，必须舍弃所有的偏见和预设。", "book": "最初和最终的自由", "author": "克里希那穆提"}
+        ]
+
+    # 4. Dynamic Cross-Book Concept Network
+    concept_defs = [
+        ("detachment", "放下与破执", ["放下", "执着", "执著", "破执", "无住", "舍得", "解脱", "无常", "空性"]),
+        ("essence", "本质与底层", ["本质", "底层", "第一性", "真相", "根本", "根源", "逻辑", "前提"]),
+        ("uncertainty", "风险与期权", ["风险", "不确定", "期权", "估值", "周期", "波动", "概率", "安全边际", "赔率"]),
+        ("law_dialectic", "规律与辩证", ["辩证", "矛盾", "对立", "规律", "自然", "因果", "因缘", "客观"]),
+        ("action_practice", "知行与实践", ["知行", "行动", "实践", "践行", "习惯", "磨练", "实事求是", "条件", "方法"]),
+        ("freedom", "自由与觉察", ["自由", "觉察", "觉醒", "心灵", "宁静", "自主", "独处", "内心", "从容"])
+    ]
+    concept_clusters = []
+    for cid, cname, kws in concept_defs:
+        hit_count = 0
+        hit_books = set()
+        samples = []
+        sample_books_seen = set()
+        for b in unique_books:
+            for h in b.get("highlights", []):
+                txt = h.get("text", "").strip()
+                if any(kw in txt for kw in kws):
+                    hit_count += 1
+                    hit_books.add(b["title"])
+                    if 16 <= len(txt) <= 240 and b["title"] not in sample_books_seen and len(samples) < 3:
+                        sample_books_seen.add(b["title"])
+                        samples.append({"book": b["title"], "author": b["author"], "quote": txt})
+        if not samples:
+            samples = [{"book": "ReadingOS 提示", "author": "本地书库", "quote": f"当前书库暂无包含「{cname}」关键词的划线，在 Apple Books 中标记后点击同步即可自动聚合。"}]
+        concept_clusters.append({
+            "id": cid,
+            "name": cname,
+            "count": hit_count,
+            "books_count": len(hit_books),
+            "samples": samples
+        })
 
     return {
         "books": books_dict,
@@ -448,8 +509,8 @@ def get_reading_os_data():
         "inventory": {
             "total_books": total_books,
             "downloads_30d": len(recent_30d_files),
-            "conversion_rate": "81.5%",
-            "tsundoku_rate": "18.5%"
+            "conversion_rate": conversion_rate_str,
+            "tsundoku_rate": tsundoku_rate_str
         },
         "dimension_weights": dimension_weights,
         "system_info": {
